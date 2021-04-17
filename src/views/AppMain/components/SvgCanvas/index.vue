@@ -13,8 +13,8 @@
   </svg>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import IoNode from "@/components/IoNode/index.vue";
+import { defineComponent } from "vue"
+import IoNode from "@/components/IoNode/index.vue"
 
 export default defineComponent({
   name: "SvgCanvas",
@@ -22,9 +22,9 @@ export default defineComponent({
     IoNode
   },
   setup() {
-    return {};
+    return {}
   },
-});
+})
 </script>
 
 <style lang="scss" scoped>
