@@ -9,45 +9,18 @@
     style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
   >
-    <circle
-      class="draggable start node"
-      style="fill: #ff7f00"
-      cx="800"
-      cy="300"
-      r="50"
-    />
-    <circle
-      class="draggable end node"
-      style="fill: #00f9f9"
-      cx="1000"
-      cy="400"
-      r="50"
-    />
-    <path
-      id="path"
-      style="
-        pointer-events: none;
-        fill: none;
-        stroke: #69b84a;
-        stroke-width: 5;
-        stroke-miterlimit: 10;
-      "
-      d="
-      M
-      850,300
-      C
-      1000,300,
-      800,400,
-      950,400
-    "
-    />
+    <io-node />
   </svg>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import IoNode from "@/components/IoNode/index.vue";
 
 export default defineComponent({
   name: "SvgCanvas",
+  components: {
+    IoNode
+  },
   setup() {
     return {};
   },
