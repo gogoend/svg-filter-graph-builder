@@ -3,119 +3,33 @@
     <rect
       x="11.9"
       class="fill-333"
-      width="265.1"
-      height="377" />
-    <g class="head">
+      width="265"
+      :height="12+35*(Object.keys(convolveMatrixOptions).length+1)" />
+    <g
+      class="head"
+      transform="matrix(1 0 0 1 28 24)">
       <circle
         class="port"
-        cx="275.1"
-        cy="18.4"
-        r="10" />
+        r="10"
+        cx="250"
+      />
       <text
-        transform="matrix(1 0 0 1 28.1733 28.3989)"
+        transform="matrix(1 0 0 1 0 8)"
         class="fill-fff module-name">feConvolveMatrix</text>
     </g>
-    <g>
+    <g
+      v-for="(item, key, index) in convolveMatrixOptions"
+      :key="key"
+      :transform="`matrix(1 0 0 1 10 ${60 + 35 * index})`">
       <circle
         class="port"
-        cx="10"
-        cy="60.3"
         r="10"
       />
       <text
-        transform="matrix(1 0 0 1 28.1733 70.6196)"
-        class="fill-fff port-name">in</text>
+        transform="matrix(1 0 0 1 16 8)"
+        class="fill-fff port-name">{{ key }}</text>
     </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="92.8"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 103.1572)"
-        class="fill-fff port-name">order</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="125.4"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 135.6953)"
-        class="fill-fff port-name">kernelMatrix</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="157.9"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 168.2329)"
-        class="fill-fff port-name">divisor</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="190.4"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 200.77)"
-        class="fill-fff port-name">bias</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="223"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 233.3086)"
-        class="fill-fff port-name">targetX</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="255.3"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 265.6787)"
-        class="fill-fff port-name">targetY</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="287.7"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 298.0464)"
-        class="fill-fff port-name">edgeMode</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="320.1"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 330.4165)"
-        class="fill-fff port-name">kernelUnitLength</text>
-    </g>
-    <g>
-      <circle
-        class="port"
-        cx="10"
-        cy="352.4"
-        r="10"/>
-      <text
-        transform="matrix(1 0 0 1 28.1733 362.7852)"
-        class="fill-fff port-name">preserveAlpha</text>
-    </g>
+
   </g>
 </template>
 <script lang="ts">
@@ -124,7 +38,21 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'IoNode',
   setup() {
-    return {}
+    const convolveMatrixOptions = {
+      in: {},
+      order: {},
+      kernelMatrix: {},
+      divisor: {},
+      bias: {},
+      targetX: {},
+      targetY: {},
+      edgeMode: {},
+      kernelUnitLength: {},
+      preserveAlpha: {}
+    }
+    return {
+      convolveMatrixOptions
+    }
   }
 })
 </script>
