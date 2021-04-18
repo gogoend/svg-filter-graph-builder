@@ -13,17 +13,17 @@
   </svg>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue"
-import IoNode from "@/components/IoNode/index.vue"
+import { defineComponent } from 'vue'
+import IoNode from '@/components/IoNode/index.vue'
 
 export default defineComponent({
-  name: "SvgCanvas",
+  name: 'SvgCanvas',
   components: {
     IoNode
   },
   setup() {
     return {}
-  },
+  }
 })
 </script>
 
