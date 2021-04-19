@@ -9,7 +9,8 @@
     style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
   >
-    <io-node />
+    <io-node is="convolveMatrix" />
+    <io-node is="turbulence" />
   </svg>
 </template>
 <script lang="ts">
