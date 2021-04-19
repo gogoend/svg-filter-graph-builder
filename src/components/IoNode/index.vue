@@ -51,25 +51,33 @@ export default defineComponent({
     is: {
       type: String,
       required: true
+    },
+    nodeId: {
+      type: String,
+      required: true
     }
   },
-  setup() {
+  setup(_, { emit }) {
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
     const clickedRelativePosition = ref([0, 0])
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
-        start(ev) {
-          const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
-          // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
-          clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+        start(ev, { originEl }) {
+          if (originEl.classList.contains('port')) {
+            emit('port-start', ev)
+          } else {
+            const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
+            // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+            clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
 
-          console.log(clickedRelativePosition.value)
+            console.log(clickedRelativePosition.value)
+          }
         },
         move(ev, { originEl }) {
           if (originEl.classList.contains('port')) {
-            void 0
+            emit('port-move', ev)
           } else {
           // const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
           //   console.log(

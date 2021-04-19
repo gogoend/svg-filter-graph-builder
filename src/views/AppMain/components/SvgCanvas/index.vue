@@ -9,12 +9,27 @@
     style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
   >
-    <io-node is="convolveMatrix" />
-    <io-node is="turbulence" />
+    <path class="ghost-line" />
+    <io-node
+      is="convolveMatrix"
+      node-id="1"
+      @port-start="handlePortStart"
+      @port-move="handlePortMove"
+      @port-connect="handlePortConnect"
+      @port-cancel="handlePortCancel"
+    />
+    <io-node
+      is="turbulence"
+      node-id="2"
+      @port-start="handlePortStart"
+      @port-move="handlePortMove"
+      @port-connect="handlePortConnect"
+      @port-cancel="handlePortCancel"
+    />
   </svg>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
 
 export default defineComponent({
@@ -23,7 +38,24 @@ export default defineComponent({
     IoNode
   },
   setup() {
-    return {}
+    const linkedPath = ref([])
+
+    const handlePortStart = (ev: MouseEvent) => {
+      console.log(ev)
+    }
+    const handlePortMove = (ev: MouseEvent) => {
+      console.log(ev)
+    }
+    const handlePortConnect = () => ({})
+    const handlePortCancel = () => ({})
+
+    return {
+      linkedPath,
+      handlePortStart,
+      handlePortMove,
+      handlePortConnect,
+      handlePortCancel
+    }
   }
 })
 </script>
