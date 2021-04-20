@@ -40,7 +40,7 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, ref } from 'vue'
+import { defineComponent, getCurrentInstance, nextTick, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
@@ -58,6 +58,8 @@ export default defineComponent({
     }
   },
   setup(_, { emit }) {
+    const vm = getCurrentInstance()
+
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
     const clickedRelativePosition = ref([0, 0])
@@ -66,7 +68,7 @@ export default defineComponent({
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
           if (originEl.classList.contains('port')) {
-            emit('port-start', ev)
+            emit('port-start', { ev, originEl, vm })
           } else {
             const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
             // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
@@ -77,7 +79,7 @@ export default defineComponent({
         },
         move(ev, { originEl }) {
           if (originEl.classList.contains('port')) {
-            emit('port-move', ev)
+            emit('port-move', { ev, originEl, vm })
           } else {
           // const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
           //   console.log(
@@ -97,8 +99,16 @@ export default defineComponent({
           //   // position.value = [ev.clientX - 100, ev.clientY - 100]
           }
         },
-        up() {
-          clickedRelativePosition.value = [0, 0]
+        up(ev, { originEl }) {
+          if (originEl.classList.contains('port')) {
+            if ((ev.target as Element)?.classList.contains('port')) {
+              emit('port-connect', { ev, originEl, vm })
+            } else {
+              emit('port-cancel', { ev, originEl, vm })
+            }
+          } else {
+            clickedRelativePosition.value = [0, 0]
+          }
         }
 
       })

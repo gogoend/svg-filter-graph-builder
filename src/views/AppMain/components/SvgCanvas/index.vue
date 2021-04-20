@@ -9,7 +9,10 @@
     style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
   >
-    <path class="ghost-line" />
+    <path
+      class="ghost-line"
+      :d="ghostPathD"
+    />
     <io-node
       is="convolveMatrix"
       node-id="1"
@@ -29,8 +32,20 @@
   </svg>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
+
+// 圆形半径
+const POINT_R = 10
+// 曲线手柄长度
+const HANDLE_LENGTH = 150
+// function mcPaser(path: string) {
+//   path = path + ''
+//   path = path.replace(/\s/g, '')
+//   path = path.replace(/[a-z]/i, '')
+//   path = path.replace(/[a-z]/ig, ',')
+//   return path
+// }
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -40,16 +55,37 @@ export default defineComponent({
   setup() {
     const linkedPath = ref([])
 
-    const handlePortStart = (ev: MouseEvent) => {
-      console.log(ev)
+    const ghostPathDArguments = ref([850, 300, 1000, 300, 800, 400, 950, 400])
+    const ghostPathD = computed(() => {
+      const dArgs = ghostPathDArguments.value
+      return `
+M ${dArgs[0]}, ${dArgs[1]}
+C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
+    })
+
+    const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: HTMLElement, vm: any}) => {
+      console.log(ev.target, originEl, vm)
+
+      ghostPathDArguments.value[0] = ev.pageX + POINT_R
+      ghostPathDArguments.value[1] = ev.pageY
+      ghostPathDArguments.value[2] = ev.pageX + HANDLE_LENGTH
+      ghostPathDArguments.value[3] = ev.pageY
     }
-    const handlePortMove = (ev: MouseEvent) => {
-      console.log(ev)
+    const handlePortMove = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: HTMLElement, vm: any}) => {
+      console.log(ev.target, originEl, vm)
+
+      ghostPathDArguments.value[0] = ev.pageX + POINT_R
+      ghostPathDArguments.value[1] = ev.pageY
+      ghostPathDArguments.value[2] = ev.pageX + HANDLE_LENGTH
+      ghostPathDArguments.value[3] = ev.pageY
     }
     const handlePortConnect = () => ({})
-    const handlePortCancel = () => ({})
+    const handlePortCancel = () => {
+      console.log('canceled')
+    }
 
     return {
+      ghostPathD,
       linkedPath,
       handlePortStart,
       handlePortMove,
@@ -63,5 +99,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .draggable {
   cursor: grab;
+}
+.ghost-line {
+  fill: none;
+  stroke: #69b84a;
+  stroke-width: 4px;
 }
 </style>
