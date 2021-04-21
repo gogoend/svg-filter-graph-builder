@@ -14,7 +14,7 @@
       class="head"
       transform="matrix(1 0 0 1 28 24)">
       <circle
-        class="port"
+        class="port out"
         r="10"
         cx="250"
       />
@@ -29,7 +29,7 @@
       :key="key"
       :transform="`matrix(1 0 0 1 10 ${60 + 35 * index})`">
       <circle
-        class="port"
+        class="port in"
         r="10"
       />
       <text

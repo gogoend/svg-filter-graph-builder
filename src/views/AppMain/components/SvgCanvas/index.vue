@@ -66,18 +66,31 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: HTMLElement, vm: any}) => {
       console.log(ev.target, originEl, vm)
 
-      ghostPathDArguments.value[0] = ev.pageX + POINT_R
-      ghostPathDArguments.value[1] = ev.pageY
-      ghostPathDArguments.value[2] = ev.pageX + HANDLE_LENGTH
-      ghostPathDArguments.value[3] = ev.pageY
+      ghostPathDArguments.value = [
+        ev.pageX + POINT_R,
+        ev.pageY,
+        ev.pageX + HANDLE_LENGTH,
+        ev.pageY,
+        ev.pageX - HANDLE_LENGTH,
+        ev.pageY,
+        ev.pageX - POINT_R,
+        ev.pageY
+      ]
     }
     const handlePortMove = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: HTMLElement, vm: any}) => {
       console.log(ev.target, originEl, vm)
-
-      ghostPathDArguments.value[0] = ev.pageX + POINT_R
-      ghostPathDArguments.value[1] = ev.pageY
-      ghostPathDArguments.value[2] = ev.pageX + HANDLE_LENGTH
-      ghostPathDArguments.value[3] = ev.pageY
+      if (originEl.classList.contains('in')) {
+        ghostPathDArguments.value[0] = ev.pageX + POINT_R
+        ghostPathDArguments.value[1] = ev.pageY
+        ghostPathDArguments.value[2] = ev.pageX + HANDLE_LENGTH
+        ghostPathDArguments.value[3] = ev.pageY
+      }
+      if (originEl.classList.contains('out')) {
+        ghostPathDArguments.value[4] = ev.pageX - HANDLE_LENGTH
+        ghostPathDArguments.value[5] = ev.pageY
+        ghostPathDArguments.value[6] = ev.pageX - POINT_R
+        ghostPathDArguments.value[7] = ev.pageY
+      }
     }
     const handlePortConnect = () => ({})
     const handlePortCancel = () => {
