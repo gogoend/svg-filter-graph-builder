@@ -55,7 +55,8 @@ export default defineComponent({
   setup() {
     const linkedPath = ref([])
 
-    const ghostPathDArguments = ref([850, 300, 1000, 300, 800, 400, 950, 400])
+    // const ghostPathDArguments = ref([850, 300, 1000, 300, 800, 400, 950, 400])
+    const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
     const ghostPathD = computed(() => {
       const dArgs = ghostPathDArguments.value
       return `
@@ -67,33 +68,28 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       console.log(ev.target, originEl, vm)
 
       ghostPathDArguments.value = [
-        ev.pageX + POINT_R,
-        ev.pageY,
-        ev.pageX + HANDLE_LENGTH,
-        ev.pageY,
-        ev.pageX - HANDLE_LENGTH,
-        ev.pageY,
-        ev.pageX - POINT_R,
-        ev.pageY
+        ev.pageX + POINT_R, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
+        ev.pageX - HANDLE_LENGTH, ev.pageY, ev.pageX - POINT_R, ev.pageY
       ]
     }
     const handlePortMove = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: HTMLElement, vm: any}) => {
       console.log(ev.target, originEl, vm)
       if (originEl.classList.contains('in')) {
-        ghostPathDArguments.value[0] = ev.pageX + POINT_R
-        ghostPathDArguments.value[1] = ev.pageY
-        ghostPathDArguments.value[2] = ev.pageX + HANDLE_LENGTH
-        ghostPathDArguments.value[3] = ev.pageY
+        ghostPathDArguments.value = [
+          ev.pageX + POINT_R, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
+          ...ghostPathDArguments.value.slice(4)
+        ]
       }
       if (originEl.classList.contains('out')) {
-        ghostPathDArguments.value[4] = ev.pageX - HANDLE_LENGTH
-        ghostPathDArguments.value[5] = ev.pageY
-        ghostPathDArguments.value[6] = ev.pageX - POINT_R
-        ghostPathDArguments.value[7] = ev.pageY
+        ghostPathDArguments.value = [
+          ...ghostPathDArguments.value.slice(0, 4),
+          ev.pageX - HANDLE_LENGTH, ev.pageY, ev.pageX - POINT_R, ev.pageY
+        ]
       }
     }
     const handlePortConnect = () => ({})
     const handlePortCancel = () => {
+      ghostPathDArguments.value = [0, 0, 0, 0, 0, 0, 0, 0]
       console.log('canceled')
     }
 
