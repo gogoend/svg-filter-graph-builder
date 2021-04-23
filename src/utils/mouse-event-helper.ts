@@ -27,7 +27,7 @@ const mouseEventHelper = function(ev: MouseEvent, handlers?: MouseEventHelper.Ha
       }
       case 'mouseup': {
         document.removeEventListener('mousemove', handleTargetTouchEvent)
-        document.addEventListener('mouseup', handleTargetTouchEvent)
+        document.removeEventListener('mouseup', handleTargetTouchEvent)
         up(ev, {
           originEl
         })
