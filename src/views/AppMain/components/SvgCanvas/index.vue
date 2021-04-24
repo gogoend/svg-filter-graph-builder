@@ -76,14 +76,14 @@ M ${dArgs[0]}, ${dArgs[1]}
 C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
 
-    const fromVm = ref<InstanceType<typeof IoNode>|null>(null)
-    const toVm = ref<InstanceType<typeof IoNode>|null>(null)
-    provide('fromVm', fromVm)
-    provide('toVm', toVm)
+    const fromPort = ref<InstanceType<typeof IoNode>|null>(null)
+    const toPort = ref<InstanceType<typeof IoNode>|null>(null)
+    provide('fromPort', fromPort)
+    provide('toPort', toPort)
     // const destnationVm = ref<InstanceType<typeof IoNode>>()
 
     const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
-      fromVm.value = vm
+      fromPort.value = vm
       const el = originEl
       const coord = [
         el.getBoundingClientRect().x,
@@ -160,23 +160,23 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       linkedPath.value.push({
         pathDArguments,
         id: '' + id++,
-        from: fromVm.value as InstanceType<typeof IoNode>,
-        to: toVm.value as InstanceType<typeof IoNode>
+        from: fromPort.value as InstanceType<typeof IoNode>,
+        to: toPort.value as InstanceType<typeof IoNode>
       })
 
-      console.log(fromVm.value, toVm.value)
-      fromVm.value = null
-      toVm.value = null
+      console.log(fromPort.value, toPort.value)
+      fromPort.value = null
+      toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
     const handlePortCancel = () => {
       console.log('canceled')
-      fromVm.value = null
-      toVm.value = null
+      fromPort.value = null
+      toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
     const handleDestinationChange = ({ vm }: {vm: InstanceType<typeof IoNode> | null}) => {
-      toVm.value = vm
+      toPort.value = vm
     }
 
     return {
@@ -188,8 +188,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       handlePortCancel,
       handleDestinationChange,
 
-      fromVm,
-      toVm
+      fromPort,
+      toPort
     }
   }
 })

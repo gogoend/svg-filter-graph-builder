@@ -64,7 +64,7 @@ export default defineComponent({
   },
   setup(_, { emit }) {
     const vm = getCurrentInstance()
-    const fromVm = inject<any>('fromVm')
+    const fromPort = inject<any>('fromPort')
 
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
@@ -127,18 +127,18 @@ export default defineComponent({
     }
 
     const handlePortMouseout = function(ev: Event) {
-      if (!fromVm?.value) { return }
+      if (!fromPort?.value) { return }
       emit('destination-change', { ev, vm: null })
       ev.target?.removeEventListener('mouseout', handlePortMouseout)
     }
     const handlePortMouseenter = function(ev: Event) {
-      if (!fromVm?.value) { return }
+      if (!fromPort?.value) { return }
       emit('destination-change', { ev, vm })
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
     return {
-      fromVm,
+      fromPort,
       ioNodeEl,
       position,
 
