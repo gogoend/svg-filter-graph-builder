@@ -17,6 +17,7 @@
         class="port out"
         r="10"
         cx="250"
+        data-fe-attr="result"
         @mouseenter="handlePortMouseenter"
       />
       <text
@@ -32,6 +33,8 @@
       <circle
         class="port in"
         r="10"
+        :data-fe-attr="key"
+        :ref="setFeAttrRefs"
         @mouseenter="handlePortMouseenter"
       />
       <text
@@ -42,7 +45,7 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, Ref, ref } from 'vue'
+import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
@@ -66,6 +69,12 @@ export default defineComponent({
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
     const clickedRelativePosition = ref([0, 0])
+
+    const feAttrRefs = ref<SVGCircleElement[]>([])
+    const setFeAttrRefs = (el?: SVGCircleElement) => {
+      el && feAttrRefs.value.push(el)
+    }
+    onBeforeUpdate(() => { feAttrRefs.value = [] })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
@@ -132,6 +141,9 @@ export default defineComponent({
       fromVm,
       ioNodeEl,
       position,
+
+      setFeAttrRefs,
+
       handleNodeMousedown,
       handlePortMouseenter,
       fe
