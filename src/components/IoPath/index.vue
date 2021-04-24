@@ -18,15 +18,15 @@ export default defineComponent({
     pathId: {
       type: String,
       required: true
+    },
+    from: {
+      type: Object as PropType<InstanceType<typeof IoNode>>,
+      required: true
+    },
+    to: {
+      type: Object as PropType<InstanceType<typeof IoNode>>,
+      required: true
     }
-    // in: {
-    //   type: Object as PropType<InstanceType<typeof IoNode>>,
-    //   required: true
-    // },
-    // out: {
-    //   type: Object as PropType<InstanceType<typeof IoNode>>,
-    //   required: true
-    // }
   },
   setup(props, { emit }) {
     const pathD = computed(() => {

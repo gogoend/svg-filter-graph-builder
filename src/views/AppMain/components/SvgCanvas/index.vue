@@ -18,6 +18,8 @@
       :key="path.id"
       :path-id="path.id"
       :path-d-arguments="path.pathDArguments"
+      :from="path.from"
+      :to="path.to"
     ></io-path>
     <io-node
       is="convolveMatrix"
@@ -26,6 +28,7 @@
       @port-move="handlePortMove"
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
+      @destination-change="handleDestinationChange"
     />
     <io-node
       is="turbulence"
@@ -34,11 +37,12 @@
       @port-move="handlePortMove"
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
+      @destination-change="handleDestinationChange"
     />
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, provide } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
 import IoPath from '@/components/IoPath/index.vue'
 
@@ -59,7 +63,9 @@ export default defineComponent({
   setup() {
     const linkedPath = ref<{
       pathDArguments: number[],
-      id: string
+      id: string,
+      from: InstanceType<typeof IoNode>,
+      to: InstanceType<typeof IoNode>
     }[]>([])
 
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
@@ -70,10 +76,14 @@ M ${dArgs[0]}, ${dArgs[1]}
 C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
 
-    // const sourceVm = ref<InstanceType<typeof IoNode>>()
+    const fromVm = ref<InstanceType<typeof IoNode>|null>(null)
+    const toVm = ref<InstanceType<typeof IoNode>|null>(null)
+    provide('fromVm', fromVm)
+    provide('toVm', toVm)
     // const destnationVm = ref<InstanceType<typeof IoNode>>()
 
-    const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: any}) => {
+    const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
+      fromVm.value = vm
       const el = originEl
       const coord = [
         el.getBoundingClientRect().x,
@@ -107,7 +117,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
       }
     }
-    const handlePortMove = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: any}) => {
+    const handlePortMove = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
       if (originEl.classList.contains('in')) {
         ghostPathDArguments.value = [
           ev.pageX, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
@@ -121,7 +131,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
       }
     }
-    const handlePortConnect = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: any}) => {
+    const handlePortConnect = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoPath>}) => {
       const el = ev.target as SVGGElement
       const coord = [
         el.getBoundingClientRect().x,
@@ -149,14 +159,24 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       }
       linkedPath.value.push({
         pathDArguments,
-        id: '' + id++
+        id: '' + id++,
+        from: fromVm.value as InstanceType<typeof IoNode>,
+        to: toVm.value as InstanceType<typeof IoNode>
       })
 
+      console.log(fromVm.value, toVm.value)
+      fromVm.value = null
+      toVm.value = null
       ghostPathDArguments.value.fill(0)
     }
     const handlePortCancel = () => {
-      ghostPathDArguments.value.fill(0)
       console.log('canceled')
+      fromVm.value = null
+      toVm.value = null
+      ghostPathDArguments.value.fill(0)
+    }
+    const handleDestinationChange = ({ vm }: {vm: InstanceType<typeof IoNode> | null}) => {
+      toVm.value = vm
     }
 
     return {
@@ -165,7 +185,11 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       handlePortStart,
       handlePortMove,
       handlePortConnect,
-      handlePortCancel
+      handlePortCancel,
+      handleDestinationChange,
+
+      fromVm,
+      toVm
     }
   }
 })

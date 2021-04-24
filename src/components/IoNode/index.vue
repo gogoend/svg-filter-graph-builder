@@ -17,6 +17,7 @@
         class="port out"
         r="10"
         cx="250"
+        @mouseenter="handlePortMouseenter"
       />
       <text
         transform="matrix(1 0 0 1 0 8)"
@@ -31,6 +32,7 @@
       <circle
         class="port in"
         r="10"
+        @mouseenter="handlePortMouseenter"
       />
       <text
         transform="matrix(1 0 0 1 16 8)"
@@ -40,7 +42,7 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, nextTick, ref } from 'vue'
+import { defineComponent, getCurrentInstance, inject, nextTick, Ref, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
@@ -59,6 +61,7 @@ export default defineComponent({
   },
   setup(_, { emit }) {
     const vm = getCurrentInstance()
+    const fromVm = inject<any>('fromVm')
 
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
@@ -114,10 +117,23 @@ export default defineComponent({
       })
     }
 
+    const handlePortMouseout = function(ev: Event) {
+      if (!fromVm?.value) { return }
+      emit('destination-change', { ev, vm: null })
+      ev.target?.removeEventListener('mouseout', handlePortMouseout)
+    }
+    const handlePortMouseenter = function(ev: Event) {
+      if (!fromVm?.value) { return }
+      emit('destination-change', { ev, vm })
+      ev.target?.addEventListener('mouseout', handlePortMouseout)
+    }
+
     return {
+      fromVm,
       ioNodeEl,
       position,
       handleNodeMousedown,
+      handlePortMouseenter,
       fe
     }
   }
