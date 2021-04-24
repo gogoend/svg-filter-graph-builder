@@ -46,6 +46,10 @@ import { computed, defineComponent, ref, provide } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
 import IoPath from '@/components/IoPath/index.vue'
 
+interface Port<T> {
+  vm: T;
+  attr: string;
+}
 // 圆形半径
 const POINT_R = 10
 // 曲线手柄长度
@@ -64,8 +68,8 @@ export default defineComponent({
     const linkedPath = ref<{
       pathDArguments: number[],
       id: string,
-      from: InstanceType<typeof IoNode>,
-      to: InstanceType<typeof IoNode>
+      from: Port<InstanceType<typeof IoNode>>,
+      to: Port<InstanceType<typeof IoNode>>
     }[]>([])
 
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
@@ -76,14 +80,17 @@ M ${dArgs[0]}, ${dArgs[1]}
 C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
 
-    const fromPort = ref<InstanceType<typeof IoNode>|null>(null)
-    const toPort = ref<InstanceType<typeof IoNode>|null>(null)
+    const fromPort = ref<Port<InstanceType<typeof IoNode>>|null>(null)
+    const toPort = ref<Port<InstanceType<typeof IoNode>>|null>(null)
     provide('fromPort', fromPort)
     provide('toPort', toPort)
     // const destnationVm = ref<InstanceType<typeof IoNode>>()
 
     const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
-      fromPort.value = vm
+      fromPort.value = {
+        vm,
+        attr: originEl.dataset?.feAttr ?? ''
+      }
       const el = originEl
       const coord = [
         el.getBoundingClientRect().x,
@@ -160,8 +167,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       linkedPath.value.push({
         pathDArguments,
         id: '' + id++,
-        from: fromPort.value as InstanceType<typeof IoNode>,
-        to: toPort.value as InstanceType<typeof IoNode>
+        from: fromPort.value as Port<InstanceType<typeof IoNode>>,
+        to: toPort.value as Port<InstanceType<typeof IoNode>>
       })
 
       console.log(fromPort.value, toPort.value)
@@ -175,8 +182,11 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
-    const handleDestinationChange = ({ vm }: {vm: InstanceType<typeof IoNode> | null}) => {
-      toPort.value = vm
+    const handleDestinationChange = ({ vm, ev }: {vm: InstanceType<typeof IoNode> | null, ev: MouseEvent}) => {
+      toPort.value = {
+        vm: vm as InstanceType<typeof IoNode>,
+        attr: (ev.target as SVGCircleElement)?.dataset?.feAttr ?? ''
+      }
     }
 
     return {
