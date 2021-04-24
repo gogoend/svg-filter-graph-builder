@@ -10,9 +10,15 @@
     xml:space="preserve"
   >
     <path
-      class="ghost-line"
+      class="ghost-path"
       :d="ghostPathD"
     />
+    <io-path
+      v-for="path in linkedPath"
+      :key="path.id"
+      :path-id="path.id"
+      :path-d-arguments="path.pathDArguments"
+    ></io-path>
     <io-node
       is="convolveMatrix"
       node-id="1"
@@ -34,19 +40,27 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
+import IoPath from '@/components/IoPath/index.vue'
 
 // 圆形半径
 const POINT_R = 10
 // 曲线手柄长度
 const HANDLE_LENGTH = 150
 
+//
+let id = 0
+
 export default defineComponent({
   name: 'SvgCanvas',
   components: {
-    IoNode
+    IoNode,
+    IoPath
   },
   setup() {
-    const linkedPath = ref([])
+    const linkedPath = ref<{
+      pathDArguments: number[],
+      id: string
+    }[]>([])
 
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
     const ghostPathD = computed(() => {
@@ -55,6 +69,9 @@ export default defineComponent({
 M ${dArgs[0]}, ${dArgs[1]}
 C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
+
+    // const sourceVm = ref<InstanceType<typeof IoNode>>()
+    // const destnationVm = ref<InstanceType<typeof IoNode>>()
 
     const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: any}) => {
       const el = originEl
@@ -110,9 +127,10 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         el.getBoundingClientRect().x,
         el.getBoundingClientRect().y
       ]
+      let pathDArguments: number[] = []
 
       if (originEl.classList.contains('in')) {
-        ghostPathDArguments.value = [
+        pathDArguments = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
           coord[0] + HANDLE_LENGTH,
@@ -121,7 +139,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
       }
       if (originEl.classList.contains('out')) {
-        ghostPathDArguments.value = [
+        pathDArguments = [
           ...ghostPathDArguments.value.slice(0, 4),
           coord[0] - HANDLE_LENGTH,
           coord[1],
@@ -129,6 +147,12 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1] + POINT_R
         ]
       }
+      linkedPath.value.push({
+        pathDArguments,
+        id: '' + id++
+      })
+
+      ghostPathDArguments.value.fill(0)
     }
     const handlePortCancel = () => {
       ghostPathDArguments.value.fill(0)
@@ -151,7 +175,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 .draggable {
   cursor: grab;
 }
-.ghost-line {
+.ghost-path {
   fill: none;
   stroke: #69b84a;
   stroke-width: 4px;
