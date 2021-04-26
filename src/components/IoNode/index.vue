@@ -45,11 +45,23 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, ref } from 'vue'
+import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, Ref, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
 
+import IoNode from '@/components/IoNode/index.vue'
+
+interface Port<T> {
+  vm: T;
+  attr: string;
+}
+interface Path {
+  pathDArguments: number[],
+  id: string,
+  from: Port<InstanceType<typeof IoNode>>,
+  to: Port<InstanceType<typeof IoNode>>
+}
 export default defineComponent({
   name: 'IoNode',
   props: {
@@ -137,6 +149,11 @@ export default defineComponent({
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
+    const linkedPaths: Ref<Set<Path>> = ref(new Set())
+    const addLinkedPath = (path: Path) => {
+      linkedPaths.value.add(path)
+    }
+
     return {
       fromPort,
       ioNodeEl,
@@ -146,7 +163,9 @@ export default defineComponent({
 
       handleNodeMousedown,
       handlePortMouseenter,
-      fe
+      fe,
+
+      addLinkedPath
     }
   }
 })

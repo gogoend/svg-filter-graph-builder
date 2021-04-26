@@ -14,7 +14,7 @@
       :d="ghostPathD"
     />
     <io-path
-      v-for="path in linkedPath"
+      v-for="path in linkedPaths"
       :key="path.id"
       :path-id="path.id"
       :path-d-arguments="path.pathDArguments"
@@ -50,6 +50,13 @@ interface Port<T> {
   vm: T;
   attr: string;
 }
+
+interface Path {
+  pathDArguments: number[],
+  id: string,
+  from: Port<InstanceType<typeof IoNode>>,
+  to: Port<InstanceType<typeof IoNode>>
+}
 // 圆形半径
 const POINT_R = 10
 // 曲线手柄长度
@@ -65,12 +72,7 @@ export default defineComponent({
     IoPath
   },
   setup() {
-    const linkedPath = ref<{
-      pathDArguments: number[],
-      id: string,
-      from: Port<InstanceType<typeof IoNode>>,
-      to: Port<InstanceType<typeof IoNode>>
-    }[]>([])
+    const linkedPaths = ref<Path[]>([])
 
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
     const ghostPathD = computed(() => {
@@ -164,12 +166,15 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1] + POINT_R
         ]
       }
-      linkedPath.value.push({
+      const linkedPath = {
         pathDArguments,
         id: '' + id++,
         from: fromPort.value as Port<InstanceType<typeof IoNode>>,
         to: toPort.value as Port<InstanceType<typeof IoNode>>
-      })
+      }
+      linkedPaths.value.push(linkedPath)
+      fromPort.value?.vm.ctx.addLinkedPath(linkedPath)
+      toPort.value?.vm.ctx.addLinkedPath(linkedPath)
 
       console.log(fromPort.value, toPort.value)
       fromPort.value = null
@@ -191,7 +196,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
     return {
       ghostPathD,
-      linkedPath,
+      linkedPaths,
       handlePortStart,
       handlePortMove,
       handlePortConnect,
