@@ -45,7 +45,7 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, Ref, ref } from 'vue'
+import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
@@ -71,6 +71,10 @@ export default defineComponent({
     },
     nodeId: {
       type: String,
+      required: true
+    },
+    relativePathId: {
+      type: Array as PropType<Array<string>>,
       required: true
     }
   },
@@ -149,11 +153,6 @@ export default defineComponent({
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
-    const linkedPaths: Ref<Set<Path>> = ref(new Set())
-    const addLinkedPath = (path: Path) => {
-      linkedPaths.value.add(path)
-    }
-
     return {
       fromPort,
       ioNodeEl,
@@ -163,9 +162,7 @@ export default defineComponent({
 
       handleNodeMousedown,
       handlePortMouseenter,
-      fe,
-
-      addLinkedPath
+      fe
     }
   }
 })

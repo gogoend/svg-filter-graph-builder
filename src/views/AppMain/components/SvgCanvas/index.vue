@@ -29,6 +29,7 @@
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
+      :relativePathId="getRelativePathIdOfNode(1)"
     />
     <io-node
       is="turbulence"
@@ -38,11 +39,12 @@
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
+      :relativePathId="getRelativePathIdOfNode(2)"
     />
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide } from 'vue'
+import { computed, defineComponent, ref, provide, Component } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
 import IoPath from '@/components/IoPath/index.vue'
 
@@ -173,10 +175,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         to: toPort.value as Port<InstanceType<typeof IoNode>>
       }
       linkedPaths.value.push(linkedPath)
-      fromPort.value?.vm.ctx.addLinkedPath(linkedPath)
-      toPort.value?.vm.ctx.addLinkedPath(linkedPath)
 
-      console.log(fromPort.value, toPort.value)
+      console.log(fromPort.value?.vm, toPort.value?.vm)
       fromPort.value = null
       toPort.value = null
       ghostPathDArguments.value.fill(0)
@@ -188,6 +188,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       ghostPathDArguments.value.fill(0)
     }
     const handleDestinationChange = ({ vm, ev }: {vm: InstanceType<typeof IoNode> | null, ev: MouseEvent}) => {
+      console.log(vm)
       toPort.value = {
         vm: vm as InstanceType<typeof IoNode>,
         attr: (ev.target as SVGCircleElement)?.dataset?.feAttr ?? ''
@@ -204,7 +205,12 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       handleDestinationChange,
 
       fromPort,
-      toPort
+      toPort,
+
+      getRelativePathIdOfNode(nodeId: string) {
+        nodeId = String(nodeId)
+        return linkedPaths.value.filter(path => ((path.from.vm as any).props.nodeId === nodeId || (path.to.vm as any).props.nodeId === nodeId))
+      }
     }
   }
 })
