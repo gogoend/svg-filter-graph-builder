@@ -29,7 +29,7 @@
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
-      :relativePathId="getRelativePathIdOfNode(1)"
+      :relative-paths="getRelativePathIdOfNode(1)"
     />
     <io-node
       is="turbulence"
@@ -39,7 +39,7 @@
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
-      :relativePathId="getRelativePathIdOfNode(2)"
+      :relative-paths="getRelativePathIdOfNode(2)"
     />
   </svg>
 </template>

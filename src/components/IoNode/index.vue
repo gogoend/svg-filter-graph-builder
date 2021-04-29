@@ -45,12 +45,13 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, ref } from 'vue'
+import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
 
 import IoNode from '@/components/IoNode/index.vue'
+import IoPath from '@/components/IoPath/index.vue'
 
 interface Port<T> {
   vm: T;
@@ -73,13 +74,13 @@ export default defineComponent({
       type: String,
       required: true
     },
-    relativePathId: {
-      type: Array as PropType<Array<string>>,
+    relativePaths: {
+      type: Array as PropType<Path[]>,
       required: true
     }
   },
-  setup(_, { emit }) {
-    const vm = getCurrentInstance()
+  setup(props, { emit }) {
+    const vm = ref(getCurrentInstance())
     const fromPort = inject<any>('fromPort')
 
     const ioNodeEl = ref<SVGGElement>()
@@ -109,22 +110,22 @@ export default defineComponent({
           if (originEl.classList.contains('port')) {
             emit('port-move', { ev, originEl, vm })
           } else {
-          // const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
-          //   console.log(
-          //     `${ev.clientX - (currentPostion?.left || 0)} ${ev.clientY - (currentPostion?.top || 0)}\n`,
-          //     `${position.value[0]} ${position.value[1]}`
-          //   )
-          // clickedRelativePosition.value = [ev.pageX - clickedRelativePosition.value[0], ev.pageY - clickedRelativePosition.value[1]]
-
             position.value = [ev.pageX - clickedRelativePosition.value[0], ev.pageY - clickedRelativePosition.value[1]] // clickedRelativePosition.value.concat()
             nextTick(() => {
               const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
               clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
 
-            // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+              // 实现连线随IoNode的拖动而发生位置更新的逻辑
+              props.relativePaths.forEach(item => {
+                const fromVm = item.from.vm
+                const toVm = item.to.vm
+
+                if ((fromVm as any).uid === vm.value?.uid) {
+                  debugger
+                  void 0
+                }
+              })
             })
-          //   // position.value = [ev.clientX - position.value[0], ev.clientY - position.value[1]]
-          //   // position.value = [ev.clientX - 100, ev.clientY - 100]
           }
         },
         up(ev, { originEl }) {
