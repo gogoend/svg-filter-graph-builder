@@ -7,9 +7,9 @@
   >
     <rect
       x="11.9"
-      class="fill-333"
+      class="io-node__bg fill-333"
       width="265"
-      :height="12+35*(Object.keys(fe[is]).length+1)" />
+      :height="12+35*(Object.keys(fe[is] || {}).length+1)" />
     <g
       class="head"
       transform="matrix(1 0 0 1 28 24)">
@@ -18,6 +18,7 @@
         r="10"
         cx="250"
         data-fe-attr="result"
+        :ref="setFeAttrEls"
         @mouseenter="handlePortMouseenter"
       />
       <text
@@ -34,7 +35,7 @@
         class="port in"
         r="10"
         :data-fe-attr="key"
-        :ref="setFeAttrRefs"
+        :ref="setFeAttrEls"
         @mouseenter="handlePortMouseenter"
       />
       <text
@@ -45,24 +46,13 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, ref, unref } from 'vue'
+import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition'
 
-import IoNode from '@/components/IoNode/index.vue'
-import IoPath from '@/components/IoPath/index.vue'
+import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 
-interface Port<T> {
-  vm: T;
-  attr: string;
-}
-interface Path {
-  pathDArguments: number[],
-  id: string,
-  from: Port<InstanceType<typeof IoNode>>,
-  to: Port<InstanceType<typeof IoNode>>
-}
 export default defineComponent({
   name: 'IoNode',
   props: {
@@ -75,23 +65,23 @@ export default defineComponent({
       required: true
     },
     relativePaths: {
-      type: Array as PropType<Path[]>,
+      type: Object as PropType<RelativePathForNode>,
       required: true
     }
   },
   setup(props, { emit }) {
     const vm = ref(getCurrentInstance())
-    const fromPort = inject<any>('fromPort')
+    const fromPort = inject<Ref<Port<any>>>('fromPort')
 
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
     const clickedRelativePosition = ref([0, 0])
 
-    const feAttrRefs = ref<SVGCircleElement[]>([])
-    const setFeAttrRefs = (el?: SVGCircleElement) => {
-      el && feAttrRefs.value.push(el)
+    const feAttrEls = ref<SVGCircleElement[]>([])
+    const setFeAttrEls = (el?: SVGCircleElement) => {
+      el && feAttrEls.value.push(el)
     }
-    onBeforeUpdate(() => { feAttrRefs.value = [] })
+    onBeforeUpdate(() => { feAttrEls.value = [] })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
@@ -114,17 +104,26 @@ export default defineComponent({
             nextTick(() => {
               const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
               clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+              emit('node-move', props.relativePaths)
 
-              // 实现连线随IoNode的拖动而发生位置更新的逻辑
-              props.relativePaths.forEach(item => {
-                const fromVm = item.from.vm
-                const toVm = item.to.vm
-
-                if ((fromVm as any).uid === vm.value?.uid) {
-                  debugger
-                  void 0
-                }
-              })
+              // // 实现连线随IoNode的拖动而发生位置更新的逻辑
+              // const affectedPortEls = {
+              //   from: [] as SVGGElement[],
+              //   to: [] as SVGGElement[]
+              // }
+              // props.relativePaths.forEach(item => {
+              //   const fromVm = item.from.vm
+              //   const toVm = item.to.vm
+              //   let el
+              //   if (fromVm === unref(vm)) {
+              //     el = unref(feAttrEls).find(el => el.dataset.feAttr === item.from.attr)
+              //     affectedPortEls.from.push(el as SVGGElement)
+              //   }
+              //   if (toVm === unref(vm)) {
+              //     el = unref(feAttrEls).find(el => el.dataset.feAttr === item.to.attr)
+              //     affectedPortEls.to.push(el as SVGGElement)
+              //   }
+              // })
             })
           }
         },
@@ -145,21 +144,22 @@ export default defineComponent({
 
     const handlePortMouseout = function(ev: Event) {
       if (!fromPort?.value) { return }
-      emit('destination-change', { ev, vm: null })
+      emit('destination-change', { ev, vm: null, originEl: null })
       ev.target?.removeEventListener('mouseout', handlePortMouseout)
     }
     const handlePortMouseenter = function(ev: Event) {
       if (!fromPort?.value) { return }
-      emit('destination-change', { ev, vm })
+      emit('destination-change', { ev, vm, originEl: ev.target })
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
     return {
       fromPort,
+
       ioNodeEl,
       position,
 
-      setFeAttrRefs,
+      setFeAttrEls,
 
       handleNodeMousedown,
       handlePortMouseenter,
@@ -173,6 +173,10 @@ export default defineComponent({
 .io-node {
   user-select: none;
   cursor: move;
+  &__bg {
+    stroke: #a0a0a0;
+    stroke-width: 4px;
+  }
   .fill-333 {
     fill: #333333;
   }

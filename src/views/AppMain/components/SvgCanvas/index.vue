@@ -22,43 +22,27 @@
       :to="path.to"
     ></io-path>
     <io-node
-      is="convolveMatrix"
-      node-id="1"
+      v-for="node in nodes"
+      :key="node.id"
+      :is="node.is"
+      :node-id="node.id"
       @port-start="handlePortStart"
       @port-move="handlePortMove"
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
-      :relative-paths="getRelativePathIdOfNode(1)"
-    />
-    <io-node
-      is="turbulence"
-      node-id="2"
-      @port-start="handlePortStart"
-      @port-move="handlePortMove"
-      @port-connect="handlePortConnect"
-      @port-cancel="handlePortCancel"
-      @destination-change="handleDestinationChange"
-      :relative-paths="getRelativePathIdOfNode(2)"
+      :relative-paths="getRelativePathIdOfNode(node.id)"
+      @node-move="handleNodeMove"
     />
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, Component } from 'vue'
+import { computed, defineComponent, ref, provide } from 'vue'
 import IoNode from '@/components/IoNode/index.vue'
 import IoPath from '@/components/IoPath/index.vue'
 
-interface Port<T> {
-  vm: T;
-  attr: string;
-}
+import type { Port, Path, Node, RelativePathForNode } from './type'
 
-interface Path {
-  pathDArguments: number[],
-  id: string,
-  from: Port<InstanceType<typeof IoNode>>,
-  to: Port<InstanceType<typeof IoNode>>
-}
 // 圆形半径
 const POINT_R = 10
 // 曲线手柄长度
@@ -75,6 +59,16 @@ export default defineComponent({
   },
   setup() {
     const linkedPaths = ref<Path[]>([])
+    const nodes = ref<Node[]>([
+      {
+        is: 'convolveMatrix',
+        id: '1'
+      },
+      {
+        is: 'turbulence',
+        id: '2'
+      }
+    ])
 
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
     const ghostPathD = computed(() => {
@@ -90,12 +84,13 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     provide('toPort', toPort)
     // const destnationVm = ref<InstanceType<typeof IoNode>>()
 
-    const handlePortStart = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
+    const handlePortStart = ({ originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
+      const el = originEl
       fromPort.value = {
         vm,
-        attr: originEl.dataset?.feAttr ?? ''
+        attr: originEl.dataset?.feAttr ?? '',
+        el: originEl
       }
-      const el = originEl
       const coord = [
         el.getBoundingClientRect().x,
         el.getBoundingClientRect().y
@@ -128,7 +123,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
       }
     }
-    const handlePortMove = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
+    const handlePortMove = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
       if (originEl.classList.contains('in')) {
         ghostPathDArguments.value = [
           ev.pageX, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
@@ -142,7 +137,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
       }
     }
-    const handlePortConnect = ({ ev, originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoPath>}) => {
+    const handlePortConnect = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoPath>}) => {
       const el = ev.target as SVGGElement
       const coord = [
         el.getBoundingClientRect().x,
@@ -150,6 +145,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       ]
       let pathDArguments: number[] = []
 
+      let linkedPath!: Path
+      // 从输入接口出发，连到输出接口的逻辑 - 反向连接
       if (originEl.classList.contains('in')) {
         pathDArguments = [
           coord[0] + 2 * POINT_R,
@@ -158,7 +155,15 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           ...ghostPathDArguments.value.slice(4)
         ]
+        // 在存储路径时需要将to和from交换，因为连接的出发点是从输入接口，输入接口被存储为了fromPort
+        linkedPath = {
+          pathDArguments,
+          id: '' + id++,
+          to: fromPort.value as Port<InstanceType<typeof IoNode>>,
+          from: toPort.value as Port<InstanceType<typeof IoNode>>
+        }
       }
+      // 从输出接口出发，连到输入接口的逻辑 - 正向连接
       if (originEl.classList.contains('out')) {
         pathDArguments = [
           ...ghostPathDArguments.value.slice(0, 4),
@@ -167,12 +172,12 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[0],
           coord[1] + POINT_R
         ]
-      }
-      const linkedPath = {
-        pathDArguments,
-        id: '' + id++,
-        from: fromPort.value as Port<InstanceType<typeof IoNode>>,
-        to: toPort.value as Port<InstanceType<typeof IoNode>>
+        linkedPath = {
+          pathDArguments,
+          id: '' + id++,
+          from: fromPort.value as Port<InstanceType<typeof IoNode>>,
+          to: toPort.value as Port<InstanceType<typeof IoNode>>
+        }
       }
       linkedPaths.value.push(linkedPath)
 
@@ -187,29 +192,63 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
-    const handleDestinationChange = ({ vm, ev }: {vm: InstanceType<typeof IoNode> | null, ev: MouseEvent}) => {
+    const handleDestinationChange = ({ vm, originEl, ev }: {vm: InstanceType<typeof IoNode> | null, originEl: SVGCircleElement, ev: MouseEvent}) => {
       console.log(vm)
       toPort.value = {
         vm: vm as InstanceType<typeof IoNode>,
-        attr: (ev.target as SVGCircleElement)?.dataset?.feAttr ?? ''
+        attr: (ev.target as SVGCircleElement)?.dataset?.feAttr ?? '',
+        el: originEl
       }
+    }
+    const handleNodeMove = (paths: RelativePathForNode) => {
+      paths.out.forEach(item => {
+        const coord = [
+          item.from.el?.getBoundingClientRect().x ?? 0,
+          item.from.el?.getBoundingClientRect().y ?? 0
+        ]
+        item.pathDArguments = [
+          coord[0] + 2 * POINT_R,
+          coord[1] + POINT_R,
+          coord[0] + HANDLE_LENGTH,
+          coord[1],
+          ...item.pathDArguments.slice(4)
+        ]
+      })
+      paths.in.forEach(item => {
+        const coord = [
+          item.to.el?.getBoundingClientRect().x ?? 0,
+          item.to.el?.getBoundingClientRect().y ?? 0
+        ]
+        item.pathDArguments = [
+          ...item.pathDArguments.slice(0, 4),
+          coord[0] - HANDLE_LENGTH,
+          coord[1],
+          coord[0],
+          coord[1] + POINT_R
+        ]
+      })
     }
 
     return {
       ghostPathD,
+      nodes,
       linkedPaths,
       handlePortStart,
       handlePortMove,
       handlePortConnect,
       handlePortCancel,
       handleDestinationChange,
+      handleNodeMove,
 
       fromPort,
       toPort,
 
-      getRelativePathIdOfNode(nodeId: string) {
+      getRelativePathIdOfNode(nodeId: string): RelativePathForNode {
         nodeId = String(nodeId)
-        return linkedPaths.value.filter(path => ((path.from.vm as any).props.nodeId === nodeId || (path.to.vm as any).props.nodeId === nodeId))
+        return {
+          in: linkedPaths.value.filter(path => path.to.vm.props.nodeId === nodeId),
+          out: linkedPaths.value.filter(path => path.from.vm.props.nodeId === nodeId)
+        }
       }
     }
   }
