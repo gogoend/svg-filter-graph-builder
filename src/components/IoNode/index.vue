@@ -15,6 +15,7 @@
       transform="matrix(1 0 0 1 28 24)">
       <circle
         class="port out"
+        data-port-type="out"
         r="10"
         cx="250"
         data-fe-attr="result"
@@ -33,6 +34,7 @@
       :transform="`matrix(1 0 0 1 10 ${60 + 35 * index})`">
       <circle
         class="port in"
+        data-port-type="in"
         r="10"
         :data-fe-attr="key"
         :ref="setFeAttrEls"
@@ -52,6 +54,7 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 import * as fe from './fe-definition'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import { isPortEl } from '@/utils'
 
 export default defineComponent({
   name: 'IoNode',
@@ -87,7 +90,7 @@ export default defineComponent({
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
-          if (originEl.classList.contains('port')) {
+          if (isPortEl(originEl)) {
             emit('port-start', { ev, originEl, vm })
           } else {
             const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
@@ -98,7 +101,7 @@ export default defineComponent({
           }
         },
         move(ev, { originEl }) {
-          if (originEl.classList.contains('port')) {
+          if (isPortEl(originEl)) {
             emit('port-move', { ev, originEl, vm })
           } else {
             position.value = [ev.pageX - clickedRelativePosition.value[0], ev.pageY - clickedRelativePosition.value[1]] // clickedRelativePosition.value.concat()
@@ -110,10 +113,9 @@ export default defineComponent({
           }
         },
         up(ev, { originEl }) {
-          console.log(fromPort, toPort)
-          if (originEl.classList.contains('port')) {
+          if (isPortEl(originEl)) {
             if (
-              (ev.target as Element)?.classList.contains('port') &&
+              isPortEl(ev.target as HTMLElement) &&
               fromPort?.value &&
               toPort?.value
             ) {

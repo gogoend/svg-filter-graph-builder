@@ -42,6 +42,7 @@ import IoNode from '@/components/IoNode/index.vue'
 import IoPath from '@/components/IoPath/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
+import { getPortElType } from '@/utils'
 
 // 圆形半径
 const POINT_R = 10
@@ -50,6 +51,17 @@ const HANDLE_LENGTH = 150
 
 //
 let id = 0
+
+function portCanBeConnected(path: Path) {
+  console.log(path.from, path.to)
+  if (path.from.vm === path.to.vm) {
+    return false
+  }
+  if (path.from.el?.dataset.portType === path.to.el?.dataset.portType) {
+    return false
+  }
+  return true
+}
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -96,7 +108,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         el.getBoundingClientRect().y
       ]
 
-      if (el.classList.contains('in')) {
+      if (getPortElType(el) === 'in') {
         ghostPathDArguments.value = [
           coord[0],
           coord[1],
@@ -109,7 +121,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1] + POINT_R
         ]
       }
-      if (el.classList.contains('out')) {
+      if (getPortElType(el) === 'out') {
         ghostPathDArguments.value = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
@@ -124,13 +136,13 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       }
     }
     const handlePortMove = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
-      if (originEl.classList.contains('in')) {
+      if (getPortElType(originEl) === 'in') {
         ghostPathDArguments.value = [
           ev.pageX, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
           ...ghostPathDArguments.value.slice(4)
         ]
       }
-      if (originEl.classList.contains('out')) {
+      if (getPortElType(originEl) === 'out') {
         ghostPathDArguments.value = [
           ...ghostPathDArguments.value.slice(0, 4),
           ev.pageX - HANDLE_LENGTH, ev.pageY, ev.pageX, ev.pageY
@@ -147,7 +159,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       let linkedPath!: Path
       // 从输入接口出发，连到输出接口的逻辑 - 反向连接
-      if (originEl.classList.contains('in')) {
+      if (getPortElType(originEl) === 'in') {
         pathDArguments = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
@@ -164,7 +176,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         }
       }
       // 从输出接口出发，连到输入接口的逻辑 - 正向连接
-      if (originEl.classList.contains('out')) {
+      if (getPortElType(originEl) === 'out') {
         pathDArguments = [
           ...ghostPathDArguments.value.slice(0, 4),
           coord[0] - HANDLE_LENGTH,
@@ -179,9 +191,11 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           to: toPort.value as Port<InstanceType<typeof IoNode>>
         }
       }
-      linkedPaths.value.push(linkedPath)
 
-      console.log(fromPort.value?.vm, toPort.value?.vm)
+      if (portCanBeConnected(linkedPath)) {
+        linkedPaths.value.push(linkedPath)
+      }
+
       fromPort.value = null
       toPort.value = null
       ghostPathDArguments.value.fill(0)
