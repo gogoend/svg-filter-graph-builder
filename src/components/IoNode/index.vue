@@ -121,11 +121,9 @@ export default defineComponent({
             } else {
               emit('port-cancel', { ev, originEl, vm })
             }
-          } else {
-            clickedRelativePosition.value = [0, 0]
           }
+          clickedRelativePosition.value = [0, 0]
         }
-
       })
     }
 
