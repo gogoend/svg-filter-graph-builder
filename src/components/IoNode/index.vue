@@ -72,6 +72,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const vm = ref(getCurrentInstance())
     const fromPort = inject<Ref<Port<any>>>('fromPort')
+    const toPort = inject<Ref<Port<any>>>('toPort')
 
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
@@ -105,31 +106,17 @@ export default defineComponent({
               const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
               clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
               emit('node-move', props.relativePaths)
-
-              // // 实现连线随IoNode的拖动而发生位置更新的逻辑
-              // const affectedPortEls = {
-              //   from: [] as SVGGElement[],
-              //   to: [] as SVGGElement[]
-              // }
-              // props.relativePaths.forEach(item => {
-              //   const fromVm = item.from.vm
-              //   const toVm = item.to.vm
-              //   let el
-              //   if (fromVm === unref(vm)) {
-              //     el = unref(feAttrEls).find(el => el.dataset.feAttr === item.from.attr)
-              //     affectedPortEls.from.push(el as SVGGElement)
-              //   }
-              //   if (toVm === unref(vm)) {
-              //     el = unref(feAttrEls).find(el => el.dataset.feAttr === item.to.attr)
-              //     affectedPortEls.to.push(el as SVGGElement)
-              //   }
-              // })
             })
           }
         },
         up(ev, { originEl }) {
+          console.log(fromPort, toPort)
           if (originEl.classList.contains('port')) {
-            if ((ev.target as Element)?.classList.contains('port')) {
+            if (
+              (ev.target as Element)?.classList.contains('port') &&
+              fromPort?.value &&
+              toPort?.value
+            ) {
               emit('port-connect', { ev, originEl, vm })
             } else {
               emit('port-cancel', { ev, originEl, vm })

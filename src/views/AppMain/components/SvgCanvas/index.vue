@@ -193,7 +193,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       ghostPathDArguments.value.fill(0)
     }
     const handleDestinationChange = ({ vm, originEl, ev }: {vm: InstanceType<typeof IoNode> | null, originEl: SVGCircleElement, ev: MouseEvent}) => {
-      console.log(vm)
       toPort.value = {
         vm: vm as InstanceType<typeof IoNode>,
         attr: (ev.target as SVGCircleElement)?.dataset?.feAttr ?? '',
@@ -246,8 +245,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       getRelativePathIdOfNode(nodeId: string): RelativePathForNode {
         nodeId = String(nodeId)
         return {
-          in: linkedPaths.value.filter(path => path.to.vm.props.nodeId === nodeId),
-          out: linkedPaths.value.filter(path => path.from.vm.props.nodeId === nodeId)
+          in: linkedPaths.value.filter(path => path.to?.vm.props.nodeId === nodeId),
+          out: linkedPaths.value.filter(path => path.from?.vm.props.nodeId === nodeId)
         }
       }
     }
@@ -261,7 +260,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 }
 .ghost-path {
   fill: none;
-  stroke: #69b84a;
+  stroke: rgba(105, 184, 74, 0.459);
   stroke-width: 4px;
 }
 </style>
