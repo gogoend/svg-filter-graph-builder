@@ -38,8 +38,8 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref, provide } from 'vue'
-import IoNode from '@/components/IoNode/index.vue'
-import IoPath from '@/components/IoPath/index.vue'
+import IoNode from './components/IoNode/index.vue'
+import IoPath from './components/IoPath/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
