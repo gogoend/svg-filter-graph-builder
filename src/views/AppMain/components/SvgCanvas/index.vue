@@ -43,6 +43,7 @@ import IoPath from '@/components/IoPath/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
+import { uuid } from '@/utils/uuid'
 
 // 圆形半径
 const POINT_R = 10
@@ -52,14 +53,45 @@ const HANDLE_LENGTH = 150
 //
 let id = 0
 
+function checkLoop(path: Path) {
+  const { to, from } = path
+  let hasLoop = false
+  const innerLoop = (from: Port<any>) => {
+    if (to.vm === from.vm) {
+      hasLoop = true
+      return
+    }
+    for (let i = 0; i < from.vm.props.relativePaths.in.length; i++) {
+      if (hasLoop) break
+      const item = from.vm.props.relativePaths.in[i]
+      innerLoop(item.from)
+    }
+  }
+  innerLoop(from)
+  return hasLoop
+}
+
 function portCanBeConnected(path: Path) {
-  console.log(path.from, path.to)
+  // 在当前port元素上点击后即松开
   if (path.from.vm === path.to.vm) {
     return false
   }
+  // 尝试连接类型（in、out）相同的元素
   if (path.from.el?.dataset.portType === path.to.el?.dataset.portType) {
     return false
   }
+  // 发生了重复连接
+  // TODO
+  // 连接产生了环
+  if (checkLoop(path)) {
+    return false
+  }
+  console.log(
+    path.to.vm.props.relativePaths.in[0]
+      ?.from.vm.props.relativePaths.in[0]
+      ?.from.vm.props.relativePaths.in
+  )
+
   return true
 }
 
@@ -74,11 +106,15 @@ export default defineComponent({
     const nodes = ref<Node[]>([
       {
         is: 'convolveMatrix',
-        id: '1'
+        id: uuid()
       },
       {
         is: 'turbulence',
-        id: '2'
+        id: uuid()
+      },
+      {
+        is: 'dropShadow',
+        id: uuid()
       }
     ])
 
