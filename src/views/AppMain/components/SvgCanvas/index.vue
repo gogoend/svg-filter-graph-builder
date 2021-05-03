@@ -9,6 +9,7 @@
     style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
   >
+    <fe-def />
     <path
       class="ghost-path"
       :d="ghostPathD"
@@ -40,6 +41,7 @@
 import { computed, defineComponent, ref, provide } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
+import FeDef from './components/FeDef/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
@@ -99,7 +101,8 @@ export default defineComponent({
   name: 'SvgCanvas',
   components: {
     IoNode,
-    IoPath
+    IoPath,
+    FeDef
   },
   setup() {
     const linkedPaths = ref<Path[]>([])
