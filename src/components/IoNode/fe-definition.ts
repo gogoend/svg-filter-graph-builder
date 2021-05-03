@@ -18,3 +18,13 @@ export const turbulence = {
   stitchTiles: {},
   seed: {}
 }
+
+export const dropShadow = {
+  in: {},
+  dx: {},
+  dy: {},
+  stdDeviation: {},
+  seed: {},
+  floodColor: {},
+  floodOpacity: {}
+}
