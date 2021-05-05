@@ -24,9 +24,7 @@
       />
       <text
         transform="matrix(1 0 0 1 0 8)"
-        class="fill-fff module-name">fe{{
-          `${is.substr(0, 1).toUpperCase()}${is.substring(1)}`
-        }}</text>
+        class="fill-fff module-name">{{is}}</text>
     </g>
     <g
       v-for="(item, key, index) in fe[is]"
@@ -51,7 +49,7 @@
 import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
-import * as fe from './fe-definition'
+import * as fe from './fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { isPortEl } from '@/utils'

@@ -9,7 +9,10 @@
     style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
   >
-    <fe-def />
+    <filter-def
+      :linked-paths="linkedPaths"
+      :nodes="nodes"
+    />
     <path
       class="ghost-path"
       :d="ghostPathD"
@@ -41,7 +44,7 @@
 import { computed, defineComponent, ref, provide } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
-import FeDef from './components/FeDef/index.vue'
+import FilterDef from './components/FilterDef/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
@@ -102,21 +105,21 @@ export default defineComponent({
   components: {
     IoNode,
     IoPath,
-    FeDef
+    FilterDef
   },
   setup() {
     const linkedPaths = ref<Path[]>([])
     const nodes = ref<Node[]>([
       {
-        is: 'convolveMatrix',
+        is: 'feConvolveMatrix',
         id: uuid()
       },
       {
-        is: 'turbulence',
+        is: 'feTurbulence',
         id: uuid()
       },
       {
-        is: 'dropShadow',
+        is: 'feDropShadow',
         id: uuid()
       }
     ])
