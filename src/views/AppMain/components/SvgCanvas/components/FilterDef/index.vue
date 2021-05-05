@@ -13,6 +13,15 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { Node, Path } from '../../type'
 
+function getAllChildrenOfNode(node: Node) {
+  const children:Node[] = []
+  const innerLoop = (node: Node) => {
+    console.log(node)
+  }
+  innerLoop(node)
+  return children
+}
+
 export default defineComponent({
   name: 'FeDef',
   props: {
@@ -31,12 +40,13 @@ export default defineComponent({
         const {
           linkedPaths, nodes
         } = props
-
+        console.log(nodes)
         return {
           nodes, linkedPaths
         }
       }
     )
+    console.log(nodeGropWithLinks)
     return {
       nodeGropWithLinks
     }

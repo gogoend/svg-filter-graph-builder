@@ -138,6 +138,8 @@ export default defineComponent({
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
+    // TODO 加一个计算属性，表示当前节点下的子节点可组成的来滤镜
+
     return {
       fromPort,
 
