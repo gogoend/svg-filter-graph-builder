@@ -46,7 +46,7 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition-config'
@@ -94,8 +94,6 @@ export default defineComponent({
             const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
             // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
             clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
-
-            console.log(clickedRelativePosition.value)
           }
         },
         move(ev, { originEl }) {
@@ -138,7 +136,21 @@ export default defineComponent({
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
-    // TODO 加一个计算属性，表示当前节点下的子节点可组成的来滤镜
+    // 计算属性，表示当前节点下的所有的后代节点
+    const allDescendants = computed<any[]>(() => {
+      const allDescendants = new Set()
+      const innerLoop = (vm: any) => {
+        allDescendants.add(vm)
+
+        vm.props.relativePaths.in.forEach((item: any) => {
+          innerLoop(item.from.vm)
+        })
+        // [0].from.vm.setupState.allDescendants[0]
+      }
+      innerLoop(unref(vm))
+      // props.relativePaths.in[0].from.vm.props.relativePaths.in[0].from.vm.props.relativePaths.in[0]
+      return [...allDescendants]
+    })
 
     return {
       fromPort,
@@ -150,7 +162,8 @@ export default defineComponent({
 
       handleNodeMousedown,
       handlePortMouseenter,
-      fe
+      fe,
+      allDescendants
     }
   }
 })
