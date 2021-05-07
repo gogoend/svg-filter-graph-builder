@@ -7,24 +7,24 @@
   >
     <rect
       x="11.9"
-      class="fill-333"
+      class="io-node__bg fill-333"
       width="265"
-      :height="12+35*(Object.keys(fe[is]).length+1)" />
+      :height="12+35*(Object.keys(fe[is] || {}).length+1)" />
     <g
       class="head"
       transform="matrix(1 0 0 1 28 24)">
       <circle
         class="port out"
+        data-port-type="out"
         r="10"
         cx="250"
         data-fe-attr="result"
+        :ref="setFeAttrEls"
         @mouseenter="handlePortMouseenter"
       />
       <text
         transform="matrix(1 0 0 1 0 8)"
-        class="fill-fff module-name">fe{{
-          `${is.substr(0, 1).toUpperCase()}${is.substring(1)}`
-        }}</text>
+        class="fill-fff module-name">{{is}}</text>
     </g>
     <g
       v-for="(item, key, index) in fe[is]"
@@ -32,9 +32,10 @@
       :transform="`matrix(1 0 0 1 10 ${60 + 35 * index})`">
       <circle
         class="port in"
+        data-port-type="in"
         r="10"
         :data-fe-attr="key"
-        :ref="setFeAttrRefs"
+        :ref="setFeAttrEls"
         @mouseenter="handlePortMouseenter"
       />
       <text
@@ -45,10 +46,13 @@
   </g>
 </template>
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, ref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
-import * as fe from './fe-definition'
+import * as fe from './fe-definition-config'
+
+import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import { isPortEl } from '@/utils'
 
 export default defineComponent({
   name: 'IoNode',
@@ -60,93 +64,106 @@ export default defineComponent({
     nodeId: {
       type: String,
       required: true
+    },
+    relativePaths: {
+      type: Object as PropType<RelativePathForNode>,
+      required: true
     }
   },
-  setup(_, { emit }) {
-    const vm = getCurrentInstance()
-    const fromPort = inject<any>('fromPort')
+  setup(props, { emit }) {
+    const vm = ref(getCurrentInstance())
+    const fromPort = inject<Ref<Port<any>>>('fromPort')
+    const toPort = inject<Ref<Port<any>>>('toPort')
 
     const ioNodeEl = ref<SVGGElement>()
     const position = ref([0, 0])
     const clickedRelativePosition = ref([0, 0])
 
-    const feAttrRefs = ref<SVGCircleElement[]>([])
-    const setFeAttrRefs = (el?: SVGCircleElement) => {
-      el && feAttrRefs.value.push(el)
+    const feAttrEls = ref<SVGCircleElement[]>([])
+    const setFeAttrEls = (el?: SVGCircleElement) => {
+      el && feAttrEls.value.push(el)
     }
-    onBeforeUpdate(() => { feAttrRefs.value = [] })
+    onBeforeUpdate(() => { feAttrEls.value = [] })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
-          if (originEl.classList.contains('port')) {
+          if (isPortEl(originEl)) {
             emit('port-start', { ev, originEl, vm })
           } else {
             const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
             // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
             clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
-
-            console.log(clickedRelativePosition.value)
           }
         },
         move(ev, { originEl }) {
-          if (originEl.classList.contains('port')) {
+          if (isPortEl(originEl)) {
             emit('port-move', { ev, originEl, vm })
           } else {
-          // const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
-          //   console.log(
-          //     `${ev.clientX - (currentPostion?.left || 0)} ${ev.clientY - (currentPostion?.top || 0)}\n`,
-          //     `${position.value[0]} ${position.value[1]}`
-          //   )
-          // clickedRelativePosition.value = [ev.pageX - clickedRelativePosition.value[0], ev.pageY - clickedRelativePosition.value[1]]
-
             position.value = [ev.pageX - clickedRelativePosition.value[0], ev.pageY - clickedRelativePosition.value[1]] // clickedRelativePosition.value.concat()
             nextTick(() => {
               const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
               clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
-
-            // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+              emit('node-move', props.relativePaths)
             })
-          //   // position.value = [ev.clientX - position.value[0], ev.clientY - position.value[1]]
-          //   // position.value = [ev.clientX - 100, ev.clientY - 100]
           }
         },
         up(ev, { originEl }) {
-          if (originEl.classList.contains('port')) {
-            if ((ev.target as Element)?.classList.contains('port')) {
+          if (isPortEl(originEl)) {
+            if (
+              isPortEl(ev.target as HTMLElement) &&
+              fromPort?.value &&
+              toPort?.value
+            ) {
               emit('port-connect', { ev, originEl, vm })
             } else {
               emit('port-cancel', { ev, originEl, vm })
             }
-          } else {
-            clickedRelativePosition.value = [0, 0]
           }
+          clickedRelativePosition.value = [0, 0]
         }
-
       })
     }
 
     const handlePortMouseout = function(ev: Event) {
       if (!fromPort?.value) { return }
-      emit('destination-change', { ev, vm: null })
+      emit('destination-change', { ev, vm: null, originEl: null })
       ev.target?.removeEventListener('mouseout', handlePortMouseout)
     }
     const handlePortMouseenter = function(ev: Event) {
       if (!fromPort?.value) { return }
-      emit('destination-change', { ev, vm })
+      emit('destination-change', { ev, vm, originEl: ev.target })
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
 
+    // 计算属性，表示当前节点下的所有的后代节点
+    const allDescendants = computed<any[]>(() => {
+      const allDescendants = new Set()
+      const innerLoop = (vm: any) => {
+        allDescendants.add(vm)
+
+        vm.props.relativePaths.in.forEach((item: any) => {
+          innerLoop(item.from.vm)
+        })
+        // [0].from.vm.setupState.allDescendants[0]
+      }
+      innerLoop(unref(vm))
+      // props.relativePaths.in[0].from.vm.props.relativePaths.in[0].from.vm.props.relativePaths.in[0]
+      return [...allDescendants]
+    })
+
     return {
       fromPort,
+
       ioNodeEl,
       position,
 
-      setFeAttrRefs,
+      setFeAttrEls,
 
       handleNodeMousedown,
       handlePortMouseenter,
-      fe
+      fe,
+      allDescendants
     }
   }
 })
@@ -156,6 +173,10 @@ export default defineComponent({
 .io-node {
   user-select: none;
   cursor: move;
+  &__bg {
+    stroke: #a0a0a0;
+    stroke-width: 4px;
+  }
   .fill-333 {
     fill: #333333;
   }

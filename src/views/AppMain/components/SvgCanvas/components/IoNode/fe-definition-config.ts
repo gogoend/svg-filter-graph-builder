@@ -1,4 +1,4 @@
-export const convolveMatrix = {
+export const feConvolveMatrix = {
   in: {},
   order: {},
   kernelMatrix: {},
@@ -11,10 +11,20 @@ export const convolveMatrix = {
   preserveAlpha: {}
 }
 
-export const turbulence = {
+export const feTurbulence = {
   type: {},
   baseFrequency: {},
   numOctaves: {},
   stitchTiles: {},
   seed: {}
+}
+
+export const feDropShadow = {
+  in: {},
+  dx: {},
+  dy: {},
+  stdDeviation: {},
+  seed: {},
+  floodColor: {},
+  floodOpacity: {}
 }

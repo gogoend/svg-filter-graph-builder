@@ -1,4 +1,4 @@
-import { MouseEventHelper } from '.'
+import type { MouseEventHelper } from './type'
 
 const mouseEventHelper = function(ev: MouseEvent, handlers?: MouseEventHelper.Handlers): void {
   const start = handlers?.start || (() => void 0)
