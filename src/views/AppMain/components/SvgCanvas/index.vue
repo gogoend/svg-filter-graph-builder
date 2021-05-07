@@ -26,6 +26,7 @@
       :to="path.to"
     ></io-path>
     <io-node
+      ref="setNodeRefs"
       v-for="node in nodes"
       :key="node.id"
       :is="node.is"
@@ -41,7 +42,7 @@
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 import FilterDef from './components/FilterDef/index.vue'
@@ -123,6 +124,11 @@ export default defineComponent({
         id: uuid()
       }
     ])
+    const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
+    const setNodeRefs = (ref?: InstanceType<typeof IoNode>) => {
+      if (ref) { nodeRefs.value.push(ref as any) }
+    }
+    onBeforeUpdate(() => { nodeRefs.value = [] })
 
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
     const ghostPathD = computed(() => {
@@ -287,6 +293,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     return {
       ghostPathD,
       nodes,
+      setNodeRefs,
       linkedPaths,
       handlePortStart,
       handlePortMove,
