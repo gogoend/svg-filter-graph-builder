@@ -11,7 +11,7 @@
   >
     <filter-def
       :linked-paths="linkedPaths"
-      :nodes="nodes"
+      :nodes="nodeRefs"
     />
     <path
       class="ghost-path"
@@ -26,7 +26,7 @@
       :to="path.to"
     ></io-path>
     <io-node
-      ref="setNodeRefs"
+      :ref="setNodeRefs"
       v-for="node in nodes"
       :key="node.id"
       :is="node.is"
@@ -293,6 +293,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     return {
       ghostPathD,
       nodes,
+      nodeRefs,
       setNodeRefs,
       linkedPaths,
       handlePortStart,

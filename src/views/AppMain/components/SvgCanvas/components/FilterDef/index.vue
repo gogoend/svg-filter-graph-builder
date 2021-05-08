@@ -5,7 +5,11 @@
       :key="node.id"
       :id="node.id"
     >
-      <component :is="node.is" />
+      <component
+        v-for="(desc) in node.allDescendants"
+        :key="desc.props.id"
+        :is="desc.props.is"
+        :id="desc.props.nodeId" />
     </filter>
   </defs>
 </template>
