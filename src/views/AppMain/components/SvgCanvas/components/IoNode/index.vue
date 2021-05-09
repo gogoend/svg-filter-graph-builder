@@ -5,47 +5,49 @@
     :transform="`translate(${position[0]}, ${position[1]})`"
     ref="ioNodeEl"
   >
-    <rect
-      x="11.9"
-      class="io-node__bg fill-333"
-      width="265"
-      :height="12+35*(Object.keys(fe[is] || {}).length+1)" />
-    <g
-      class="head"
-      transform="matrix(1 0 0 1 28 24)">
-      <circle
-        class="port out"
-        data-port-type="out"
-        r="10"
-        cx="250"
-        data-fe-attr="result"
-        :ref="setFeAttrEls"
-        @mouseenter="handlePortMouseenter"
-      />
-      <text
-        transform="matrix(1 0 0 1 0 8)"
-        class="fill-fff module-name">{{is}}</text>
-    </g>
-    <g
-      v-for="(item, key, index) in fe[is]"
-      :key="key"
-      :transform="`matrix(1 0 0 1 10 ${60 + 35 * index})`">
-      <circle
-        class="port in"
-        data-port-type="in"
-        r="10"
-        :data-fe-attr="key"
-        :ref="setFeAttrEls"
-        @mouseenter="handlePortMouseenter"
-      />
-      <text
-        transform="matrix(1 0 0 1 16 8)"
-        class="fill-fff port-name">{{ key }}</text>
-    </g>
-    <image
-      class="filter-thumb"
-      :href="filterThumbUrl"
-    ></image>
+    <foreignObject class="io-node__inner">
+      <div
+        class="io-node__body"
+        xmlns="http://www.w3.org/1999/xhtml">
+        <img
+          class="io-node__filter-thumb"
+          :src="filterThumbUrl"
+        />
+        <div
+          class="io-node__head"
+        >
+          <em
+            class="port out"
+            data-port-type="out"
+            r="10"
+            cx="250"
+            data-fe-attr="result"
+            :ref="setFeAttrEls"
+            @mouseenter="handlePortMouseenter"
+          />
+          <span
+            transform="matrix(1 0 0 1 0 8)"
+            class="fill-fff module-name">{{is}}</span>
+        </div>
+        <div
+          class="io-node__li"
+          v-for="(item, key) in fe[is]"
+          :key="key">
+          <em
+            class="port in"
+            data-port-type="in"
+            r="10"
+            :data-fe-attr="key"
+            :ref="setFeAttrEls"
+            @mouseenter="handlePortMouseenter"
+          />
+          <label class="io-node__port-text">
+            <span class="port-name">{{ key }}</span>
+            <input />
+          </label>
+        </div>
+      </div>
+    </foreignObject>
   </g>
 </template>
 <script lang="ts">
@@ -192,41 +194,78 @@ ${allDescendants.value.map(item => {
 </script>
 
 <style lang="scss" scoped>
+.fill-333 {
+  fill: #333333;
+}
+.fill-fff {
+  fill: #ffffff;
+}
 .io-node {
   user-select: none;
   cursor: move;
-  &__bg {
-    stroke: #a0a0a0;
-    stroke-width: 4px;
+  color: #fff;
+  &__inner {
+    overflow: visible;
   }
-  .fill-333 {
-    fill: #333333;
-  }
-  .fill-fff {
-    fill: #ffffff;
+  &__body {
+    width: 250px;
+    background-color: #333333;
+    padding: 0.5em 0;
+    position: relative;
   }
   .module-name {
     font-size: 24px;
   }
-  .port-name {
-    font-size: 20px;
+  &__filter-thumb {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    background-color: #f0f0f0;
   }
   .port {
-    fill: #333333;
-    stroke-width: 4;
+    background-color: #333333;
+    border: 4px solid;
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 50%;
+    flex: 0 0 auto;
     cursor: grab;
     &.disabled {
       cursor: no-drop;
     }
   }
-  .head {
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
     .port {
-      stroke: #00f9f9;
+      border-color: #00f9f9;
+      transform: translate(50%, 0);
     }
   }
-  :not(.head) {
+  &__li {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    height: 2em;
     .port {
-      stroke: #ff7f00;
+      border-color: #ff7f00;
+      transform: translate(-50%, 0);
+    }
+    label.io-node__port-text{
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      .port-name {
+        font-size: 20px;
+      }
+      input {
+        width: 30px;
+        flex: 0 1 auto;
+      }
     }
   }
 }
