@@ -42,7 +42,10 @@
         transform="matrix(1 0 0 1 16 8)"
         class="fill-fff port-name">{{ key }}</text>
     </g>
-
+    <image
+      class="filter-thumb"
+      :href="filterThumbUrl"
+    ></image>
   </g>
 </template>
 <script lang="ts">
@@ -152,6 +155,23 @@ export default defineComponent({
       return [...allDescendants]
     })
 
+    const filterThumbUrl = computed<string>(() => {
+      const prefix = 'data:image/svg+xml,'
+      const template = `
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="27" height="34" viewBox="-21 -32 112 182">
+<defs><filter id="filter">
+${allDescendants.value.map(item => {
+    return `<${item.props.is} id="${item.props.nodeId}"></${item.props.is}>`
+  })}
+</filter></defs>
+<g style="filter: url(#filter)">
+<text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text>
+</g>
+</svg>
+`
+      return prefix + encodeURIComponent(template)
+    })
+
     return {
       fromPort,
 
@@ -163,7 +183,9 @@ export default defineComponent({
       handleNodeMousedown,
       handlePortMouseenter,
       fe,
-      allDescendants
+      allDescendants,
+
+      filterThumbUrl
     }
   }
 })
