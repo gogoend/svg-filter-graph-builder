@@ -13,18 +13,6 @@
       :linked-paths="linkedPaths"
       :nodes="nodeRefs"
     />
-    <path
-      class="ghost-path"
-      :d="ghostPathD"
-    />
-    <io-path
-      v-for="path in linkedPaths"
-      :key="path.id"
-      :path-id="path.id"
-      :path-d-arguments="path.pathDArguments"
-      :from="path.from"
-      :to="path.to"
-    ></io-path>
     <io-node
       :ref="setNodeRefs"
       v-for="node in nodes"
@@ -38,6 +26,18 @@
       @destination-change="handleDestinationChange"
       :relative-paths="getRelativePathIdOfNode(node.id)"
       @node-move="handleNodeMove"
+    />
+    <io-path
+      v-for="path in linkedPaths"
+      :key="path.id"
+      :path-id="path.id"
+      :path-d-arguments="path.pathDArguments"
+      :from="path.from"
+      :to="path.to"
+    ></io-path>
+    <path
+      class="ghost-path"
+      :d="ghostPathD"
     />
   </svg>
 </template>
@@ -326,5 +326,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
   fill: none;
   stroke: rgba(105, 184, 74, 0.459);
   stroke-width: 4px;
+  pointer-events: none;
 }
 </style>
