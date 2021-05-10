@@ -43,7 +43,7 @@
           />
           <label class="io-node__port-text">
             <span class="port-name">{{ key }}</span>
-            <input />
+            <input v-model="feAttrValue[key]" />
           </label>
         </div>
       </div>
@@ -51,13 +51,14 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, reactive, Ref, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import * as fe from './fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { isPortEl } from '@/utils'
+import { Dictionary } from '@/utils/type'
 
 export default defineComponent({
   name: 'IoNode',
@@ -89,6 +90,7 @@ export default defineComponent({
       el && feAttrEls.value.push(el)
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
+    const feAttrValue = ref<Dictionary<string>>({})
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
@@ -163,8 +165,16 @@ export default defineComponent({
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="27" height="34" viewBox="-21 -32 112 182">
 <defs><filter id="filter">
 ${[...allDescendants.value].reverse().map((item, index) => {
+    const { feAttrValue } = item.setupState
     return `
 <${item.props.is}
+${Object.keys(unref(feAttrValue) || {}).map(key => {
+    if (unref(feAttrValue)[key]) {
+      return `${key}="${unref(feAttrValue)[key]}"`
+    } else {
+      return ''
+    }
+  }).join(' ')}
 result="${item.props.nodeId}"
 in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
 ></${item.props.is}>`
@@ -185,6 +195,7 @@ in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
       position,
 
       setFeAttrEls,
+      feAttrValue,
 
       handleNodeMousedown,
       handlePortMouseenter,
