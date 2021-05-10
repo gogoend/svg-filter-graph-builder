@@ -162,9 +162,13 @@ export default defineComponent({
       const template = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="27" height="34" viewBox="-21 -32 112 182">
 <defs><filter id="filter">
-${allDescendants.value.map(item => {
-    return `<${item.props.is} id="${item.props.nodeId}"></${item.props.is}>`
-  })}
+${[...allDescendants.value].reverse().map((item, index) => {
+    return `
+<${item.props.is}
+result="${item.props.nodeId}"
+in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
+></${item.props.is}>`
+  }).join('')}
 </filter></defs>
 <g style="filter: url(#filter)">
 <text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text>
