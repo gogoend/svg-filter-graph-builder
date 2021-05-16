@@ -9,7 +9,8 @@
         v-for="(desc) in node.allDescendants"
         :key="desc.props.id"
         :is="desc.props.is"
-        :id="desc.props.nodeId" />
+        :id="desc.props.nodeId"
+      />
     </filter>
   </defs>
 </template>

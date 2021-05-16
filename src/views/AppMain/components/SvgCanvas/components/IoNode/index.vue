@@ -51,13 +51,13 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, h, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
-import { isPortEl } from '@/utils'
+import { isPortEl, vnode2dom } from '@/utils'
 import { Dictionary } from '@/utils/type'
 
 export default defineComponent({
@@ -161,43 +161,28 @@ export default defineComponent({
 
     const filterThumbUrl = computed<string>(() => {
       const prefix = 'data:image/svg+xml,'
-      // const vnode = h('filter', { id: 'filter' }, [...unref(allDescendants)].reverse().map((item, index) => {
-      //   let { feAttrValue } = item.setupState
-      //   feAttrValue = unref(feAttrValue || {})
-      //   const nodeAttrs: Dictionary<string> = {}
-      //   Object.keys(feAttrValue || {}).forEach(key => {
-      //     if (feAttrValue[key] !== undefined) {
-      //       nodeAttrs[key] = feAttrValue[key] || ''
-      //     }
-      //     nodeAttrs.in = [...unref(allDescendants)].reverse()[index - 1]?.props.nodeId ?? ''
-      //     nodeAttrs.result = item.props.nodeId
-      //   })
-      //   return h(item.props.is, nodeAttrs)
-      // }))
+      const vnode = h('filter', { id: 'filter' }, [...allDescendants.value].reverse().map((item, index) => {
+        let { feAttrValue } = item.setupState
+        feAttrValue = feAttrValue.value || {}
+        const nodeAttrs: Dictionary<string> = {}
+        Object.keys(feAttrValue || {}).forEach(key => {
+          if (feAttrValue[key] !== undefined) {
+            nodeAttrs[key] = feAttrValue[key] || ''
+          }
+          nodeAttrs.in = [...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''
+          nodeAttrs.result = item.props.nodeId
+        })
+        return h(item.props.is, nodeAttrs)
+      }))
+
       const template = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="40" height="40" viewBox="-21 -32 112 182">
-<defs><filter id="filter">
-${[...allDescendants.value].reverse().map((item, index) => {
-    const { feAttrValue } = item.setupState
-    return `
-<${item.props.is}
-${Object.keys(unref(feAttrValue) || {}).map(key => {
-    if (unref(feAttrValue)[key]) {
-      return `${key}="${unref(feAttrValue)[key]}"`
-    } else {
-      return ''
-    }
-  }).join(' ')}
-result="${item.props.nodeId}"
-in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
-></${item.props.is}>`
-  }).join('')}
-</filter></defs>
-<g style="filter: url(#filter)">
-<text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text>
-</g>
-</svg>
-`
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="40" height="40" viewBox="-21 -32 112 182">
+      <defs>${vnode2dom(vnode).outerHTML}</defs>
+      <g style="filter: url(#filter)">
+      <text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text>
+      </g>
+      </svg>
+      `
       return prefix + encodeURIComponent(template)
     })
 

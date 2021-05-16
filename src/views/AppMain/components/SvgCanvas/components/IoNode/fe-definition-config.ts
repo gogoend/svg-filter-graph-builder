@@ -1,7 +1,9 @@
 import { NodeConfig } from './type'
 
 export const feConvolveMatrix: Record<string, NodeConfig.Port> = {
-  in: {},
+  in: {
+    type: 'hidden'
+  },
   kernelMatrix: {
     defaultValue: '0 1 0, 1 1 1, 0 1 0'
   },
@@ -83,9 +85,14 @@ export const feDropShadow = {
   'flood-opacity': {}
 }
 
+export const feMerge = {
+  in: {}
+}
+
 const fe: Record<string, Record<string, NodeConfig.Port>> = {
   feConvolveMatrix,
   feTurbulence,
-  feDropShadow
+  feDropShadow,
+  feMerge
 }
 export default fe

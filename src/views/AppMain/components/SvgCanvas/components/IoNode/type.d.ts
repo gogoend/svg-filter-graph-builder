@@ -12,7 +12,7 @@ export namespace NodeConfig {
     }
 
     interface NormalPort {
-        type?: 'text';
+        type?: 'text' | 'hidden';
         defaultValue?: string;
         enum?: Enum[];
     }

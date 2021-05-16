@@ -122,6 +122,10 @@ export default defineComponent({
       {
         is: 'feDropShadow',
         id: uuid()
+      },
+      {
+        is: 'feMerge',
+        id: uuid()
       }
     ])
     const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
