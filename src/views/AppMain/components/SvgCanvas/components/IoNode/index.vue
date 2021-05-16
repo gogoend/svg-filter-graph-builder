@@ -51,10 +51,10 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, reactive, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
-import * as fe from './fe-definition-config'
+import fe from './fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { isPortEl } from '@/utils'
@@ -64,7 +64,7 @@ export default defineComponent({
   name: 'IoNode',
   props: {
     is: {
-      type: String,
+      type: String as PropType<keyof typeof fe>,
       required: true
     },
     nodeId: {
@@ -90,7 +90,7 @@ export default defineComponent({
       el && feAttrEls.value.push(el)
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
-    const feAttrValue = ref<Dictionary<string>>({})
+    const feAttrValue = ref<Dictionary<string|number>>({})
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
@@ -162,7 +162,7 @@ export default defineComponent({
     const filterThumbUrl = computed<string>(() => {
       const prefix = 'data:image/svg+xml,'
       const template = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="27" height="34" viewBox="-21 -32 112 182">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="40" height="40" viewBox="-21 -32 112 182">
 <defs><filter id="filter">
 ${[...allDescendants.value].reverse().map((item, index) => {
     const { feAttrValue } = item.setupState
@@ -188,6 +188,20 @@ in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
       return prefix + encodeURIComponent(template)
     })
 
+    // 填充默认值
+    console.log(fe[props.is])
+    Object.keys(fe[props.is]).forEach(key => {
+      if (
+        (['number', 'range'] as unknown[]).includes(fe[props.is][key].type)
+      ) {
+        feAttrValue.value[key] = (fe[props.is][key]).defaultValue ?? 0
+      } else {
+        feAttrValue.value[key] = (fe[props.is][key]).defaultValue ?? ''
+      }
+    })
+    // .forEach((key: keyof typeof fe[props.is]) => {
+    //   feAttrValue.value[key] = fe[props.is][key]?.defaultValue ?? ''
+    // })
     return {
       fromPort,
 
@@ -223,13 +237,14 @@ in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
     overflow: visible;
   }
   &__body {
-    width: 250px;
+    width: 15em;
     background-color: #333333;
     padding: 0.5em 0;
     position: relative;
+    font-size: 12px;
   }
   .module-name {
-    font-size: 24px;
+    font-size: 1.25em;
   }
   &__filter-thumb {
     position: absolute;
@@ -265,7 +280,7 @@ in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
     display: flex;
     align-items: center;
     flex-direction: row;
-    height: 2em;
+    line-height: 1.75em;
     .port {
       border-color: #ff7f00;
       transform: translate(-50%, 0);
@@ -274,8 +289,9 @@ in="${[...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''}"
       display: flex;
       flex: 1;
       justify-content: space-between;
+      align-items: center;
       .port-name {
-        font-size: 20px;
+        font-size: 1.25em;
       }
       input {
         width: 30px;
