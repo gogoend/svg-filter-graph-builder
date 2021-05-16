@@ -161,6 +161,19 @@ export default defineComponent({
 
     const filterThumbUrl = computed<string>(() => {
       const prefix = 'data:image/svg+xml,'
+      // const vnode = h('filter', { id: 'filter' }, [...unref(allDescendants)].reverse().map((item, index) => {
+      //   let { feAttrValue } = item.setupState
+      //   feAttrValue = unref(feAttrValue || {})
+      //   const nodeAttrs: Dictionary<string> = {}
+      //   Object.keys(feAttrValue || {}).forEach(key => {
+      //     if (feAttrValue[key] !== undefined) {
+      //       nodeAttrs[key] = feAttrValue[key] || ''
+      //     }
+      //     nodeAttrs.in = [...unref(allDescendants)].reverse()[index - 1]?.props.nodeId ?? ''
+      //     nodeAttrs.result = item.props.nodeId
+      //   })
+      //   return h(item.props.is, nodeAttrs)
+      // }))
       const template = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="40" height="40" viewBox="-21 -32 112 182">
 <defs><filter id="filter">
