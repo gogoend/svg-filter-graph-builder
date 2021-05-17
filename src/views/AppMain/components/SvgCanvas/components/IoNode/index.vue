@@ -163,7 +163,7 @@ export default defineComponent({
       const prefix = 'data:image/svg+xml,'
       const vnode = h('filter', { id: 'filter' }, [...allDescendants.value].reverse().map((item, index) => {
         let { feAttrValue } = item.setupState
-        feAttrValue = feAttrValue.value || {}
+        feAttrValue = feAttrValue || {}
         const nodeAttrs: Dictionary<string> = {}
         Object.keys(feAttrValue || {}).forEach(key => {
           if (feAttrValue[key] !== undefined) {
@@ -175,14 +175,7 @@ export default defineComponent({
         return h(item.props.is, nodeAttrs)
       }))
 
-      const template = `
-      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="SVGFilterBuilder" width="40" height="40" viewBox="-21 -32 112 182">
-      <defs>${vnode2dom(vnode).outerHTML}</defs>
-      <g style="filter: url(#filter)">
-      <text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text>
-      </g>
-      </svg>
-      `
+      const template = `<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
       return prefix + encodeURIComponent(template)
     })
 

@@ -38,8 +38,8 @@ export const feConvolveMatrix: Record<string, NodeConfig.Port> = {
   },
   preserveAlpha: {
     type: 'text',
-    defaultValue: 'preserveAlpha',
-    enum: ['preserveAlpha', '']
+    defaultValue: 'true',
+    enum: ['true', 'false']
   }
 }
 

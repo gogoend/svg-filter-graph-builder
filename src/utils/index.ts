@@ -19,7 +19,7 @@ export function vnode2dom(vnode: VNode): HTMLElement {
 
   let children: any = vnode.children
 
-  const rootEl = document.createElement(tag)
+  const rootEl = document.createElementNS('http://www.w3.org/2000/svg', tag)
   props && Object.keys(props).forEach(key => {
     ['number', 'string'].includes(typeof props?.[key]) && String(props?.[key]).length && rootEl.setAttribute(key, props?.[key])
   })
