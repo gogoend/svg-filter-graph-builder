@@ -31,7 +31,7 @@
         </div>
         <div
           class="io-node__li"
-          v-for="(item, key) in fe[is]"
+          v-for="(item, key) in fe[is].ports"
           :key="key">
           <em
             class="port in"
@@ -175,19 +175,20 @@ export default defineComponent({
         return h(item.props.is, nodeAttrs)
       }))
 
-      const template = `<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
+      const template =
+`<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
       return prefix + encodeURIComponent(template)
     })
 
     // 填充默认值
     console.log(fe[props.is])
-    Object.keys(fe[props.is]).forEach(key => {
+    Object.keys(fe[props.is].ports).forEach(key => {
       if (
-        (['number', 'range'] as unknown[]).includes(fe[props.is][key].type)
+        (['number', 'range'] as unknown[]).includes(fe[props.is].ports[key].type)
       ) {
-        feAttrValue.value[key] = (fe[props.is][key]).defaultValue ?? 0
+        feAttrValue.value[key] = fe[props.is].ports[key].defaultValue ?? 0
       } else {
-        feAttrValue.value[key] = (fe[props.is][key]).defaultValue ?? ''
+        feAttrValue.value[key] = fe[props.is].ports[key].defaultValue ?? ''
       }
     })
     // .forEach((key: keyof typeof fe[props.is]) => {

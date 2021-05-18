@@ -1,4 +1,6 @@
-export namespace NodeConfig {
+import { Dictionary } from "@/utils/type";
+
+export namespace SVGFilterConfig {
     type Enum = {
         label: string;
         value: string | number;
@@ -18,4 +20,9 @@ export namespace NodeConfig {
     }
 
     export type Port = NormalPort | NumberPort
+
+    export type Node = {
+        type?: 'normal' | 'merge';
+        ports: Dictionary<Port>
+    }
 }
