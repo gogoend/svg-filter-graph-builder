@@ -29,23 +29,25 @@
             transform="matrix(1 0 0 1 0 8)"
             class="fill-fff module-name">{{is}}</span>
         </div>
-        <div
-          class="io-node__li"
-          v-for="(item, key) in fe[is].ports"
-          :key="key">
-          <em
-            class="port in"
-            data-port-type="in"
-            r="10"
-            :data-fe-attr="key"
-            :ref="setFeAttrEls"
-            @mouseenter="handlePortMouseenter"
-          />
-          <label class="io-node__port-text">
-            <span class="port-name">{{ key }}</span>
-            <input v-model="feAttrValue[key]" />
-          </label>
-        </div>
+        <template v-if="['normal', undefined].includes(fe[is].type)">
+          <div
+            class="io-node__li"
+            v-for="(item, key) in fe[is].ports"
+            :key="key">
+            <em
+              class="port in"
+              data-port-type="in"
+              r="10"
+              :data-fe-attr="key"
+              :ref="setFeAttrEls"
+              @mouseenter="handlePortMouseenter"
+            />
+            <label class="io-node__port-text">
+              <span class="port-name">{{ key }}</span>
+              <input v-model="feAttrValue[key]" />
+            </label>
+          </div>
+        </template>
       </div>
     </foreignObject>
   </g>
