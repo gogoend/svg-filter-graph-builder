@@ -97,7 +97,9 @@ export const feDropShadow: SVGFilterConfig.Node = {
 export const feMerge: SVGFilterConfig.Node = {
   type: 'merge',
   ports: {
-    in: {}
+    in: {
+      type: 'text'
+    }
   }
 }
 

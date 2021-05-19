@@ -1,28 +1,38 @@
 import { Dictionary } from "@/utils/type";
 
-export namespace SVGFilterConfig {
-    type Enum = {
-        label: string;
-        value: string | number;
-    } | string | number;
+type Enum = {
+    label: string;
+    value: string | number;
+} | string | number;
 
-    interface NumberPort {
+export namespace SVGFilterConfig {
+    export interface NumberPort {
         type: 'number' | 'range';
         defaultValue?: number;
         enum?: Enum[];
         range?: [number, number];
     }
 
-    interface NormalPort {
+    export interface NormalPort {
         type?: 'text' | 'hidden';
         defaultValue?: string;
         enum?: Enum[];
     }
 
-    export type Port = NormalPort | NumberPort
-
-    export type Node = {
-        type?: 'normal' | 'merge';
+    export interface NormalNode {
+        type?: 'normal';
         ports: Dictionary<Port>
     }
+
+    export interface MergeNode {
+        type: 'merge';
+        ports: {
+            in: {
+                type: 'text'
+            }
+        }
+    }
+
+    export type Port = NormalPort | NumberPort
+    export type Node = NormalNode | MergeNode
 }

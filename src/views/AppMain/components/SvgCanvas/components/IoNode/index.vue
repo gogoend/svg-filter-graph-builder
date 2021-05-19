@@ -59,6 +59,7 @@ import fe from './fe-definition-config'
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { isPortEl, vnode2dom } from '@/utils'
 import { Dictionary } from '@/utils/type'
+import { SVGFilterConfig } from './type'
 
 export default defineComponent({
   name: 'IoNode',
@@ -182,18 +183,18 @@ export default defineComponent({
 
     // 填充默认值
     console.log(fe[props.is])
-    Object.keys(fe[props.is].ports).forEach(key => {
-      if (
-        (['number', 'range'] as unknown[]).includes(fe[props.is].ports[key].type)
-      ) {
-        feAttrValue.value[key] = fe[props.is].ports[key].defaultValue ?? 0
-      } else {
-        feAttrValue.value[key] = fe[props.is].ports[key].defaultValue ?? ''
-      }
-    })
-    // .forEach((key: keyof typeof fe[props.is]) => {
-    //   feAttrValue.value[key] = fe[props.is][key]?.defaultValue ?? ''
-    // })
+    if (['normal', undefined].includes(fe[props.is].type)) {
+      const { ports } = fe[props.is] as SVGFilterConfig.NormalNode
+      Object.keys(ports).forEach(key => {
+        if (
+          (['number', 'range'] as unknown[]).includes(ports[key].type)
+        ) {
+          feAttrValue.value[key] = ports[key].defaultValue ?? 0
+        } else {
+          feAttrValue.value[key] = ports[key].defaultValue ?? ''
+        }
+      })
+    }
     return {
       fromPort,
 
