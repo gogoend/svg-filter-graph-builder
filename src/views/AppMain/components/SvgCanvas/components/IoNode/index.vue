@@ -30,40 +30,37 @@
             class="fill-fff module-name">{{is}}</span>
         </div>
         <template v-if="['normal', undefined].includes(fe[is].type)">
-          <div
-            class="io-node__li"
-            v-for="(item, key) in fe[is].ports"
-            :key="key">
-            <em
-              class="port in"
-              data-port-type="in"
-              r="10"
-              :data-fe-attr="key"
-              :ref="setFeAttrEls"
-              @mouseenter="handlePortMouseenter"
-            />
-            <label class="io-node__port-text">
-              <span class="port-name">{{ key }}</span>
-              <input v-model="feAttrValue[key]" />
-            </label>
-          </div>
+          <normal-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+          />
+        </template>
+        <template v-else-if="['merge'].includes(fe[is].type)">
+          <merge-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+          />
         </template>
       </div>
     </foreignObject>
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, h, inject, nextTick, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, h, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref, watch } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { isPortEl, vnode2dom } from '@/utils'
+import NormalNode from './components/NormalNode.vue'
+import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
-import { SVGFilterConfig } from './type'
 
 export default defineComponent({
+  components: { NormalNode, MergeNode },
   name: 'IoNode',
   props: {
     is: {
@@ -93,7 +90,31 @@ export default defineComponent({
       el && feAttrEls.value.push(el)
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
-    const feAttrValue = ref<Dictionary<string|number>>({})
+
+    const filterThumbUrl = computed<string>(() => {
+      const allDescs = allDescendants.value ?? []
+      const prefix = 'data:image/svg+xml,'
+      const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => {
+        let { feAttrValue } = item.setupState
+        feAttrValue = feAttrValue || {}
+        const nodeAttrs: Dictionary<string> = {}
+        Object.keys(feAttrValue || {}).forEach(key => {
+          if (feAttrValue[key] !== undefined) {
+            nodeAttrs[key] = feAttrValue[key] || ''
+          }
+          nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
+          nodeAttrs.result = item.props.nodeId
+        })
+        return h(item.props.is, nodeAttrs)
+      }))
+      watch(() => filterThumbUrl, val => {
+        emit('base64-url-changed', val)
+      })
+
+      const template =
+`<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
+      return prefix + encodeURIComponent(template)
+    })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
@@ -145,6 +166,7 @@ export default defineComponent({
       emit('destination-change', { ev, vm, originEl: ev.target })
       ev.target?.addEventListener('mouseout', handlePortMouseout)
     }
+    provide('handlePortMouseenter', handlePortMouseenter)
 
     // 计算属性，表示当前节点下的所有的后代节点
     const allDescendants = computed<any[]>(() => {
@@ -161,42 +183,8 @@ export default defineComponent({
       // props.relativePaths.in[0].from.vm.props.relativePaths.in[0].from.vm.props.relativePaths.in[0]
       return [...allDescendants]
     })
+    provide('allDescendants', allDescendants)
 
-    const filterThumbUrl = computed<string>(() => {
-      const prefix = 'data:image/svg+xml,'
-      const vnode = h('filter', { id: 'filter' }, [...allDescendants.value].reverse().map((item, index) => {
-        let { feAttrValue } = item.setupState
-        feAttrValue = feAttrValue || {}
-        const nodeAttrs: Dictionary<string> = {}
-        Object.keys(feAttrValue || {}).forEach(key => {
-          if (feAttrValue[key] !== undefined) {
-            nodeAttrs[key] = feAttrValue[key] || ''
-          }
-          nodeAttrs.in = [...allDescendants.value].reverse()[index - 1]?.props.nodeId ?? ''
-          nodeAttrs.result = item.props.nodeId
-        })
-        return h(item.props.is, nodeAttrs)
-      }))
-
-      const template =
-`<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
-      return prefix + encodeURIComponent(template)
-    })
-
-    // 填充默认值
-    console.log(fe[props.is])
-    if (['normal', undefined].includes(fe[props.is].type)) {
-      const { ports } = fe[props.is] as SVGFilterConfig.NormalNode
-      Object.keys(ports).forEach(key => {
-        if (
-          (['number', 'range'] as unknown[]).includes(ports[key].type)
-        ) {
-          feAttrValue.value[key] = ports[key].defaultValue ?? 0
-        } else {
-          feAttrValue.value[key] = ports[key].defaultValue ?? ''
-        }
-      })
-    }
     return {
       fromPort,
 
@@ -204,7 +192,6 @@ export default defineComponent({
       position,
 
       setFeAttrEls,
-      feAttrValue,
 
       handleNodeMousedown,
       handlePortMouseenter,
@@ -250,7 +237,7 @@ export default defineComponent({
     transform: translate(-50%, -50%);
     background-color: #f0f0f0;
   }
-  .port {
+  :deep(.port) {
     background-color: #333333;
     border: 4px solid;
     width: 0.75em;
@@ -271,7 +258,7 @@ export default defineComponent({
       transform: translate(50%, 0);
     }
   }
-  &__li {
+  :deep(&__li) {
     display: flex;
     align-items: center;
     flex-direction: row;
