@@ -13,7 +13,6 @@ export default () => {
     el && feAttrEls.value.push(el)
   }
   onBeforeUpdate(() => { feAttrEls.value = [] })
-
   // 计算属性，表示当前节点下的所有的后代节点
   const allDescendants = inject<Ref<any[]>>('allDescendants')
 
