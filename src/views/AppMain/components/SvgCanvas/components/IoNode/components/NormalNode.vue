@@ -19,11 +19,12 @@
 
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, inject, onBeforeUpdate, PropType, Ref, ref } from 'vue'
+import { computed, defineComponent, h, PropType, ref } from 'vue'
+import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
 
-import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
 import { vnode2dom } from '@/utils'
@@ -44,24 +45,16 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props, { emit }) {
-    const fromPort = inject<Ref<Port<any>>>('fromPort')
-    const toPort = inject<Ref<Port<any>>>('toPort')
+  setup(props) {
+    const {
+      fromPort,
+      ioNodeEl,
+      setFeAttrEls,
+      allDescendants,
+      handlePortMouseenter
+    } = useIoNode()
 
-    const ioNodeEl = ref<SVGGElement>()
-
-    const feAttrEls = ref<SVGCircleElement[]>([])
-    const setFeAttrEls = (el?: SVGCircleElement) => {
-      el && feAttrEls.value.push(el)
-    }
-    onBeforeUpdate(() => { feAttrEls.value = [] })
-    const feAttrValue = ref<Dictionary<string|number>>({})
-
-    // 计算属性，表示当前节点下的所有的后代节点
-    const allDescendants = inject<Ref<any[]>>('allDescendants')
-
-    const handlePortMouseenter = inject<Ref<any>>('handlePortMouseenter')
-
+    const feAttrValue = ref<Dictionary<string | number>>({})
     const filterThumbUrl = computed<string>(() => {
       const allDescs = allDescendants?.value ?? []
       const prefix = 'data:image/svg+xml,'
