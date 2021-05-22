@@ -1,0 +1,29 @@
+.io-node {
+  &__li {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    line-height: 1.75em;
+
+    .port {
+      border-color: #ff7f00;
+      transform: translate(-50%, 0);
+    }
+
+    label.io-node__port-text {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      align-items: center;
+
+      .port-name {
+        font-size: 1.25em;
+      }
+
+      input {
+        width: 30px;
+        flex: 0 1 auto;
+      }
+    }
+  }
+}

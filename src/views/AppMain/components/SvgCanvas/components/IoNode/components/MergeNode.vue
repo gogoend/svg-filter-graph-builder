@@ -16,19 +16,20 @@
       <input v-model="feAttrValue[key]" />
     </label>
   </div>
+
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, inject, onBeforeUpdate, PropType, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, h, inject, onBeforeUpdate, PropType, Ref, ref } from 'vue'
 
 import fe from '../fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
-import { vnode2dom } from '@/utils'
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
+import { vnode2dom } from '@/utils'
 
 export default defineComponent({
-  name: 'MergeNode',
+  name: 'NormalNode',
   props: {
     is: {
       type: String as PropType<keyof typeof fe>,
@@ -57,12 +58,12 @@ export default defineComponent({
     const feAttrValue = ref<Dictionary<string|number>>({})
 
     // 计算属性，表示当前节点下的所有的后代节点
-    const allDescendants = inject<any[]>('allDescendants')
+    const allDescendants = inject<Ref<any[]>>('allDescendants')
 
-    const handlePortMouseenter = inject<any>('handlePortMouseenter')
+    const handlePortMouseenter = inject<Ref<any>>('handlePortMouseenter')
 
     const filterThumbUrl = computed<string>(() => {
-      const allDescs = unref(allDescendants) ?? []
+      const allDescs = allDescendants?.value ?? []
       const prefix = 'data:image/svg+xml,'
       const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => {
         let { feAttrValue } = item.setupState
@@ -116,30 +117,5 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.io-node {
-  &__li {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    line-height: 1.75em;
-    .port {
-      border-color: #ff7f00;
-      transform: translate(-50%, 0);
-    }
-    label.io-node__port-text{
-      display: flex;
-      flex: 1;
-      justify-content: space-between;
-      align-items: center;
-      .port-name {
-        font-size: 1.25em;
-      }
-      input {
-        width: 30px;
-        flex: 0 1 auto;
-      }
-    }
-  }
-}
-
+  @import url('../styles/public.scss');
 </style>

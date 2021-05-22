@@ -34,6 +34,7 @@
             :is="is"
             :node-id="nodeId"
             :relativePaths="relativePaths"
+            ref="nodeConfigRef"
           />
         </template>
         <template v-else-if="['merge'].includes(fe[is].type)">
@@ -41,6 +42,7 @@
             :is="is"
             :node-id="nodeId"
             :relativePaths="relativePaths"
+            ref="nodeConfigRef"
           />
         </template>
       </div>
@@ -54,7 +56,7 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 import fe from './fe-definition-config'
 
 import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
-import { isPortEl, vnode2dom } from '@/utils'
+import { isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
@@ -91,29 +93,13 @@ export default defineComponent({
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
 
-    const filterThumbUrl = computed<string>(() => {
-      const allDescs = allDescendants.value ?? []
-      const prefix = 'data:image/svg+xml,'
-      const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => {
-        let { feAttrValue } = item.setupState
-        feAttrValue = feAttrValue || {}
-        const nodeAttrs: Dictionary<string> = {}
-        Object.keys(feAttrValue || {}).forEach(key => {
-          if (feAttrValue[key] !== undefined) {
-            nodeAttrs[key] = feAttrValue[key] || ''
-          }
-          nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
-          nodeAttrs.result = item.props.nodeId
-        })
-        return h(item.props.is, nodeAttrs)
-      }))
-      watch(() => filterThumbUrl, val => {
-        emit('base64-url-changed', val)
-      })
+    const nodeConfigRef = ref<InstanceType<typeof NormalNode>>(null)
 
-      const template =
-`<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
-      return prefix + encodeURIComponent(template)
+    const filterThumbUrl = computed<string>(() => {
+      return nodeConfigRef.value?.filterThumbUrl ?? ''
+    })
+    const feAttrValue = computed<Dictionary<unknown>>(() => {
+      return nodeConfigRef.value?.feAttrValue
     })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
@@ -198,7 +184,9 @@ export default defineComponent({
       fe,
       allDescendants,
 
-      filterThumbUrl
+      nodeConfigRef,
+      filterThumbUrl,
+      feAttrValue
     }
   }
 })
