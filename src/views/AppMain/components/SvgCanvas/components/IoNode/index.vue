@@ -98,9 +98,6 @@ export default defineComponent({
     const filterThumbUrl = computed<string>(() => {
       return nodeConfigRef.value?.filterThumbUrl ?? ''
     })
-    const feAttrValue = computed<Dictionary<unknown>>(() => {
-      return nodeConfigRef.value?.feAttrValue
-    })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
@@ -185,8 +182,7 @@ export default defineComponent({
       allDescendants,
 
       nodeConfigRef,
-      filterThumbUrl,
-      feAttrValue
+      filterThumbUrl
     }
   }
 })
