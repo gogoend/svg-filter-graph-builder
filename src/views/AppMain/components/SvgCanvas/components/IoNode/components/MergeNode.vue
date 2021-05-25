@@ -77,20 +77,6 @@ export default defineComponent({
       return prefix + encodeURIComponent(template)
     })
 
-    // 填充默认值
-    console.log(fe[props.is])
-    if (['normal', undefined].includes(fe[props.is].type)) {
-      const { ports } = fe[props.is] as SVGFilterConfig.NormalNode
-      Object.keys(ports).forEach(key => {
-        if (
-          (['number', 'range'] as unknown[]).includes(ports[key].type)
-        ) {
-          feAttrValue.value[key] = ports[key].defaultValue ?? 0
-        } else {
-          feAttrValue.value[key] = ports[key].defaultValue ?? ''
-        }
-      })
-    }
     return {
       fromPort,
 
