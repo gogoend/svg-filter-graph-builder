@@ -1,8 +1,22 @@
 <template>
   <div
+    class="io-node__li">
+    <em
+      class="port in"
+      data-port-type="in"
+      r="10"
+      data-fe-attr="in"
+      ref="feAttrElPlaceholder"
+      @mouseenter="handlePortMouseenter"
+    />
+    <label class="io-node__port-text">
+      <span class="port-name">in-placeholder</span>
+    </label>
+  </div>
+  <div
     class="io-node__li"
-    v-for="(item, key) in fe[is].ports"
-    :key="key">
+    v-for="(item, index) in feAttrValue"
+    :key="'in-'+index">
     <em
       class="port in"
       data-port-type="in"
@@ -12,7 +26,7 @@
       @mouseenter="handlePortMouseenter"
     />
     <label class="io-node__port-text">
-      <span class="port-name">{{ key }}</span>
+      <span class="port-name">in</span>
       <input v-model="feAttrValue[key]" />
     </label>
   </div>
@@ -54,22 +68,36 @@ export default defineComponent({
       handlePortMouseenter
     } = useIoNode()
 
-    const feAttrValue = ref<Dictionary<string | number>>({})
+    const feAttrValue = ref<string[]>([])
     const filterThumbUrl = computed<string>(() => {
       const allDescs = allDescendants?.value ?? []
       const prefix = 'data:image/svg+xml,'
       const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => {
+        const is: keyof typeof fe = item.props.is
         let { feAttrValue } = item.setupState
-        feAttrValue = feAttrValue || {}
-        const nodeAttrs: Dictionary<string> = {}
-        Object.keys(feAttrValue || {}).forEach(key => {
-          if (feAttrValue[key] !== undefined) {
-            nodeAttrs[key] = feAttrValue[key] || ''
+
+        switch (fe[is].type) {
+          case 'merge': {
+            return h(is, {
+              result: item.props.nodeId
+            }, feAttrValue.map((result:string) => {
+              return h('feMergeNode', { in: result })
+            }))
           }
-          nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
-          nodeAttrs.result = item.props.nodeId
-        })
-        return h(item.props.is, nodeAttrs)
+          case 'normal':
+          default: {
+            const nodeAttrs: Dictionary<string> = {}
+            feAttrValue = feAttrValue || {}
+            Object.keys(feAttrValue || {}).forEach(key => {
+              if (feAttrValue[key] !== undefined) {
+                nodeAttrs[key] = feAttrValue[key] || ''
+              }
+              nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
+              nodeAttrs.result = item.props.nodeId
+            })
+            return h(is, nodeAttrs)
+          }
+        }
       }))
 
       const template =
