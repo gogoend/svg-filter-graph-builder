@@ -1,5 +1,6 @@
+import { vnode2dom } from '@/utils'
 import { Dictionary } from '@/utils/type'
-import { inject, onBeforeUpdate, Ref, ref } from 'vue'
+import { computed, inject, onBeforeUpdate, Ref, ref, h } from 'vue'
 import { Port } from '../../../type'
 
 export default () => {
@@ -17,6 +18,14 @@ export default () => {
   const allDescendants = inject<Ref<any[]>>('allDescendants')
 
   const handlePortMouseenter = inject<Ref<any>>('handlePortMouseenter')
+  const filterThumbUrl = computed<string>(() => {
+    const allDescs = allDescendants?.value ?? []
+    const prefix = 'data:image/svg+xml,'
+    const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => item.setupState.getVNodeFragment(item, index)))
+    const template =
+`<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
+    return prefix + encodeURIComponent(template)
+  })
 
   return {
     fromPort,
@@ -25,6 +34,7 @@ export default () => {
     feAttrEls,
     setFeAttrEls,
     allDescendants,
-    handlePortMouseenter
+    handlePortMouseenter,
+    filterThumbUrl
   }
 }

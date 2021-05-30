@@ -19,7 +19,7 @@
 
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, PropType, ref } from 'vue'
+import { defineComponent, h, PropType, ref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -27,7 +27,6 @@ import fe from '../fe-definition-config'
 import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
-import { vnode2dom } from '@/utils'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -51,45 +50,27 @@ export default defineComponent({
       ioNodeEl,
       setFeAttrEls,
       allDescendants,
-      handlePortMouseenter
+      handlePortMouseenter,
+      filterThumbUrl
     } = useIoNode()
 
     const feAttrValue = ref<Dictionary<string | number>>({})
-    const filterThumbUrl = computed<string>(() => {
+
+    const getVNodeFragment = (item: any, index: number): VNode => {
+      const { is, nodeId } = item.props
+      const { feAttrValue } = item.setupState
       const allDescs = allDescendants?.value ?? []
-      const prefix = 'data:image/svg+xml,'
-      const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => {
-        const is: keyof typeof fe = item.props.is
-        let { feAttrValue } = item.setupState
 
-        switch (fe[is].type) {
-          case 'merge': {
-            return h(is, {
-              result: item.props.nodeId
-            }, feAttrValue.map((result:string) => {
-              return h('feMergeNode', { in: result })
-            }))
-          }
-          case 'normal':
-          default: {
-            const nodeAttrs: Dictionary<string> = {}
-            feAttrValue = feAttrValue || {}
-            Object.keys(feAttrValue || {}).forEach(key => {
-              if (feAttrValue[key] !== undefined) {
-                nodeAttrs[key] = feAttrValue[key] || ''
-              }
-              nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
-              nodeAttrs.result = item.props.nodeId
-            })
-            return h(is, nodeAttrs)
-          }
+      const nodeAttrs: Dictionary<string> = {}
+      Object.keys(feAttrValue || {}).forEach(key => {
+        if (feAttrValue[key] !== undefined) {
+          nodeAttrs[key] = feAttrValue[key] || ''
         }
-      }))
-
-      const template =
-`<svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="-21 -32 112 182"><defs>${vnode2dom(vnode).outerHTML}</defs><g style="filter: url(#filter)"><text y="130" fill="#31d0c6" font-family="cursive" font-size="140px">A</text></g></svg>`
-      return prefix + encodeURIComponent(template)
-    })
+        nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
+        nodeAttrs.result = item.props.nodeId
+      })
+      return h(is, nodeAttrs)
+    }
 
     // 填充默认值
     console.log(fe[props.is])
@@ -117,7 +98,8 @@ export default defineComponent({
       fe,
       allDescendants,
 
-      filterThumbUrl
+      filterThumbUrl,
+      getVNodeFragment
     }
   }
 })

@@ -50,7 +50,7 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, h, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref, watch } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref, VNode, watch } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
@@ -105,6 +105,12 @@ export default defineComponent({
      */
     const feAttrValue = computed<Dictionary<unknown>>(() => {
       return nodeConfigRef.value?.feAttrValue
+    })
+    /**
+     * getVNodeFragment 供下层（各类型Node）组件递归组件树时使用，用于获得滤镜VNode
+     */
+    const getVNodeFragment = computed(() => {
+      return nodeConfigRef.value?.getVNodeFragment
     })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
@@ -191,7 +197,8 @@ export default defineComponent({
 
       nodeConfigRef,
       filterThumbUrl,
-      feAttrValue
+      feAttrValue,
+      getVNodeFragment
     }
   }
 })
