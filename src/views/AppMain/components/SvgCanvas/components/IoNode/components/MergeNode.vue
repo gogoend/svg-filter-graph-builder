@@ -27,7 +27,6 @@
     />
     <label class="io-node__port-text">
       <span class="port-name">in</span>
-      <input v-model="feAttrValue[key]" />
     </label>
   </div>
 
@@ -68,7 +67,12 @@ export default defineComponent({
       handlePortMouseenter
     } = useIoNode()
 
-    const feAttrValue = ref<string[]>([])
+    const feAttrValue = computed<string[]>(() => {
+      return props.relativePaths.in.map(item => {
+        console.log(item.from.vm.props.nodeId)
+        return item.from.vm.props.nodeId
+      })
+    })
     const filterThumbUrl = computed<string>(() => {
       const allDescs = allDescendants?.value ?? []
       const prefix = 'data:image/svg+xml,'
@@ -114,7 +118,6 @@ export default defineComponent({
       feAttrValue,
 
       handlePortMouseenter,
-      fe,
       allDescendants,
 
       filterThumbUrl
