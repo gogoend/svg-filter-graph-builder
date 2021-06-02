@@ -15,24 +15,10 @@
       <span class="port-name">in</span>
     </label>
   </div>
-  <div
-    class="io-node__li">
-    <em
-      class="port in"
-      data-port-type="in"
-      r="10"
-      :data-fe-attr="`in-${feAttrValue.length+1}`"
-      ref="feAttrElPlaceholder"
-      @mouseenter="handlePortMouseenter"
-    />
-    <label class="io-node__port-text">
-      <span class="port-name">in-placeholder</span>
-    </label>
-  </div>
 
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, PropType, ref, VNode } from 'vue'
+import { defineComponent, h, PropType, ref, unref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -57,6 +43,7 @@ export default defineComponent({
   },
   setup(props) {
     const {
+      toPort,
       fromPort,
       ioNodeEl,
       setFeAttrEls,
@@ -65,20 +52,26 @@ export default defineComponent({
       filterThumbUrl
     } = useIoNode()
 
-    const feAttrValue = computed<string[]>(() => {
-      return props.relativePaths.in.map(item => {
-        console.log(item.from.vm.props.nodeId)
-        return item.from.vm.props.nodeId
-      })
-    })
+    // const feAttrValue = computed<string[]>(() => {
+    //   return props.relativePaths.in.map(item => {
+    //     console.log(item.from.vm.props.nodeId)
+    //     return item.from.vm.props.nodeId
+    //   })
+    // })
 
-    // const feAttrValue = ref<string[]>([''])
+    const feAttrValue = ref<string[]>([''])
+
+    const afterConnected = () => {
+      console.log(toPort, fromPort)
+      feAttrValue.value[0] = fromPort?.value.vm.props.nodeId
+      feAttrValue.value.unshift('')
+    }
 
     const getVNodeFragment = (item, index): VNode => {
       const { is, nodeId } = props
       return h(is, {
         result: nodeId
-      }, feAttrValue.value.map((result:string) => {
+      }, unref(feAttrValue).filter(filter => !!filter).map((result:string) => {
         return h('feMergeNode', { in: result })
       }))
     }
@@ -90,6 +83,7 @@ export default defineComponent({
 
       setFeAttrEls,
       feAttrValue,
+      afterConnected,
 
       handlePortMouseenter,
       allDescendants,

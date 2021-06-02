@@ -93,7 +93,7 @@ export default defineComponent({
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
 
-    const nodeConfigRef = ref<InstanceType<typeof NormalNode>>(null)
+    const nodeConfigRef = ref<InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>>(null)
 
     const filterThumbUrl = computed<string>(() => {
       return nodeConfigRef.value?.filterThumbUrl ?? ''
@@ -103,7 +103,7 @@ export default defineComponent({
      * feAttrValue 供下层（各类型Node）组件递归组件树时使用，直接在本层级获得feAttrValue而无需进入到下层组件
      * 去掉此变量会使得 filterThumb 一片空白，且生成的滤镜标签中无任何属性
      */
-    const feAttrValue = computed<Dictionary<unknown>>(() => {
+    const feAttrValue = computed<Dictionary<unknown> | unknown[]>(() => {
       return nodeConfigRef.value?.feAttrValue
     })
     /**
@@ -111,6 +111,10 @@ export default defineComponent({
      */
     const getVNodeFragment = computed(() => {
       return nodeConfigRef.value?.getVNodeFragment
+    })
+
+    const afterConnected = computed(() => {
+      return (nodeConfigRef.value as any)?.afterConnected ?? (() => void 0)
     })
 
     const handleNodeMousedown = function(ev: MouseEvent) {
@@ -143,6 +147,8 @@ export default defineComponent({
               fromPort?.value &&
               toPort?.value
             ) {
+              // console.log(toPort.value.vm.refs.ioNodeEl.querySelector(`[data-fe-attr=${toPort.value.attr}]`))
+              toPort.value.vm.setupState?.afterConnected()
               emit('port-connect', { ev, originEl, vm })
             } else {
               emit('port-cancel', { ev, originEl, vm })
@@ -194,6 +200,7 @@ export default defineComponent({
       handlePortMouseenter,
       fe,
       allDescendants,
+      afterConnected,
 
       nodeConfigRef,
       filterThumbUrl,
