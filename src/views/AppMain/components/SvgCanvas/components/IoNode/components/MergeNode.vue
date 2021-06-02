@@ -1,32 +1,32 @@
 <template>
   <div
-    class="io-node__li">
-    <em
-      class="port in"
-      data-port-type="in"
-      r="10"
-      data-fe-attr="in"
-      ref="feAttrElPlaceholder"
-      @mouseenter="handlePortMouseenter"
-    />
-    <label class="io-node__port-text">
-      <span class="port-name">in-placeholder</span>
-    </label>
-  </div>
-  <div
     class="io-node__li"
     v-for="(item, index) in feAttrValue"
-    :key="'in-'+index">
+    :key="`in-${index}`">
     <em
       class="port in"
       data-port-type="in"
       r="10"
-      :data-fe-attr="key"
+      :data-fe-attr="`in-${index}`"
       :ref="setFeAttrEls"
       @mouseenter="handlePortMouseenter"
     />
     <label class="io-node__port-text">
       <span class="port-name">in</span>
+    </label>
+  </div>
+  <div
+    class="io-node__li">
+    <em
+      class="port in"
+      data-port-type="in"
+      r="10"
+      :data-fe-attr="`in-${feAttrValue.length+1}`"
+      ref="feAttrElPlaceholder"
+      @mouseenter="handlePortMouseenter"
+    />
+    <label class="io-node__port-text">
+      <span class="port-name">in-placeholder</span>
     </label>
   </div>
 
@@ -71,6 +71,8 @@ export default defineComponent({
         return item.from.vm.props.nodeId
       })
     })
+
+    // const feAttrValue = ref<string[]>([''])
 
     const getVNodeFragment = (item, index): VNode => {
       const { is, nodeId } = props
