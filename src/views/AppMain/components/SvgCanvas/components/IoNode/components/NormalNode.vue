@@ -68,6 +68,9 @@ export default defineComponent({
         }
         nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
         nodeAttrs.result = item.props.nodeId
+        if (nodeAttrs.in === nodeAttrs.result) {
+          delete nodeAttrs.in
+        }
       })
       return h(is, nodeAttrs)
     }
