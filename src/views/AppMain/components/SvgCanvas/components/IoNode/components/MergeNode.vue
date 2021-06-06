@@ -63,8 +63,8 @@ export default defineComponent({
 
     const afterConnected = () => {
       console.log(toPort, fromPort)
-      feAttrValue.value[0] = fromPort?.value.vm.props.nodeId
-      feAttrValue.value.unshift('')
+      feAttrValue.value[feAttrValue.value.length - 1] = fromPort?.value.vm.props.nodeId
+      feAttrValue.value.push('')
     }
 
     const getVNodeFragment = (item, index): VNode => {
