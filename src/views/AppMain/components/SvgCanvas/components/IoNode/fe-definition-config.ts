@@ -103,9 +103,62 @@ export const feMerge: SVGFilterConfig.Node = {
   }
 }
 
+export const feOffset: SVGFilterConfig.Node = {
+  type: 'normal',
+  ports: {
+    in: {},
+    dx: {},
+    dy: {}
+  }
+}
+
+export const feColorMatrix: SVGFilterConfig.Node = {
+  type: 'normal',
+  ports: {
+    in: {
+
+    },
+    type: {
+      type: 'text',
+      defaultValue: 'matrix',
+      enum: ['matrix', 'saturate', 'hueRotate', 'luminanceToAlpha']
+    },
+    values: {
+      defaultValue: [
+        1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0,
+        0, 0, 0, 1, 0
+      ].join(' ')
+    }
+  }
+}
+
+export const feTile: SVGFilterConfig.Node = {
+  type: 'normal',
+  ports: {
+    in: {}
+  }
+}
+
+export const feDisplacementMap: SVGFilterConfig.Node = {
+  type: 'normal',
+  ports: {
+    in: {},
+    in2: {},
+    scale: {},
+    xChannelSelector: {},
+    yChannelSelector: {}
+  }
+}
+
 export default {
   feConvolveMatrix,
   feTurbulence,
   feDropShadow,
-  feMerge
+  feMerge,
+  feOffset,
+  feColorMatrix,
+  feTile,
+  feDisplacementMap
 }
