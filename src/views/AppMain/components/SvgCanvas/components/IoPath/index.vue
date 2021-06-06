@@ -28,7 +28,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props, { emit }) {
+  setup(props) {
     const pathD = computed(() => {
       const dArgs = props.pathDArguments
       return `
