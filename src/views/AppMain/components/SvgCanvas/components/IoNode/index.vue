@@ -93,7 +93,7 @@ export default defineComponent({
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
 
-    const nodeConfigRef = ref<InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>>(null)
+    const nodeConfigRef = ref<InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>>()
 
     const filterThumbUrl = computed<string>(() => {
       return nodeConfigRef.value?.filterThumbUrl ?? ''
@@ -104,7 +104,7 @@ export default defineComponent({
      * 去掉此变量会使得 filterThumb 一片空白，且生成的滤镜标签中无任何属性
      */
     const feAttrValue = computed<Dictionary<unknown> | unknown[]>(() => {
-      return nodeConfigRef.value?.feAttrValue
+      return (nodeConfigRef.value as any).feAttrValue
     })
     /**
      * getVNodeFragment 供下层（各类型Node）组件递归组件树时使用，用于获得滤镜VNode

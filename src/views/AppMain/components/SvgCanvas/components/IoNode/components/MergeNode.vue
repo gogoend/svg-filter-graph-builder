@@ -67,7 +67,7 @@ export default defineComponent({
       feAttrValue.value.push('')
     }
 
-    const getVNodeFragment = (item, index): VNode => {
+    const getVNodeFragment = (): VNode => {
       const { is, nodeId } = props
       return h(is, {
         result: nodeId
