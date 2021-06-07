@@ -77,6 +77,19 @@ function checkLoop(path: Path) {
   return hasLoop
 }
 
+function checkDuplicateLink(path: Path) {
+  const { to, from } = path
+
+  const duplicatedLinks = to.vm.props.relativePaths.in.filter((path: Path) => {
+    return (
+      from.attr === path.from.attr && from.vm === path.from.vm &&
+      to.attr === path.to.attr && to.vm === path.to.vm
+    )
+  })
+
+  return duplicatedLinks.length > 0
+}
+
 function portCanBeConnected(path: Path) {
   // 在当前port元素上点击后即松开
   if (path.from.vm === path.to.vm) {
@@ -87,7 +100,9 @@ function portCanBeConnected(path: Path) {
     return false
   }
   // 发生了重复连接
-  // TODO
+  if (checkDuplicateLink(path)) {
+    return false
+  }
   // 连接产生了环
   if (checkLoop(path)) {
     return false
