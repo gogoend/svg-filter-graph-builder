@@ -50,7 +50,7 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref, VNode, watch } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
@@ -148,7 +148,6 @@ export default defineComponent({
               toPort?.value
             ) {
               // console.log(toPort.value.vm.refs.ioNodeEl.querySelector(`[data-fe-attr=${toPort.value.attr}]`))
-              toPort.value.vm.setupState?.afterConnected()
               emit('port-connect', { ev, originEl, vm })
             } else {
               emit('port-cancel', { ev, originEl, vm })

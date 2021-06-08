@@ -205,6 +205,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       if (portCanBeConnected(linkedPath)) {
         linkedPaths.value.push(linkedPath)
+        ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
       }
 
       fromPort.value = null
