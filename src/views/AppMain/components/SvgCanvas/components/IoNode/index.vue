@@ -103,8 +103,8 @@ export default defineComponent({
      * feAttrValue 供下层（各类型Node）组件递归组件树时使用，直接在本层级获得feAttrValue而无需进入到下层组件
      * 去掉此变量会使得 filterThumb 一片空白，且生成的滤镜标签中无任何属性
      */
-    const feAttrValue = computed<Dictionary<unknown> | unknown[]>(() => {
-      return (nodeConfigRef.value as any).feAttrValue
+    const mergedFeAttrValue = computed<Dictionary<unknown> | unknown[]>(() => {
+      return (nodeConfigRef.value as any).mergedFeAttrValue
     })
     /**
      * getVNodeFragment 供下层（各类型Node）组件递归组件树时使用，用于获得滤镜VNode
@@ -203,7 +203,7 @@ export default defineComponent({
 
       nodeConfigRef,
       filterThumbUrl,
-      feAttrValue,
+      mergedFeAttrValue,
       getVNodeFragment
     }
   }

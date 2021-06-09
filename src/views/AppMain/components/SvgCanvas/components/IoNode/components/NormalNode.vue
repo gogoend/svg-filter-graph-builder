@@ -19,7 +19,7 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, h, PropType, ref, VNode } from 'vue'
+import { computed, defineComponent, h, PropType, ref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -47,6 +47,7 @@ export default defineComponent({
   setup(props) {
     const {
       fromPort,
+      toPort,
       ioNodeEl,
       setFeAttrEls,
       allDescendants,
@@ -56,18 +57,27 @@ export default defineComponent({
 
     const feAttrValue = ref<Dictionary<string | number>>({})
 
+    const foreignPortValue = ref<Dictionary<string | number>>({})
+
+    const mergedFeAttrValue = computed<Dictionary<string | number>>(() => ({
+      ...feAttrValue.value,
+      ...foreignPortValue.value,
+      result: props.nodeId
+    }))
+
+    const afterConnected = () => {
+      foreignPortValue.value[toPort?.value.attr as string] = fromPort?.value.vm.setupState.mergedFeAttrValue[fromPort?.value.attr]
+    }
+
     const getVNodeFragment = (item: any, index: number): VNode => {
-      const { is, nodeId } = item.props
-      const { feAttrValue } = item.setupState
-      const allDescs = allDescendants?.value ?? []
+      const { is } = item.props
+      const { mergedFeAttrValue } = item.setupState
 
       const nodeAttrs: Dictionary<string> = {}
-      Object.keys(feAttrValue || {}).forEach(key => {
-        if (feAttrValue[key] !== undefined) {
-          nodeAttrs[key] = feAttrValue[key] || ''
+      Object.keys(mergedFeAttrValue || {}).forEach(key => {
+        if (mergedFeAttrValue[key] !== undefined) {
+          nodeAttrs[key] = mergedFeAttrValue[key] || ''
         }
-        nodeAttrs.in = [...allDescs].reverse()[index - 1]?.props.nodeId ?? ''
-        nodeAttrs.result = item.props.nodeId
         if (nodeAttrs.in === nodeAttrs.result) {
           delete nodeAttrs.in
         }
@@ -96,6 +106,9 @@ export default defineComponent({
 
       setFeAttrEls,
       feAttrValue,
+      foreignPortValue,
+      mergedFeAttrValue,
+      afterConnected,
 
       handlePortMouseenter,
       fe,
