@@ -152,6 +152,13 @@ export const feDisplacementMap: SVGFilterConfig.Node = {
   }
 }
 
+export const feImage: SVGFilterConfig.Node = {
+  type: 'normal',
+  ports: {
+    href: {}
+  }
+}
+
 export default {
   feConvolveMatrix,
   feTurbulence,
@@ -160,5 +167,6 @@ export default {
   feOffset,
   feColorMatrix,
   feTile,
-  feDisplacementMap
+  feDisplacementMap,
+  feImage
 }
