@@ -79,11 +79,15 @@ export default defineComponent({
         id: uuid()
       },
       {
-        is: 'feDropShadow',
+        is: 'feImage',
         id: uuid()
       },
       {
-        is: 'feMerge',
+        is: 'feOffset',
+        id: uuid()
+      },
+      {
+        is: 'feDisplacementMap',
         id: uuid()
       }
     ])
