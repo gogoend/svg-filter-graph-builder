@@ -117,6 +117,7 @@ export default defineComponent({
       return (nodeConfigRef.value as any)?.afterConnected ?? (() => void 0)
     })
 
+    const canvasScrollEl = inject('canvasScrollEl') as Ref<HTMLElement>
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
@@ -125,17 +126,26 @@ export default defineComponent({
           } else {
             const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
             // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
-            clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+            clickedRelativePosition.value = [
+              ev.pageX - currentPostion?.left - canvasScrollEl.value.scrollLeft,
+              ev.pageY - currentPostion?.top - canvasScrollEl.value.scrollTop
+            ]
           }
         },
         move(ev, { originEl }) {
           if (isPortEl(originEl)) {
             emit('port-move', { ev, originEl, vm })
           } else {
-            position.value = [ev.pageX - clickedRelativePosition.value[0], ev.pageY - clickedRelativePosition.value[1]] // clickedRelativePosition.value.concat()
+            position.value = [
+              ev.pageX - clickedRelativePosition.value[0],
+              ev.pageY - clickedRelativePosition.value[1]
+            ] // clickedRelativePosition.value.concat()
             nextTick(() => {
               const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
-              clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+              clickedRelativePosition.value = [
+                ev.pageX - currentPostion?.left - canvasScrollEl.value.scrollLeft,
+                ev.pageY - currentPostion?.top - canvasScrollEl.value.scrollTop
+              ]
               emit('node-move', props.relativePaths)
             })
           }

@@ -68,6 +68,9 @@ export default defineComponent({
     FilterDef
   },
   setup() {
+    const canvasScrollEl = ref(document.documentElement)
+    provide('canvasScrollEl', canvasScrollEl)
+
     const linkedPaths = ref<Path[]>([])
     const nodes = ref<Node[]>([
       {
