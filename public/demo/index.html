@@ -1,0 +1,58 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <style>
+    #app {
+      height: 100%;
+      width: 100%;
+    }
+
+    svg.svg-defs {
+      display: none
+    }
+
+    .main {
+      background-size: cover;
+      background-image: url(./assets/rinkysplash.jpg);
+      background-position: center;
+      width: 800px;
+      height: 600px;
+      filter: url(#filter);
+    }
+  </style>
+</head>
+
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <filter xmlns="http://www.w3.org/2000/svg" id="filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05" stitchTiles="stitch" seed="0.05" result="C784C141-10E8-4F78-9D83-B89692D469A7"/>
+        <feDisplacementMap in="45CDE792-ED3D-4DC3-B416-EC2B2BBB647D" in2="C784C141-10E8-4F78-9D83-B89692D469A7" scale="20" xChannelSelector="R" yChannelSelector="B" result="C3CF1399-6B7E-4347-9399-6D177E617AEF"/>
+        <feImage href="./assets/rinkysplash.jpg" result="45CDE792-ED3D-4DC3-B416-EC2B2BBB647D"/>
+        <feOffset in="45CDE792-ED3D-4DC3-B416-EC2B2BBB647D" dx="20" dy="-20" result="339A8F4C-298C-4825-B3EF-9293BBB086E8"/>
+        <feConvolveMatrix in="339A8F4C-298C-4825-B3EF-9293BBB086E8" kernelMatrix="0 1 0, 1 1 1, 0 1 0" order="3, 3" divisor="1" edgeMode="none" kernelUnitLength="2" preserveAlpha="true" result="3E437EFD-F720-4987-928E-81134B39E831"/>
+        <feMerge result="50966CD0-0822-4E3B-AC2A-65DD8E6867A1">
+          <feMergeNode in="3E437EFD-F720-4987-928E-81134B39E831"/>
+          <feMergeNode in="C3CF1399-6B7E-4347-9399-6D177E617AEF"/>
+          <feMergeNode in="45CDE792-ED3D-4DC3-B416-EC2B2BBB647D"/>
+          <feMergeNode in="339A8F4C-298C-4825-B3EF-9293BBB086E8"/>
+          <feMergeNode in="3E437EFD-F720-4987-928E-81134B39E831"/>
+        </feMerge>
+      </filter>
+
+    </defs>
+  </svg>
+  <div id="app">
+    <div class="main"></div>
+  </div>
+  <script>
+
+  </script>
+  <script>
+
+  </script>
+
+</body>
+
+</html>
