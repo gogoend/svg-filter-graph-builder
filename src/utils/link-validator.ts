@@ -22,8 +22,8 @@ function checkDuplicateLink(path: Path) {
   const { to, from } = path
 
   const duplicatedLinks = to.vm.props.relativePaths.in.filter((path: Path) => {
+    // out port可以连出多条线，但in port只能连入一条线
     return (
-      from.attr === path.from.attr && from.vm === path.from.vm &&
       to.attr === path.to.attr && to.vm === path.to.vm
     )
   })
