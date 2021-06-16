@@ -137,7 +137,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1] + POINT_R
-        ]
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft : p + canvasScrollEl.value.scrollTop)
       }
       if (getPortElType(el) === 'out') {
         ghostPathDArguments.value = [
@@ -150,7 +150,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1]
-        ]
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft : p + canvasScrollEl.value.scrollTop)
       }
     }
     const handlePortMove = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
@@ -184,7 +184,17 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[0] + HANDLE_LENGTH,
           coord[1],
           ...ghostPathDArguments.value.slice(4)
-        ]
+        ].map((p, i) => {
+          if (i <= 3) {
+            if (i % 2 === 0) {
+              return p + canvasScrollEl.value.scrollLeft
+            } else {
+              return p + canvasScrollEl.value.scrollTop
+            }
+          } else {
+            return p
+          }
+        })
         // 在存储路径时需要将to和from交换，因为连接的出发点是从输入接口，输入接口被存储为了fromPort
         linkedPath = {
           pathDArguments,
@@ -201,7 +211,17 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1] + POINT_R
-        ]
+        ].map((p, i) => {
+          if (i >= 4) {
+            if (i % 2 === 0) {
+              return p + canvasScrollEl.value.scrollLeft
+            } else {
+              return p + canvasScrollEl.value.scrollTop
+            }
+          } else {
+            return p
+          }
+        })
         linkedPath = {
           pathDArguments,
           id: '' + id++,
@@ -244,7 +264,17 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[0] + HANDLE_LENGTH,
           coord[1],
           ...item.pathDArguments.slice(4)
-        ]
+        ].map((p, i) => {
+          if (i <= 3) {
+            if (i % 2 === 0) {
+              return p + canvasScrollEl.value.scrollLeft
+            } else {
+              return p + canvasScrollEl.value.scrollTop
+            }
+          } else {
+            return p
+          }
+        })
       })
       paths.in.forEach(item => {
         const coord = [
@@ -257,7 +287,17 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1] + POINT_R
-        ]
+        ].map((p, i) => {
+          if (i >= 4) {
+            if (i % 2 === 0) {
+              return p + canvasScrollEl.value.scrollLeft
+            } else {
+              return p + canvasScrollEl.value.scrollTop
+            }
+          } else {
+            return p
+          }
+        })
       })
     }
 
