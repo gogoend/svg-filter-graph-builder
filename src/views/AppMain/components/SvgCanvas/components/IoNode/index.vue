@@ -137,7 +137,7 @@ export default defineComponent({
             emit('port-move', { ev, originEl, vm })
           } else {
             position.value = [
-              ev.pageX - clickedRelativePosition.value[0],
+              ev.pageX - clickedRelativePosition.value[0] - 80,
               ev.pageY - clickedRelativePosition.value[1]
             ] // clickedRelativePosition.value.concat()
             nextTick(() => {

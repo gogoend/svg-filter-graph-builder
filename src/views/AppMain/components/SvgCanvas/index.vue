@@ -6,8 +6,8 @@
     x="0px"
     y="0px"
     viewBox="0 0 1920 1080"
-    style="enable-background: new 0 0 1920 1080; width: 1920px; height: 1080px"
     xml:space="preserve"
+    class="svg-canvas"
   >
     <filter-def
       :linked-paths="linkedPaths"
@@ -137,7 +137,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1] + POINT_R
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft : p + canvasScrollEl.value.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - 80 : p + canvasScrollEl.value.scrollTop)
       }
       if (getPortElType(el) === 'out') {
         ghostPathDArguments.value = [
@@ -150,7 +150,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1]
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft : p + canvasScrollEl.value.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - 80 : p + canvasScrollEl.value.scrollTop)
       }
     }
     const handlePortMove = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
@@ -158,13 +158,33 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ghostPathDArguments.value = [
           ev.pageX, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
           ...ghostPathDArguments.value.slice(4)
-        ]
+        ].map((p, i) => {
+          if (i <= 3) {
+            if (i % 2 === 0) {
+              return p - 80
+            } else {
+              return p
+            }
+          } else {
+            return p
+          }
+        })
       }
       if (getPortElType(originEl) === 'out') {
         ghostPathDArguments.value = [
           ...ghostPathDArguments.value.slice(0, 4),
           ev.pageX - HANDLE_LENGTH, ev.pageY, ev.pageX, ev.pageY
-        ]
+        ].map((p, i) => {
+          if (i >= 4) {
+            if (i % 2 === 0) {
+              return p - 80
+            } else {
+              return p
+            }
+          } else {
+            return p
+          }
+        })
       }
     }
     const handlePortConnect = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoPath>}) => {
@@ -187,7 +207,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft
+              return p + canvasScrollEl.value.scrollLeft - 80
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -214,7 +234,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft
+              return p + canvasScrollEl.value.scrollLeft - 80
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -267,7 +287,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft
+              return p + canvasScrollEl.value.scrollLeft - 80
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -290,7 +310,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft
+              return p + canvasScrollEl.value.scrollLeft - 80
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -330,13 +350,19 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 </script>
 
 <style lang="scss" scoped>
-.draggable {
-  cursor: grab;
-}
-.ghost-path {
-  fill: none;
-  stroke: rgba(105, 184, 74, 0.459);
-  stroke-width: 4px;
-  pointer-events: none;
+.svg-canvas {
+  enable-background: new 0 0 1920 1080;
+  width: 1920px;
+  height: 1080px;
+  margin-left: 80px;
+  .draggable {
+    cursor: grab;
+  }
+  .ghost-path {
+    fill: none;
+    stroke: rgba(105, 184, 74, 0.459);
+    stroke-width: 4px;
+    pointer-events: none;
+  }
 }
 </style>
