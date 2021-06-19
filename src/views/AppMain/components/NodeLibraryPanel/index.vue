@@ -20,6 +20,7 @@
 import { computed, defineComponent, nextTick } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 import { useStore } from 'vuex'
+import { uuid } from '@/utils/uuid'
 
 const menuGroup = [
   {
@@ -58,6 +59,11 @@ export default defineComponent({
           void 0
         },
         up(ev, { originEl }) {
+          store.commit('ADD_NODE', {
+            is: icon.title,
+            id: uuid(),
+            position: [ev.clientX - 80, ev.clientY]
+          })
           store.commit('SET_DRAGGING_NODE_ICON', null)
           void 0
         }

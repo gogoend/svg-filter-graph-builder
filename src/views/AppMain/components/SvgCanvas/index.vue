@@ -88,33 +88,7 @@ export default defineComponent({
     provide('canvasScrollEl', canvasScrollEl)
 
     const linkedPaths = ref<Path[]>([])
-    const nodes = ref<Node[]>([
-      {
-        is: 'feConvolveMatrix',
-        id: uuid(),
-        position: [10, 50]
-      },
-      {
-        is: 'feTurbulence',
-        id: uuid(),
-        position: [80, 30]
-      },
-      {
-        is: 'feImage',
-        id: uuid(),
-        position: [300, 420]
-      },
-      {
-        is: 'feOffset',
-        id: uuid(),
-        position: [80, 300]
-      },
-      {
-        is: 'feDisplacementMap',
-        id: uuid(),
-        position: [720, 640]
-      }
-    ])
+    const nodes = computed<Node[]>(() => store.state.nodes)
     const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
     const setNodeRefs = (ref?: InstanceType<typeof IoNode>) => {
       if (ref) { nodeRefs.value.push(ref as any) }
