@@ -14,6 +14,7 @@ export interface Path {
 export interface Node {
   is: string;
   id: string;
+  position: [number, number]
 }
 
 export interface RelativePathForNode {

@@ -26,6 +26,7 @@
       @destination-change="handleDestinationChange"
       :relative-paths="getRelativePathIdOfNode(node.id)"
       @node-move="handleNodeMove"
+      v-model:position="node.position"
     />
     <io-path
       v-for="path in linkedPaths"
@@ -88,23 +89,28 @@ export default defineComponent({
     const nodes = ref<Node[]>([
       {
         is: 'feConvolveMatrix',
-        id: uuid()
+        id: uuid(),
+        position: [10, 50]
       },
       {
         is: 'feTurbulence',
-        id: uuid()
+        id: uuid(),
+        position: [80, 30]
       },
       {
         is: 'feImage',
-        id: uuid()
+        id: uuid(),
+        position: [300, 420]
       },
       {
         is: 'feOffset',
-        id: uuid()
+        id: uuid(),
+        position: [80, 300]
       },
       {
         is: 'feDisplacementMap',
-        id: uuid()
+        id: uuid(),
+        position: [720, 640]
       }
     ])
     const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])

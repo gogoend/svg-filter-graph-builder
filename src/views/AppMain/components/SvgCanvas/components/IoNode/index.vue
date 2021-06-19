@@ -76,6 +76,10 @@ export default defineComponent({
     relativePaths: {
       type: Object as PropType<RelativePathForNode>,
       required: true
+    },
+    position: {
+      type: Array as PropType<number[]>,
+      required: true
     }
   },
   setup(props, { emit }) {
@@ -84,7 +88,7 @@ export default defineComponent({
     const toPort = inject<Ref<Port<any>>>('toPort')
 
     const ioNodeEl = ref<SVGGElement>()
-    const position = ref([0, 0])
+
     const clickedRelativePosition = ref([0, 0])
 
     const feAttrEls = ref<SVGCircleElement[]>([])
@@ -136,10 +140,11 @@ export default defineComponent({
           if (isPortEl(originEl)) {
             emit('port-move', { ev, originEl, vm })
           } else {
-            position.value = [
+            const newPosition = [
               ev.pageX - clickedRelativePosition.value[0] - 80,
               ev.pageY - clickedRelativePosition.value[1]
             ] // clickedRelativePosition.value.concat()
+            emit('update:position', newPosition)
             nextTick(() => {
               const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
               clickedRelativePosition.value = [
@@ -201,7 +206,6 @@ export default defineComponent({
       fromPort,
 
       ioNodeEl,
-      position,
 
       setFeAttrEls,
 
