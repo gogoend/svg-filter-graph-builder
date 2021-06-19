@@ -5,7 +5,7 @@ const store = createStore({
     draggingNodeIcon: null
   },
   mutations: {
-    SET_DRAGGING_NODE_ICON (state, payload) {
+    SET_DRAGGING_NODE_ICON(state, payload) {
       state.draggingNodeIcon = payload || null
     }
   }

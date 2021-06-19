@@ -1,25 +1,67 @@
 <template>
   <div class="node-library-panel">
-    <ul class="menu-list">
-      <li draggable>feImage</li>
-      <li draggable>feMerge</li>
-      <li draggable>feColorMatrix</li>
-      <li draggable>feTurbulence</li>
-    </ul>
-    <ul class="menu-list">
-      <li draggable>feDisplacementMap</li>
-      <li draggable>feConvolveMatrix</li>
-    </ul>
+    <div
+      v-for="(group, index) in menuGroup"
+      :key="index">
+      <h4>{{ menuGroup.title }}</h4>
+      <ul class="menu-list">
+        <li
+          v-for="(icon, index) in group.children"
+          :key="index"
+          @mousedown="(ev) => handleIconMousedown(ev, icon)"
+        >
+          {{ icon.title }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { defineComponent } from 'vue'
+import mouseEventHelper from '@/utils/mouse-event-helper'
+import { useStore } from 'vuex'
+
+const menuGroup = [
+  {
+    title: '组1',
+    children: [
+      { title: 'feImage' },
+      { title: 'feMerge' },
+      { title: 'feColorMatrix' },
+      { title: 'feTurbulence' }
+    ]
+  },
+  {
+    title: '组2',
+    children: [
+      { title: 'feDisplacementMap' },
+      { title: 'feConvolveMatrix' }
+    ]
+  }
+]
 
 export default defineComponent({
   name: 'NodeLibraryPanel',
   setup(props, { emit }) {
+    const store = useStore()
+    const handleIconMousedown = function(ev: MouseEvent, icon: any) {
+      mouseEventHelper(ev, {
+        start(ev, { originEl }) {
+          store.commit('SET_DRAGGING_NODE_ICON', icon.title)
+        },
+        move(ev, { originEl }) {
+          console.log(icon)
+          void 0
+        },
+        up(ev, { originEl }) {
+          store.commit('SET_DRAGGING_NODE_ICON', null)
+          void 0
+        }
+      })
+    }
     return {
-
+      handleIconMousedown,
+      menuGroup
     }
   }
 })

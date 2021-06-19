@@ -35,10 +35,21 @@
       :from="path.from"
       :to="path.to"
     ></io-path>
-    <path
-      class="ghost-path"
-      :d="ghostPathD"
-    />
+    <g class="ghost">
+      <path
+        class="ghost-path"
+        :d="ghostPathD"
+      />
+      <io-node
+        v-if="ghostNodeType"
+        style="opacity: 0.5"
+        :is="ghostNodeType"
+        nodeId="0"
+        :relativePaths="{
+          in: [],
+          out: []
+        }" />
+    </g>
   </svg>
 </template>
 <script lang="ts">
@@ -51,6 +62,7 @@ import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
 import { portCanBeConnected } from '@/utils/link-validator'
 import { uuid } from '@/utils/uuid'
+import { useStore } from 'vuex'
 
 // 圆形半径
 const POINT_R = 10
@@ -68,6 +80,7 @@ export default defineComponent({
     FilterDef
   },
   setup() {
+    const store = useStore()
     const canvasScrollEl = ref(document.documentElement)
     provide('canvasScrollEl', canvasScrollEl)
 
@@ -321,8 +334,15 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       })
     }
 
+    // ghostNode
+    const ghostNodeType = computed(() => {
+      return store.state.draggingNodeIcon
+    })
+
     return {
       ghostPathD,
+      ghostNodeType,
+
       nodes,
       nodeRefs,
       setNodeRefs,
