@@ -1,6 +1,6 @@
 type EventHandler = (...args: any[]) => any
 
-class EventDoer {
+export class EventDoer {
   private listeners!: Record<string, EventHandler[]>
 
   constructor() {
@@ -25,7 +25,7 @@ class EventDoer {
   }
   off(type: string, callback: EventHandler) {
     if (!(type in this.listeners)) return
-    let typeHandlers = this.listeners[type]
+    const typeHandlers = this.listeners[type]
     if (!callback) {
       typeHandlers.length = 0
       return
@@ -41,7 +41,7 @@ class EventDoer {
     if (!(type in this.listeners)) {
       return
     }
-    let typeHandlers = this.listeners[type].concat()
+    const typeHandlers = this.listeners[type].concat()
 
     for (let i = 0; i < typeHandlers.length; i++) {
       typeHandlers[i].call(this, detail)
