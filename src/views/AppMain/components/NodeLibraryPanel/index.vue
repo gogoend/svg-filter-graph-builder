@@ -17,7 +17,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, nextTick } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 import { useStore } from 'vuex'
 
@@ -44,13 +44,17 @@ export default defineComponent({
   name: 'NodeLibraryPanel',
   setup(props, { emit }) {
     const store = useStore()
+
+    const ghostNodeRef = computed(() => store.state.ghostNodeRef)
     const handleIconMousedown = function(ev: MouseEvent, icon: any) {
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
           store.commit('SET_DRAGGING_NODE_ICON', icon.title)
+          nextTick(() => ghostNodeRef.value.$emit('update:position', [ev.clientX - 80, ev.clientY]))
         },
         move(ev, { originEl }) {
-          console.log(icon)
+          console.log(ghostNodeRef.value)
+          ghostNodeRef.value.$emit('update:position', [ev.clientX - 80, ev.clientY])
           void 0
         },
         up(ev, { originEl }) {
@@ -75,6 +79,7 @@ export default defineComponent({
   overflow: hidden;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  user-select: none;
   ul.menu-list {
     li {
     }

@@ -43,9 +43,11 @@
       />
       <io-node
         v-if="ghostNodeType"
+        ref="ghostNodeRef"
         style="opacity: 0.5"
         :is="ghostNodeType"
         nodeId="0"
+        v-model:position="ghostNodePosition"
         :relativePaths="{
           in: [],
           out: []
@@ -54,7 +56,7 @@
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 import FilterDef from './components/FilterDef/index.vue'
@@ -341,13 +343,20 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     }
 
     // ghostNode
+    const ghostNodeRef = ref<InstanceType<typeof IoNode>>()
+    watch(ghostNodeRef, val => {
+      store.commit('SET_GHOST_NODE_REF', ghostNodeRef)
+    })
     const ghostNodeType = computed(() => {
       return store.state.draggingNodeIcon
     })
+    const ghostNodePosition = ref([0, 0])
 
     return {
       ghostPathD,
+      ghostNodeRef,
       ghostNodeType,
+      ghostNodePosition,
 
       nodes,
       nodeRefs,
