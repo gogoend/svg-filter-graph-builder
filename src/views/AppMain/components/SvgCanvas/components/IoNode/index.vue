@@ -239,7 +239,7 @@ export default defineComponent({
     overflow: visible;
   }
   &__body {
-    width: 15em;
+    width: 20em;
     background-color: #333333;
     padding: 0.5em 0;
     position: relative;
@@ -296,7 +296,7 @@ export default defineComponent({
         font-size: 1.25em;
       }
       input {
-        width: 30px;
+        width: 6em;
         flex: 0 1 auto;
       }
     }
