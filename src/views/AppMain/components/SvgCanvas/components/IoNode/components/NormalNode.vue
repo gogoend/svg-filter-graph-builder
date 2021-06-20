@@ -70,7 +70,7 @@ export default defineComponent({
     }
 
     const getVNodeFragment = (item: any, index: number): VNode => {
-      const { is } = item.props
+      const is = item.props.is as keyof typeof fe
       const { mergedFeAttrValue } = item.setupState
 
       const nodeAttrs: Dictionary<string> = {}
@@ -80,6 +80,16 @@ export default defineComponent({
         }
         if (nodeAttrs.in === nodeAttrs.result) {
           delete nodeAttrs.in
+        }
+        if (
+          Object.prototype.hasOwnProperty.call(fe[is].ports, 'in') && !nodeAttrs.in
+        ) {
+          nodeAttrs.in = 'SourceGraphic'
+        }
+        if (
+          Object.prototype.hasOwnProperty.call(fe[is].ports, 'in2') && !nodeAttrs.in2
+        ) {
+          nodeAttrs.in2 = 'SourceGraphic'
         }
       })
       return h(is, nodeAttrs)
