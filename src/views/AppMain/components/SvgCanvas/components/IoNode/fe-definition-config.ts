@@ -159,6 +159,20 @@ export const feImage: SVGFilterConfig.Node = {
   }
 }
 
+export const feBlend: SVGFilterConfig.Node = {
+  type: 'normal',
+  ports: {
+    in: {},
+    in2: {},
+    mode: {
+      defaultValue: 'normal',
+      enum: [
+        'normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion',
+        'hue', 'saturation', 'color', 'luminosity'
+      ]
+    }
+  }
+}
 export default {
   feConvolveMatrix,
   feTurbulence,
@@ -168,5 +182,6 @@ export default {
   feColorMatrix,
   feTile,
   feDisplacementMap,
-  feImage
+  feImage,
+  feBlend
 }

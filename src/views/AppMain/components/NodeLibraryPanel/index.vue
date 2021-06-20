@@ -22,22 +22,14 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 import { useStore } from 'vuex'
 import { uuid } from '@/utils/uuid'
 
+import fe from '@/views/AppMain/components/SvgCanvas/components/IoNode/fe-definition-config'
+
 const menuGroup = [
   {
     title: '组1',
-    children: [
-      { title: 'feImage' },
-      { title: 'feMerge' },
-      { title: 'feColorMatrix' },
-      { title: 'feTurbulence' }
-    ]
-  },
-  {
-    title: '组2',
-    children: [
-      { title: 'feDisplacementMap' },
-      { title: 'feConvolveMatrix' }
-    ]
+    children: Object.keys(fe).map(item => ({
+      title: item
+    }))
   }
 ]
 
@@ -87,6 +79,7 @@ export default defineComponent({
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   user-select: none;
   ul.menu-list {
+    padding-inline-start: 0;
     li {
     }
   }
