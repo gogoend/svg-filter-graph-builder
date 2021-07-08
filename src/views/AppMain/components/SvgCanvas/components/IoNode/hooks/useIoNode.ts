@@ -1,4 +1,4 @@
-import { vnode2dom } from '@/utils'
+import { vnode2dom, getTopoOrder } from '@/utils'
 import { Dictionary } from '@/utils/type'
 import { computed, inject, onBeforeUpdate, Ref, ref, h } from 'vue'
 import { Port } from '../../../type'
@@ -21,7 +21,7 @@ export default () => {
   const filterThumbUrl = computed<string>(() => {
     const allDescs = allDescendants?.value ?? []
     const prefix = 'data:image/svg+xml,'
-    const vnode = h('filter', { id: 'filter' }, [...allDescs].reverse().map((item, index) => item.setupState.getVNodeFragment(item, index)))
+    const vnode = h('filter', { id: 'filter' }, getTopoOrder(allDescs).map((item, index) => item.setupState.getVNodeFragment(item, index)))
     const template =
 `
 <svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="0 0 256 256">

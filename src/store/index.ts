@@ -7,24 +7,9 @@ const store = createStore({
     ghostNodeRef: null,
     nodes: [
       {
-        is: 'feConvolveMatrix',
-        id: uuid(),
-        position: [10, 50]
-      },
-      {
         is: 'feTurbulence',
         id: uuid(),
         position: [80, 30]
-      },
-      {
-        is: 'feImage',
-        id: uuid(),
-        position: [300, 420]
-      },
-      {
-        is: 'feOffset',
-        id: uuid(),
-        position: [80, 300]
       },
       {
         is: 'feDisplacementMap',

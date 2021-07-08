@@ -38,3 +38,8 @@ export function vnode2dom(vnode: VNode): HTMLElement {
   return rootEl
 }
 
+export const getTopoOrder = (descs: any[]) => {
+  debugger
+  return descs.concat().reverse()
+}
+

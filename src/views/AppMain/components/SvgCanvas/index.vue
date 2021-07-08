@@ -9,10 +9,6 @@
     xml:space="preserve"
     class="svg-canvas"
   >
-    <filter-def
-      :linked-paths="linkedPaths"
-      :nodes="nodeRefs"
-    />
     <io-node
       :ref="setNodeRefs"
       v-for="node in nodes"
@@ -59,7 +55,6 @@
 import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
-import FilterDef from './components/FilterDef/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
@@ -79,8 +74,7 @@ export default defineComponent({
   name: 'SvgCanvas',
   components: {
     IoNode,
-    IoPath,
-    FilterDef
+    IoPath
   },
   setup() {
     const store = useStore()
