@@ -1,7 +1,7 @@
 import { vnode2dom, getTopoOrder } from '@/utils'
 import { Dictionary } from '@/utils/type'
 import { computed, inject, onBeforeUpdate, Ref, ref, h } from 'vue'
-import { Port } from '../../../type'
+import { Path, Port } from '../../../type'
 
 export default () => {
   const fromPort = inject<Ref<Port<any>>>('fromPort')
@@ -16,12 +16,12 @@ export default () => {
   onBeforeUpdate(() => { feAttrEls.value = [] })
   // 计算属性，表示当前节点下的所有的后代节点
   const allDescendants = inject<Ref<any[]>>('allDescendants')
+  const allInPaths = inject<Ref<Path[]>>('allInPaths')
 
   const handlePortMouseenter = inject<Ref<any>>('handlePortMouseenter')
   const filterThumbUrl = computed<string>(() => {
-    const allDescs = allDescendants?.value ?? []
     const prefix = 'data:image/svg+xml,'
-    const vnode = h('filter', { id: 'filter' }, getTopoOrder(allDescs).map((item, index) => item.setupState.getVNodeFragment(item, index)))
+    const vnode = h('filter', { id: 'filter' }, getTopoOrder(allInPaths?.value || []).map((item, index) => item.setupState.getVNodeFragment(item, index)))
     const template =
 `
 <svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="0 0 256 256">

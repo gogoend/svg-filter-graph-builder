@@ -55,7 +55,7 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
-import type { Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import type { Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
@@ -202,6 +202,16 @@ export default defineComponent({
     })
     provide('allDescendants', allDescendants)
 
+    const allInPaths = computed<Path[]>(() => {
+      const result: Path[] = []
+      allDescendants?.value.forEach(item => {
+        result.push(...item.props.relativePaths.in)
+      })
+
+      return result
+    })
+    provide('allInPaths', allInPaths)
+
     return {
       fromPort,
 
@@ -218,7 +228,8 @@ export default defineComponent({
       nodeConfigRef,
       filterThumbUrl,
       mergedFeAttrValue,
-      getVNodeFragment
+      getVNodeFragment,
+      allInPaths
     }
   }
 })
