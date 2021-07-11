@@ -56,7 +56,7 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 import fe from './fe-definition-config'
 
 import type { Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
-import { isPortEl } from '@/utils'
+import { getTopoOrder, isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
@@ -202,15 +202,15 @@ export default defineComponent({
     })
     provide('allDescendants', allDescendants)
 
-    const allInPaths = computed<Path[]>(() => {
-      const result: Path[] = []
+    const orderedAllDescendants = computed<any[]>(() => {
+      const allInPaths: Path[] = []
       allDescendants?.value.forEach(item => {
-        result.push(...item.props.relativePaths.in)
+        allInPaths.push(...item.props.relativePaths.in)
       })
 
-      return result
+      return getTopoOrder(allInPaths)
     })
-    provide('allInPaths', allInPaths)
+    provide('orderedAllDescendants', orderedAllDescendants)
 
     return {
       fromPort,
@@ -229,7 +229,7 @@ export default defineComponent({
       filterThumbUrl,
       mergedFeAttrValue,
       getVNodeFragment,
-      allInPaths
+      orderedAllDescendants
     }
   }
 })
