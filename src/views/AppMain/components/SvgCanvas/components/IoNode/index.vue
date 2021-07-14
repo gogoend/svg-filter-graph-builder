@@ -208,7 +208,11 @@ export default defineComponent({
         allInPaths.push(...item.props.relativePaths.in)
       })
 
-      return getTopoOrder(allInPaths)
+      if (allInPaths.length) {
+        return getTopoOrder(allInPaths)
+      } else {
+        return [vm.value]
+      }
     })
     provide('orderedAllDescendants', orderedAllDescendants)
 
