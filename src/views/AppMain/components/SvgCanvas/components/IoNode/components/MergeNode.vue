@@ -18,12 +18,13 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, h, PropType, ref, unref, VNode } from 'vue'
+import { computed, defineComponent, h, PropType, ref, unref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
 
 import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import { Dictionary } from '@/utils/type'
 
 export default defineComponent({
   name: 'MergeNode',
@@ -61,6 +62,10 @@ export default defineComponent({
 
     const feAttrValue = ref<string[]>([''])
 
+    const mergedFeAttrValue = computed<Dictionary<string | number>>(() => ({
+      result: props.nodeId
+    }))
+
     const afterConnected = () => {
       console.log(toPort, fromPort)
       feAttrValue.value[feAttrValue.value.length - 1] = fromPort?.value.vm.props.nodeId
@@ -83,6 +88,7 @@ export default defineComponent({
 
       setFeAttrEls,
       feAttrValue,
+      mergedFeAttrValue,
       afterConnected,
 
       handlePortMouseenter,
