@@ -36,6 +36,7 @@
       :path-d-arguments="path.pathDArguments"
       :from="path.from"
       :to="path.to"
+      @remove="removePath"
     ></io-path>
     <g class="ghost">
       <path
@@ -407,6 +408,30 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
 
     const relativePathMapById = ref<Record<string, any>>({})
+    const removePath = (pathId: string) => {
+      const targetIndex = linkedPaths.value.findIndex(path => path.id === pathId)
+      linkedPaths.value.splice(targetIndex, 1)
+
+      Object.values(relativePathMapById.value).forEach(
+        it => {
+          for (let i = 0; i < it.in.length;) {
+            if (it.in[i].id === pathId) {
+              it.in.splice(i, 1)
+              continue
+            }
+            i++
+          }
+          for (let i = 0; i < it.out.length;) {
+            if (it.out[i].id === pathId) {
+              it.out.splice(i, 1)
+              continue
+            }
+            i++
+          }
+        }
+      )
+    }
+
     return {
       filterLibraryPanelWidth,
 
@@ -432,7 +457,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       toPort,
 
       defaultRelativePath,
-      relativePathMapById
+      relativePathMapById,
+      removePath
     }
   }
 })
