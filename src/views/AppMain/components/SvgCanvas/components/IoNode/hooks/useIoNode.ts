@@ -21,7 +21,7 @@ export default () => {
   const handlePortMouseenter = inject<Ref<any>>('handlePortMouseenter')
   const filterThumbUrl = computed<string>(() => {
     const prefix = 'data:image/svg+xml,'
-    const vnode = h('filter', { id: 'filter' }, (orderedAllDescendants?.value??[]).map((item, index) => item.setupState.getVNodeFragment(item, index)))
+    const vnode = h('filter', { id: 'filter' }, (orderedAllDescendants?.value ?? []).map((item, index) => item.setupState.getVNodeFragment(item, index)))
     const template =
 `
 <svg xmlns="http://www.w3.org/2000/svg" id="SVGFilter" width="40" height="40" viewBox="0 0 256 256">

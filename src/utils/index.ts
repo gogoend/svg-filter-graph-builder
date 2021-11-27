@@ -43,37 +43,37 @@ export const getTopoOrder = (paths: Path[]) => {
   const inDegree: Map<unknown, number> = new Map()
   const graph: Map<unknown, unknown[]> = new Map()
 
-  paths.forEach(path=>{
-    const [ fromVm, toVm ] = [ path.from.vm, path.to.vm ]
+  paths.forEach(path => {
+    const [fromVm, toVm] = [path.from.vm, path.to.vm]
 
     if (!inDegree.has(fromVm)) {
-        inDegree.set(fromVm, 0)
-        graph.set(fromVm, [])
+      inDegree.set(fromVm, 0)
+      graph.set(fromVm, [])
     }
     if (!inDegree.has(toVm)) {
-        inDegree.set(toVm, 0)
-        graph.set(toVm, [])
+      inDegree.set(toVm, 0)
+      graph.set(toVm, [])
     }
     inDegree.set(toVm, (inDegree.get(toVm) as number) + 1)
     ;(graph.get(fromVm) as unknown[]).push(toVm)
   })
 
-  const queue: unknown[] = [], result:unknown[] = []
-  for (let key of inDegree) {
+  const queue: unknown[] = []; const result:unknown[] = []
+  for (const key of inDegree) {
     if (key[1] === 0) {
       queue.push(key[0])
     }
   }
-  while(queue.length) {
+  while (queue.length) {
     const cur = queue.shift()
     result.push(cur)
 
     const toEnQueue = graph.get(cur) as unknown[]
 
-    toEnQueue.forEach(item=>{
+    toEnQueue.forEach(item => {
       inDegree.set(item, (inDegree.get(item) as number) - 1)
       if (inDegree.get(item) === 0) {
-          queue.push(item)
+        queue.push(item)
       }
     })
   }

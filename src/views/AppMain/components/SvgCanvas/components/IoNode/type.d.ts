@@ -1,4 +1,4 @@
-import { Dictionary } from "@/utils/type";
+import { Dictionary } from '@/utils/type'
 
 type Enum = {
     label: string;
