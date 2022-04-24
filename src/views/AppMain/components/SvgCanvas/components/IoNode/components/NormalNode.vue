@@ -51,8 +51,7 @@ export default defineComponent({
       ioNodeEl,
       setFeAttrEls,
       allDescendants,
-      handlePortMouseenter,
-      filterThumbUrl
+      handlePortMouseenter
     } = useIoNode()
 
     const feAttrValue = ref<Dictionary<string | number>>({})
@@ -124,7 +123,6 @@ export default defineComponent({
       fe,
       allDescendants,
 
-      filterThumbUrl,
       getVNodeFragment
     }
   }

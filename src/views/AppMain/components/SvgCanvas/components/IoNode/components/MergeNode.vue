@@ -49,8 +49,7 @@ export default defineComponent({
       ioNodeEl,
       setFeAttrEls,
       allDescendants,
-      handlePortMouseenter,
-      filterThumbUrl
+      handlePortMouseenter
     } = useIoNode()
 
     // const feAttrValue = computed<string[]>(() => {
@@ -94,7 +93,6 @@ export default defineComponent({
       handlePortMouseenter,
       allDescendants,
 
-      filterThumbUrl,
       getVNodeFragment
     }
   }
