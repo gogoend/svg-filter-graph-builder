@@ -88,6 +88,9 @@ export default defineComponent({
     }
     onBeforeUpdate(() => { nodeRefs.value = [] })
 
+    /**
+     * 鬼影路径参数
+     */
     const ghostPathDArguments = ref([0, 0, 0, 0, 0, 0, 0, 0])
     const ghostPathD = computed(() => {
       const dArgs = ghostPathDArguments.value
@@ -102,7 +105,21 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     provide('toPort', toPort)
     // const destnationVm = ref<InstanceType<typeof IoNode>>()
 
-    const handlePortStart = ({ originEl, vm }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
+    /**
+     * 处理鼠标点击起始/终止端口
+     * 点击后，将开始从端口发出鬼影路径
+     */
+    const handlePortStart = (
+      {
+        originEl,
+        vm
+      }:
+      {
+        ev:MouseEvent,
+        originEl: SVGCircleElement,
+        vm: InstanceType<typeof IoNode>
+      }
+    ) => {
       const el = originEl
       fromPort.value = {
         vm,
@@ -141,7 +158,22 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - 80 : p + canvasScrollEl.value.scrollTop)
       }
     }
-    const handlePortMove = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoNode>}) => {
+
+    /**
+     * 处理从端口发出路径后，鼠标移动时的一些逻辑
+     * 用于更新鬼影路径的逻辑
+     */
+    const handlePortMove = (
+      {
+        ev,
+        originEl
+      }:
+      {
+        ev:MouseEvent,
+        originEl: SVGCircleElement,
+        vm: InstanceType<typeof IoNode>
+      }
+    ) => {
       if (getPortElType(originEl) === 'in') {
         ghostPathDArguments.value = [
           ev.pageX, ev.pageY, ev.pageX + HANDLE_LENGTH, ev.pageY,
@@ -175,7 +207,21 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         })
       }
     }
-    const handlePortConnect = ({ ev, originEl }: {ev:MouseEvent, originEl: SVGCircleElement, vm: InstanceType<typeof IoPath>}) => {
+
+    /**
+     * 处理从端口发出路径后，连接到另一端口的逻辑
+     */
+    const handlePortConnect = (
+      {
+        ev,
+        originEl
+      }:
+      {
+        ev: MouseEvent,
+        originEl: SVGCircleElement,
+        vm: InstanceType<typeof IoPath>
+      }
+    ) => {
       const el = ev.target as SVGGElement
       const coord = [
         el.getBoundingClientRect().x,
@@ -265,12 +311,20 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
+
+    /**
+     * 用于处理连线取消的逻辑
+     */
     const handlePortCancel = () => {
       console.log('canceled')
       fromPort.value = null
       toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
+
+    /**
+     * 处理路径末端移动过程中，要连接的端口发生改变后的逻辑
+     */
     const handleDestinationChange = ({ vm, originEl, ev }: {vm: InstanceType<typeof IoNode> | null, originEl: SVGCircleElement, ev: MouseEvent}) => {
       toPort.value = {
         vm: vm as InstanceType<typeof IoNode>,
@@ -278,6 +332,10 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         el: originEl
       }
     }
+
+    /**
+     * 处理节点移动
+     */
     const handleNodeMove = (paths: RelativePathForNode) => {
       paths.out.forEach(item => {
         const coord = [
@@ -327,7 +385,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       })
     }
 
-    // ghostNode
+    /**
+     * 鬼影节点参数
+     */
     const ghostNodeRef = ref<InstanceType<typeof IoNode>>()
     watch(ghostNodeRef, val => {
       store.commit('SET_GHOST_NODE_REF', ghostNodeRef)
