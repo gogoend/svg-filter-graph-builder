@@ -284,7 +284,7 @@ export default defineComponent({
       transform: translate(50%, 0);
     }
   }
-  :deep(&__li) {
+  :deep(.io-node__li) {
     display: flex;
     align-items: center;
     flex-direction: row;
