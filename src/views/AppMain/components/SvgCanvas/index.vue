@@ -8,6 +8,9 @@
     viewBox="0 0 1920 1080"
     xml:space="preserve"
     class="svg-canvas"
+    :style="{
+      marginLeft: filterLibraryPanelWidth + 'px'
+    }"
   >
     <io-node
       :ref="setNodeRefs"
@@ -60,6 +63,7 @@ import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
 import { uuid } from '@/utils/uuid'
 import { useStore } from 'vuex'
+import { filterLibraryPanelWidth } from '@/config/ui'
 
 // 圆形半径
 const POINT_R = 10
@@ -142,7 +146,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1] + POINT_R
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - 80 : p + canvasScrollEl.value.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
       }
       if (getPortElType(el) === 'out') {
         ghostPathDArguments.value = [
@@ -155,7 +159,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1]
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - 80 : p + canvasScrollEl.value.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
       }
     }
 
@@ -181,7 +185,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p - 80
+              return p - filterLibraryPanelWidth
             } else {
               return p
             }
@@ -197,7 +201,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p - 80
+              return p - filterLibraryPanelWidth
             } else {
               return p
             }
@@ -241,7 +245,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - 80
+              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -268,7 +272,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - 80
+              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -351,7 +355,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - 80
+              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -374,7 +378,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - 80
+              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
             } else {
               return p + canvasScrollEl.value.scrollTop
             }
@@ -404,6 +408,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
     const relativePathMapById = ref<Record<string, any>>({})
     return {
+      filterLibraryPanelWidth,
+
       ghostPathD,
       ghostNodeRef,
       ghostNodeType,
@@ -412,7 +418,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       nodes,
       nodeRefs,
       setNodeRefs,
+
       linkedPaths,
+
       handlePortStart,
       handlePortMove,
       handlePortConnect,
@@ -435,7 +443,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
   enable-background: new 0 0 1920 1080;
   width: 1920px;
   height: 1080px;
-  margin-left: 80px;
   .draggable {
     cursor: grab;
   }

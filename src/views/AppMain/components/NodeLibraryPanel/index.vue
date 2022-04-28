@@ -1,5 +1,8 @@
 <template>
-  <div class="node-library-panel">
+  <div
+    class="node-library-panel"
+    :style="{width: filterLibraryPanelWidth+'px'}"
+  >
     <div
       v-for="(group, index) in menuGroup"
       :key="index">
@@ -23,6 +26,7 @@ import { useStore } from 'vuex'
 import { uuid } from '@/utils/uuid'
 
 import fe from '@/views/AppMain/components/SvgCanvas/components/IoNode/fe-definition-config'
+import { filterLibraryPanelWidth } from '@/config/ui'
 
 const menuGroup = [
   {
@@ -43,18 +47,18 @@ export default defineComponent({
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
           store.commit('SET_DRAGGING_NODE_ICON', icon.title)
-          nextTick(() => ghostNodeRef.value.$emit('update:position', [ev.clientX - 80, ev.clientY]))
+          nextTick(() => ghostNodeRef.value.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY]))
         },
         move(ev, { originEl }) {
           console.log(ghostNodeRef.value)
-          ghostNodeRef.value.$emit('update:position', [ev.clientX - 80, ev.clientY])
+          ghostNodeRef.value.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY])
           void 0
         },
         up(ev, { originEl }) {
           store.commit('ADD_NODE', {
             is: icon.title,
             id: uuid(),
-            position: [ev.clientX - 80, ev.clientY]
+            position: [ev.clientX - filterLibraryPanelWidth, ev.clientY]
           })
           store.commit('SET_DRAGGING_NODE_ICON', null)
           void 0
@@ -63,7 +67,8 @@ export default defineComponent({
     }
     return {
       handleIconMousedown,
-      menuGroup
+      menuGroup,
+      filterLibraryPanelWidth
     }
   }
 })
@@ -73,7 +78,6 @@ export default defineComponent({
   position: fixed;
   height: 100vh;
   top: 0;
-  width: 80px;
   overflow: hidden;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);

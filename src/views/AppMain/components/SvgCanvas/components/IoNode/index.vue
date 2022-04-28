@@ -56,6 +56,7 @@ import { getTopoOrder, isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
+import { filterLibraryPanelWidth } from '@/config/ui'
 
 export default defineComponent({
   components: { NormalNode, MergeNode },
@@ -133,7 +134,7 @@ export default defineComponent({
             emit('port-move', { ev, originEl, vm })
           } else {
             const newPosition = [
-              ev.pageX - clickedRelativePosition.value[0] - 80,
+              ev.pageX - clickedRelativePosition.value[0] - filterLibraryPanelWidth,
               ev.pageY - clickedRelativePosition.value[1]
             ] // clickedRelativePosition.value.concat()
             emit('update:position', newPosition)
