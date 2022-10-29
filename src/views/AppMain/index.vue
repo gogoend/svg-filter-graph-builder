@@ -10,6 +10,7 @@ import SvgCanvas from './components/SvgCanvas/index.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 
 export default defineComponent({
+  name: 'AppMain',
   components: { SvgCanvas, NodeLibraryPanel },
   setup() {
     return {}
