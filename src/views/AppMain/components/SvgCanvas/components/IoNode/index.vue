@@ -9,6 +9,10 @@
       <div
         class="io-node__body"
         xmlns="http://www.w3.org/1999/xhtml">
+        <img
+          class="io-node__filter-thumb"
+          :src="filterThumbUrl"
+        />
         <div
           class="io-node__head"
         >
@@ -95,6 +99,10 @@ export default defineComponent({
     onBeforeUpdate(() => { feAttrEls.value = [] })
 
     const nodeConfigRef = ref<InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>>()
+
+    const filterThumbUrl = computed<string>(() => {
+      return nodeConfigRef.value?.filterThumbUrl ?? ''
+    })
 
     /**
      * feAttrValue 供下层（各类型Node）组件递归组件树时使用，直接在本层级获得feAttrValue而无需进入到下层组件
@@ -223,6 +231,7 @@ export default defineComponent({
       afterConnected,
 
       nodeConfigRef,
+      filterThumbUrl,
       mergedFeAttrValue,
       getVNodeFragment,
       orderedAllDescendants
