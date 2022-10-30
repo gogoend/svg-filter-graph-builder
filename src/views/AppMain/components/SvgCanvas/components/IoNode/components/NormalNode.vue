@@ -57,17 +57,20 @@ export default defineComponent({
 
     const feAttrValue = ref<Dictionary<string | number>>({})
 
-    const foreignPortValue = ref<Dictionary<string | number>>({})
+    const foreignPortValue = computed<Dictionary<string | number>>(() => {
+      const newValueMap: Dictionary<string | number> = {}
+
+      props.relativePaths.in.forEach(p => {
+        newValueMap[p.to.attr] = p.from.vm.proxy.mergedFeAttrValue[p.from.attr]
+      })
+      return newValueMap
+    })
 
     const mergedFeAttrValue = computed<Dictionary<string | number>>(() => ({
       ...feAttrValue.value,
       ...foreignPortValue.value,
       result: props.nodeId
     }))
-
-    const afterConnected = () => {
-      foreignPortValue.value[toPort?.value.attr as string] = fromPort?.value.vm.setupState.mergedFeAttrValue[fromPort?.value.attr]
-    }
 
     const getVNodeFragment = (item: any, index: number): VNode => {
       const is = item.props.is as keyof typeof fe
@@ -118,7 +121,6 @@ export default defineComponent({
       feAttrValue,
       foreignPortValue,
       mergedFeAttrValue,
-      afterConnected,
 
       handlePortMouseenter,
       fe,
