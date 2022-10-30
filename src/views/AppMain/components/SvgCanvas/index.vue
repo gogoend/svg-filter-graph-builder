@@ -57,7 +57,7 @@ import IoPath from './components/IoPath/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
-import { portCanBeConnected } from '@/utils/link-validator'
+import { assertPortCanBeConnected } from '@/utils/link-validator'
 import { uuid } from '@/utils/uuid'
 import { useStore } from 'vuex'
 
@@ -238,27 +238,30 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         }
       }
 
-      if (portCanBeConnected(linkedPath)) {
+      try {
+        assertPortCanBeConnected(linkedPath)
         linkedPaths.value.push(linkedPath)
         ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
-      }
 
-      if (!relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId]) {
-        relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId] = {
-          in: [],
-          out: []
+        if (!relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId]) {
+          relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId] = {
+            in: [],
+            out: []
+          }
         }
+        relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
+
+        if (!relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId]) {
+          relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId] = {
+            in: [],
+            out: []
+          }
+        }
+        relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId].in.push(linkedPath)
+      } catch(err) {
+        console.error(err)
       }
-      relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
       fromPort.value = null
-
-      if (!relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId]) {
-        relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId] = {
-          in: [],
-          out: []
-        }
-      }
-      relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId].in.push(linkedPath)
       toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
