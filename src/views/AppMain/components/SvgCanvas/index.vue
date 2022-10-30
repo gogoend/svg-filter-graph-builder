@@ -20,7 +20,9 @@
       @port-connect="handlePortConnect"
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
-      :relative-paths="getRelativePathIdOfNode(node.id)"
+      :relative-paths="
+        relativePathMapById[node.id] ?? defaultRelativePath
+      "
       @node-move="handleNodeMove"
       v-model:position="node.position"
     />
@@ -44,15 +46,12 @@
         :is="ghostNodeType"
         nodeId="0"
         v-model:position="ghostNodePosition"
-        :relativePaths="{
-          in: [],
-          out: []
-        }" />
+        :relativePaths="defaultRelativePath" />
     </g>
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 
@@ -244,7 +243,22 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
       }
 
+      if (!relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId]) {
+        relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId] = {
+          in: [],
+          out: []
+        }
+      }
+      relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
       fromPort.value = null
+
+      if (!relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId]) {
+        relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId] = {
+          in: [],
+          out: []
+        }
+      }
+      relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId].in.push(linkedPath)
       toPort.value = null
       ghostPathDArguments.value.fill(0)
     }
@@ -320,6 +334,12 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
     const ghostNodePosition = ref([0, 0])
 
+    const defaultRelativePath = readonly({
+      in: [],
+      out: []
+    })
+
+    const relativePathMapById = ref<Record<string, any>>({})
     return {
       ghostPathD,
       ghostNodeRef,
@@ -340,13 +360,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       fromPort,
       toPort,
 
-      getRelativePathIdOfNode(nodeId: string): RelativePathForNode {
-        nodeId = String(nodeId)
-        return {
-          in: linkedPaths.value.filter(path => path.to?.vm.props.nodeId === nodeId),
-          out: linkedPaths.value.filter(path => path.from?.vm.props.nodeId === nodeId)
-        }
-      }
+      defaultRelativePath,
+      relativePathMapById
     }
   }
 })
