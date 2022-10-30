@@ -307,8 +307,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             out: []
           }
         }
-        relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId].in.push(linkedPath)
-      } catch(err) {
+        relativePathMapById.value[toPort.value?.vm.proxy?.$props?.nodeId].in.push(linkedPath)
+      } catch (err) {
         console.error(err)
       }
       fromPort.value = null
