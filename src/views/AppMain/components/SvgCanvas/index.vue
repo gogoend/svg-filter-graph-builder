@@ -55,16 +55,16 @@
   </svg>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
-import { uuid } from '@/utils/uuid'
-import { useStore } from 'vuex'
 import { filterLibraryPanelWidth } from '@/config/ui'
+import { ALL_NODES_ON_CANVAS_SYMBOL } from '@/store/canvasStuff'
+import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 
 // 圆形半径
 const POINT_R = 10
@@ -81,12 +81,11 @@ export default defineComponent({
     IoPath
   },
   setup() {
-    const store = useStore()
     const canvasScrollEl = ref(document.documentElement)
     provide('canvasScrollEl', canvasScrollEl)
 
     const linkedPaths = ref<Path[]>([])
-    const nodes = computed<Node[]>(() => store.state.nodes)
+    const nodes = inject(ALL_NODES_ON_CANVAS_SYMBOL)!
     const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
     const setNodeRefs = (ref?: InstanceType<typeof IoNode>) => {
       if (ref) { nodeRefs.value.push(ref as any) }
@@ -393,13 +392,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     /**
      * 鬼影节点参数
      */
-    const ghostNodeRef = ref<InstanceType<typeof IoNode>>()
-    watch(ghostNodeRef, val => {
-      store.commit('SET_GHOST_NODE_REF', ghostNodeRef)
-    })
-    const ghostNodeType = computed(() => {
-      return store.state.draggingNodeIcon
-    })
+    const ghostNodeRef = inject(GHOST_NODE_REF_SYMBOL)!
+
+    const ghostNodeType = inject(DRAGGING_NODE_ICON_SYMBOL)!
     const ghostNodePosition = ref([0, 0])
 
     const defaultRelativePath = readonly({
