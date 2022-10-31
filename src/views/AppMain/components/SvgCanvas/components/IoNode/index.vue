@@ -126,49 +126,60 @@ export default defineComponent({
     const handleNodeMousedown = function(ev: MouseEvent) {
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
+          // 如果鼠标事件的出发点是端口
           if (isPortEl(originEl)) {
+            // 就认为连线开始了
             emit('port-start', { ev, originEl, vm })
           } else {
-            const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
-            // clickedRelativePosition.value = [ev.pageX - currentPostion?.left, ev.pageY - currentPostion?.top]
+            // 否则认为是节点移动，此时保存鼠标事件起始点的位置
+            const currentPosition = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
+            // clickedRelativePosition.value = [ev.pageX - currentPosition?.left, ev.pageY - currentPosition?.top]
             clickedRelativePosition.value = [
-              ev.pageX - currentPostion?.left - canvasScrollEl.value.scrollLeft,
-              ev.pageY - currentPostion?.top - canvasScrollEl.value.scrollTop
+              ev.pageX - currentPosition?.left - canvasScrollEl.value.scrollLeft,
+              ev.pageY - currentPosition?.top - canvasScrollEl.value.scrollTop
             ]
           }
         },
         move(ev, { originEl }) {
+          // 如果鼠标事件的出发点是端口
           if (isPortEl(originEl)) {
+            // 就认为目前处于连线改变阶段 - 连线的控制点坐标应当会随之改变
             emit('port-move', { ev, originEl, vm })
           } else {
+            // 否则认为是节点移动，此时更新节点的位置
             const newPosition = [
               ev.pageX - clickedRelativePosition.value[0] - filterLibraryPanelWidth,
               ev.pageY - clickedRelativePosition.value[1]
             ] // clickedRelativePosition.value.concat()
             emit('update:position', newPosition)
             nextTick(() => {
-              const currentPostion = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
+              const currentPosition = (ioNodeEl.value?.getBoundingClientRect() as DOMRect)
               clickedRelativePosition.value = [
-                ev.pageX - currentPostion?.left - canvasScrollEl.value.scrollLeft,
-                ev.pageY - currentPostion?.top - canvasScrollEl.value.scrollTop
+                ev.pageX - currentPosition?.left - canvasScrollEl.value.scrollLeft,
+                ev.pageY - currentPosition?.top - canvasScrollEl.value.scrollTop
               ]
               emit('node-move', props.relativePaths)
             })
           }
         },
         up(ev, { originEl }) {
+          // 如果鼠标事件的出发点是端口
           if (isPortEl(originEl)) {
+            // 而且如果鼠标事件的终止点也是端口
             if (
               isPortEl(ev.target as HTMLElement) &&
               fromPort?.value &&
               toPort?.value
             ) {
+              // 则认为两个端口应该进行连线
               // console.log(toPort.value.vm.refs.ioNodeEl.querySelector(`[data-fe-attr=${toPort.value.attr}]`))
               emit('port-connect', { ev, originEl, vm })
             } else {
+              // 否则如果鼠标事件的终止点不是端口，则认为连线过程已经取消
               emit('port-cancel', { ev, originEl, vm })
             }
           }
+          // 重置鼠标事件起始点位置
           clickedRelativePosition.value = [0, 0]
         }
       })
