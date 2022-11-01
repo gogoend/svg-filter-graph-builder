@@ -103,7 +103,9 @@ export default defineComponent({
 
     const nodeRefMap = inject(NODE_REF_MAP_SYMBOL)!
     const setNodeRefMap = (ref?: InstanceType<typeof IoNode>) => {
-      if (ref) { nodeRefMap.value[ref.nodeId] = ref }
+      if (ref) {
+        nodeRefMap.value[ref.nodeId] = ref.$
+      }
     }
     onBeforeUpdate(() => { nodeRefMap.value = {} })
 
