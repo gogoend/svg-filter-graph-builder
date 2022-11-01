@@ -10,6 +10,7 @@ export const ALL_LINKED_PATH_ON_CANVAS_SYMBOL: InjectionKey<Ref<Path[]>> = Symbo
 
 export const RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<Ref<Record<string, any>>> = Symbol('节点对应所有出、入连线的映射关系')
 export const REMOVE_PATH_SYMBOL: InjectionKey<(pathId: string) => void> = Symbol('删除连线函数')
+export const ADD_PATH_SYMBOL: InjectionKey<(path: Path) => void> = Symbol('添加连线函数')
 
 export const ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<(
   linkedPath: any,
@@ -39,15 +40,48 @@ export default function canvasStuff() {
   }
   provide(REMOVE_NODES_SYMBOL, removeNode)
 
+  const linkedPathsForSerialize = ref<Record<string, any>>({
+    '0': {
+      id: '0',
+      from: {
+        vm: '3566D34B-971F-4167-8DD4-BA6A4C4A302B',
+        attr: 'result'
+      },
+      to: {
+        vm: '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
+        attr: 'in'
+      }
+    }
+  })
+  provide('tempLinkedPathsForSerialize', linkedPathsForSerialize)
+
   const linkedPaths = ref<Path[]>([])
   provide(ALL_LINKED_PATH_ON_CANVAS_SYMBOL, linkedPaths)
 
   const relativePathMapIndexedByNodeId = ref<Record<string, any>>({})
   provide(RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL, relativePathMapIndexedByNodeId)
 
+  const addPath = (path: Path) => {
+    linkedPaths.value.push(path)
+    linkedPathsForSerialize.value[path.id] = {
+      id: path.id,
+      from: {
+        vm: path.from.vm.proxy.nodeId,
+        attr: path.from.attr
+      },
+      to: {
+        vm: path.to.vm.proxy.nodeId,
+        attr: path.to.attr
+      }
+    }
+  }
+  provide(ADD_PATH_SYMBOL, addPath)
+
   const removePath = (pathId: string) => {
     const targetIndex = linkedPaths.value.findIndex(path => path.id === pathId)
     linkedPaths.value.splice(targetIndex, 1)
+
+    delete linkedPathsForSerialize.value[pathId]
 
     Object.values(relativePathMapIndexedByNodeId.value).forEach(
       it => {

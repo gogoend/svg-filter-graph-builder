@@ -63,7 +63,14 @@ import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
 import { filterLibraryPanelWidth } from '@/config/ui'
-import { ALL_LINKED_PATH_ON_CANVAS_SYMBOL, ALL_NODES_ON_CANVAS_SYMBOL, REMOVE_PATH_SYMBOL, RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL, ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL } from '@/store/canvasStuff'
+import {
+  ALL_LINKED_PATH_ON_CANVAS_SYMBOL,
+  ALL_NODES_ON_CANVAS_SYMBOL,
+  REMOVE_PATH_SYMBOL,
+  RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL,
+  ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL,
+  ADD_PATH_SYMBOL
+} from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 
 // 圆形半径
@@ -85,6 +92,7 @@ export default defineComponent({
     provide('canvasScrollEl', canvasScrollEl)
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
+    const addPath = inject(ADD_PATH_SYMBOL)!
     const removePath = inject(REMOVE_PATH_SYMBOL)!
 
     const nodes = inject(ALL_NODES_ON_CANVAS_SYMBOL)!
@@ -296,7 +304,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       try {
         assertPortCanBeConnected(linkedPath)
-        linkedPaths.value.push(linkedPath)
+        addPath(linkedPath)
         ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
 
         addRelationInMapIndexedByNodeId(
