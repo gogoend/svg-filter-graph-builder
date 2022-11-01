@@ -24,7 +24,7 @@
       @port-cancel="handlePortCancel"
       @destination-change="handleDestinationChange"
       :relative-paths="
-        relativePathMapById[node.id] ?? defaultRelativePath
+        relativePathMapIndexedByNodeId[node.id] ?? defaultRelativePath
       "
       @node-move="handleNodeMove"
       v-model:position="node.position"
@@ -63,7 +63,7 @@ import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
 import { filterLibraryPanelWidth } from '@/config/ui'
-import { ALL_NODES_ON_CANVAS_SYMBOL } from '@/store/canvasStuff'
+import { ALL_LINKED_PATH_ON_CANVAS_SYMBOL, ALL_NODES_ON_CANVAS_SYMBOL, REMOVE_PATH_SYMBOL, RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL, ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL } from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 
 // 圆形半径
@@ -84,8 +84,14 @@ export default defineComponent({
     const canvasScrollEl = ref(document.documentElement)
     provide('canvasScrollEl', canvasScrollEl)
 
-    const linkedPaths = ref<Path[]>([])
+    const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
+    const removePath = inject(REMOVE_PATH_SYMBOL)!
+
     const nodes = inject(ALL_NODES_ON_CANVAS_SYMBOL)!
+
+    const relativePathMapIndexedByNodeId = inject(RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL)!
+    const addRelationInMapIndexedByNodeId = inject(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL)!
+
     const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
     const setNodeRefs = (ref?: InstanceType<typeof IoNode>) => {
       if (ref) { nodeRefs.value.push(ref as any) }
@@ -293,21 +299,11 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         linkedPaths.value.push(linkedPath)
         ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
 
-        if (!relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId]) {
-          relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId] = {
-            in: [],
-            out: []
-          }
-        }
-        relativePathMapById.value[fromPort.value!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
-
-        if (!relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId]) {
-          relativePathMapById.value[toPort.value!.vm.proxy!.$props!.nodeId] = {
-            in: [],
-            out: []
-          }
-        }
-        relativePathMapById.value[toPort.value?.vm.proxy?.$props?.nodeId].in.push(linkedPath)
+        addRelationInMapIndexedByNodeId(
+          linkedPath,
+          fromPort,
+          toPort
+        )
       } catch (err) {
         console.error(err)
       }
@@ -402,31 +398,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       out: []
     })
 
-    const relativePathMapById = ref<Record<string, any>>({})
-    const removePath = (pathId: string) => {
-      const targetIndex = linkedPaths.value.findIndex(path => path.id === pathId)
-      linkedPaths.value.splice(targetIndex, 1)
-
-      Object.values(relativePathMapById.value).forEach(
-        it => {
-          for (let i = 0; i < it.in.length;) {
-            if (it.in[i].id === pathId) {
-              it.in.splice(i, 1)
-              continue
-            }
-            i++
-          }
-          for (let i = 0; i < it.out.length;) {
-            if (it.out[i].id === pathId) {
-              it.out.splice(i, 1)
-              continue
-            }
-            i++
-          }
-        }
-      )
-    }
-
     return {
       filterLibraryPanelWidth,
 
@@ -452,7 +423,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       toPort,
 
       defaultRelativePath,
-      relativePathMapById,
+      relativePathMapIndexedByNodeId,
       removePath
     }
   }
