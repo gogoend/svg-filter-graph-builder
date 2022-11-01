@@ -13,7 +13,7 @@
     }"
   >
     <io-node
-      :ref="setNodeRefs"
+      :ref="setNodeRefMap"
       v-for="node in nodes"
       :key="node.id"
       :is="node.is"
@@ -69,7 +69,8 @@ import {
   REMOVE_PATH_SYMBOL,
   RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL,
   ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL,
-  ADD_PATH_SYMBOL
+  ADD_PATH_SYMBOL,
+  NODE_REF_MAP_SYMBOL
 } from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 
@@ -100,11 +101,11 @@ export default defineComponent({
     const relativePathMapIndexedByNodeId = inject(RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL)!
     const addRelationInMapIndexedByNodeId = inject(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL)!
 
-    const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
-    const setNodeRefs = (ref?: InstanceType<typeof IoNode>) => {
-      if (ref) { nodeRefs.value.push(ref as any) }
+    const nodeRefMap = inject(NODE_REF_MAP_SYMBOL)!
+    const setNodeRefMap = (ref?: InstanceType<typeof IoNode>) => {
+      if (ref) { nodeRefMap.value[ref.nodeId] = ref }
     }
-    onBeforeUpdate(() => { nodeRefs.value = [] })
+    onBeforeUpdate(() => { nodeRefMap.value = {} })
 
     /**
      * 鬼影路径参数
@@ -415,8 +416,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       ghostNodePosition,
 
       nodes,
-      nodeRefs,
-      setNodeRefs,
+      setNodeRefMap,
 
       linkedPaths,
 
