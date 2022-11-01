@@ -1,6 +1,6 @@
 import { NodeInStore } from '@/schema/IoNode'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
-import { Ref, ref, InjectionKey, provide } from 'vue'
+import { Ref, ref, InjectionKey, provide, onMounted, unref } from 'vue'
 import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
 
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
@@ -46,19 +46,7 @@ export default function canvasStuff() {
   const nodeRefMap = ref<Record<string, InstanceType<typeof IoNode>>>({})
   provide(NODE_REF_MAP_SYMBOL, nodeRefMap)
 
-  const linkedPathsForSerialize = ref<Record<string, any>>({
-    '0': {
-      id: '0',
-      from: {
-        vm: '3566D34B-971F-4167-8DD4-BA6A4C4A302B',
-        attr: 'result'
-      },
-      to: {
-        vm: '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
-        attr: 'in'
-      }
-    }
-  })
+  const linkedPathsForSerialize = ref<Record<string, any>>({})
   provide('tempLinkedPathsForSerialize', linkedPathsForSerialize)
 
   const linkedPaths = ref<Path[]>([])
@@ -115,22 +103,61 @@ export default function canvasStuff() {
     fromPort: any,
     toPort: any
   ) => {
-    if (!relativePathMapIndexedByNodeId.value[fromPort.value!.vm.proxy!.$props!.nodeId]) {
-      relativePathMapIndexedByNodeId.value[fromPort.value!.vm.proxy!.$props!.nodeId] = {
+    if (!relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.proxy!.$props!.nodeId]) {
+      relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.proxy!.$props!.nodeId] = {
         in: [],
         out: []
       }
     }
-    relativePathMapIndexedByNodeId.value[fromPort.value!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
+    relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
 
-    if (!relativePathMapIndexedByNodeId.value[toPort.value!.vm.proxy!.$props!.nodeId]) {
-      relativePathMapIndexedByNodeId.value[toPort.value!.vm.proxy!.$props!.nodeId] = {
+    if (!relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.proxy!.$props!.nodeId]) {
+      relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.proxy!.$props!.nodeId] = {
         in: [],
         out: []
       }
     }
-    relativePathMapIndexedByNodeId.value[toPort.value?.vm.proxy?.$props?.nodeId].in.push(linkedPath)
+    relativePathMapIndexedByNodeId.value[unref(toPort).vm.proxy?.$props?.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
+
+  const loadCanvasFromSerializedStatus = () => {
+    const l = {
+      '0': {
+        id: '0',
+        from: {
+          vm: '3566D34B-971F-4167-8DD4-BA6A4C4A302B',
+          attr: 'result'
+        },
+        to: {
+          vm: '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
+          attr: 'in'
+        }
+      }
+    }
+    Object.values(l).forEach(it => {
+      it = window.structuredClone(it)
+
+      it.from.vm = nodeRefMap.value[it.from.vm]
+      it.from.el = it.from.vm.proxy.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)
+
+      it.to.vm = nodeRefMap.value[it.to.vm]
+      it.to.el = it.to.vm.proxy.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
+
+      // FIXME: 根据真实节点进行计算
+      it.pathDArguments = [0, 0, 0, 0, 0, 0, 0, 0]
+
+      addPath(it)
+      addRelationInMapIndexedByNodeId(
+        it,
+        it.from,
+        it.to
+      )
+    })
+  }
+
+  onMounted(() => {
+    loadCanvasFromSerializedStatus()
+  })
 }
 
