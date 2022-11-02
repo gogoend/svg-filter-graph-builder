@@ -55,8 +55,8 @@ export default defineComponent({
 
     // const feAttrValue = computed<string[]>(() => {
     //   return props.relativePaths.in.map(item => {
-    //     console.log(item.from.vm.props.nodeId)
-    //     return item.from.vm.props.nodeId
+    //     console.log(item.from.vm.nodeId)
+    //     return item.from.vm.nodeId
     //   })
     // })
 
@@ -68,7 +68,7 @@ export default defineComponent({
 
     const afterConnected = () => {
       console.log(toPort, fromPort)
-      feAttrValue.value[feAttrValue.value.length - 1] = fromPort?.value.vm.props.nodeId
+      feAttrValue.value[feAttrValue.value.length - 1] = fromPort?.value.vm.nodeId
       feAttrValue.value.push('')
     }
 

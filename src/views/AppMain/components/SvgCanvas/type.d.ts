@@ -1,3 +1,5 @@
+import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
+
 export interface Port<T> {
   vm: T;
   attr: string;

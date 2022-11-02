@@ -52,11 +52,11 @@ export default function canvasStuff() {
     linkedPathsForSerialize.value[path.id] = {
       id: path.id,
       from: {
-        vm: path.from.vm.proxy.nodeId,
+        vm: path.from.vm.nodeId,
         attr: path.from.attr
       },
       to: {
-        vm: path.to.vm.proxy.nodeId,
+        vm: path.to.vm.nodeId,
         attr: path.to.attr
       }
     }
@@ -95,21 +95,21 @@ export default function canvasStuff() {
     fromPort: any,
     toPort: any
   ) => {
-    if (!relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.proxy!.$props!.nodeId]) {
-      relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.proxy!.$props!.nodeId] = {
+    if (!relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.nodeId]) {
+      relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.nodeId] = {
         in: [],
         out: []
       }
     }
-    relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
+    relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.nodeId].out.push(linkedPath)
 
-    if (!relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.proxy!.$props!.nodeId]) {
-      relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.proxy!.$props!.nodeId] = {
+    if (!relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.nodeId]) {
+      relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.nodeId] = {
         in: [],
         out: []
       }
     }
-    relativePathMapIndexedByNodeId.value[unref(toPort).vm.proxy?.$props?.nodeId].in.push(linkedPath)
+    relativePathMapIndexedByNodeId.value[unref(toPort).vm.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
 }

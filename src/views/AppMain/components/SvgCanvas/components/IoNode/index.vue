@@ -50,7 +50,7 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, shallowRef, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
@@ -84,7 +84,7 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const vm = ref(getCurrentInstance())
+    const vm = shallowRef(getCurrentInstance()!.proxy)
     const fromPort = inject<Ref<Port<any>>>('fromPort')
     const toPort = inject<Ref<Port<any>>>('toPort')
 
@@ -203,13 +203,13 @@ export default defineComponent({
       const innerLoop = (vm: any) => {
         allDescendants.add(vm)
 
-        vm.props.relativePaths.in.forEach((item: any) => {
+        vm.relativePaths.in.forEach((item: any) => {
           innerLoop(item.from.vm)
         })
-        // [0].from.vm.setupState.allDescendants[0]
+        // [0].from.vm.allDescendants[0]
       }
       innerLoop(unref(vm))
-      // props.relativePaths.in[0].from.vm.props.relativePaths.in[0].from.vm.props.relativePaths.in[0]
+      // props.relativePaths.in[0].from.vm.relativePaths.in[0].from.vm.relativePaths.in[0]
       return [...allDescendants]
     })
     provide('allDescendants', allDescendants)
@@ -217,7 +217,7 @@ export default defineComponent({
     const orderedAllDescendants = computed<any[]>(() => {
       const allInPaths: Path[] = []
       allDescendants?.value.forEach(item => {
-        allInPaths.push(...item.props.relativePaths.in)
+        allInPaths.push(...item.relativePaths.in)
       })
 
       if (allInPaths.length) {

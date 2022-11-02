@@ -106,7 +106,7 @@ export default defineComponent({
     const nodeRefMap = inject(NODE_REF_MAP_SYMBOL)!
     const setNodeRefMap = (ref?: InstanceType<typeof IoNode>) => {
       if (ref) {
-        nodeRefMap.value[ref.nodeId] = ref.$
+        nodeRefMap.value[ref.nodeId] = ref
       }
     }
     onBeforeUpdate(() => { nodeRefMap.value = {} })
@@ -310,7 +310,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       try {
         assertPortCanBeConnected(linkedPath)
         addPath(linkedPath)
-        ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
+        ;(toPort.value?.vm as any)?.afterConnected?.()
 
         addRelationInMapIndexedByNodeId(
           linkedPath,
@@ -424,14 +424,14 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         it = window.structuredClone(it)
 
         it.from.vm = nodeRefMap.value[it.from.vm]
-        it.from.el = it.from.vm.proxy.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)
+        it.from.el = it.from.vm.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)
         const fromPortCoord = [
           it.from.el.getBoundingClientRect().x,
           it.from.el.getBoundingClientRect().y
         ]
 
         it.to.vm = nodeRefMap.value[it.to.vm]
-        it.to.el = it.to.vm.proxy.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
+        it.to.el = it.to.vm.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
         const toPortCoord = [
           it.to.el.getBoundingClientRect().x,
           it.to.el.getBoundingClientRect().y

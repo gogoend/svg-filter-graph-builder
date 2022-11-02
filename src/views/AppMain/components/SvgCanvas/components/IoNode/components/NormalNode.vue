@@ -61,7 +61,7 @@ export default defineComponent({
       const newValueMap: Dictionary<string | number> = {}
 
       props.relativePaths.in.forEach(p => {
-        newValueMap[p.to.attr] = p.from.vm.proxy.mergedFeAttrValue[p.from.attr]
+        newValueMap[p.to.attr] = p.from.vm.mergedFeAttrValue[p.from.attr]
       })
       return newValueMap
     })
@@ -73,8 +73,8 @@ export default defineComponent({
     }))
 
     const getVNodeFragment = (item: any, index: number): VNode => {
-      const is = item.props.is as keyof typeof fe
-      const { mergedFeAttrValue } = item.setupState
+      const is = item.is as keyof typeof fe
+      const { mergedFeAttrValue } = item
 
       const nodeAttrs: Dictionary<string> = {}
       Object.keys(mergedFeAttrValue || {}).forEach(key => {
