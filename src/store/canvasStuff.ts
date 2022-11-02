@@ -23,14 +23,6 @@ export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<t
 
 export default function canvasStuff() {
   const nodes = ref<Record<NodeInStore['id'], NodeInStore>>({})
-  nodes.value = {
-    '91914e37-f574-52cd-9157-bdc30073796a': { is: 'feTurbulence', id: '91914e37-f574-52cd-9157-bdc30073796a', position: [569, 462] },
-    '45c3ab87-518c-5e30-89e6-910f9fa6f1dd': { is: 'feDisplacementMap', id: '45c3ab87-518c-5e30-89e6-910f9fa6f1dd', position: [671, 111] },
-    'C63FCDE9-79FB-4243-90E1-D44258C8902D': { is: 'feOffset', id: 'C63FCDE9-79FB-4243-90E1-D44258C8902D', position: [1, 179] },
-    '4DEDA0C9-30A4-42FC-987F-A0F968C47631': { is: 'feTile', id: '4DEDA0C9-30A4-42FC-987F-A0F968C47631', position: [86, 587] },
-    '98538604-3FD4-4215-8ED9-A4B6882A9AE7': { is: 'feTurbulence', id: '98538604-3FD4-4215-8ED9-A4B6882A9AE7', position: [288, 264] },
-    '3566D34B-971F-4167-8DD4-BA6A4C4A302B': { is: 'feMerge', id: '3566D34B-971F-4167-8DD4-BA6A4C4A302B', position: [273, 32] }
-  }
   provide(ALL_NODES_ON_CANVAS_SYMBOL, nodes)
 
   const addNode = (node: NodeInStore) => {
@@ -120,44 +112,5 @@ export default function canvasStuff() {
     relativePathMapIndexedByNodeId.value[unref(toPort).vm.proxy?.$props?.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
-
-  const loadCanvasFromSerializedStatus = () => {
-    const l = {
-      '0': {
-        id: '0',
-        from: {
-          vm: '3566D34B-971F-4167-8DD4-BA6A4C4A302B',
-          attr: 'result'
-        },
-        to: {
-          vm: '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
-          attr: 'in'
-        }
-      }
-    }
-    Object.values(l).forEach(it => {
-      it = window.structuredClone(it)
-
-      it.from.vm = nodeRefMap.value[it.from.vm]
-      it.from.el = it.from.vm.proxy.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)
-
-      it.to.vm = nodeRefMap.value[it.to.vm]
-      it.to.el = it.to.vm.proxy.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
-
-      // FIXME: 根据真实节点进行计算
-      it.pathDArguments = [0, 0, 0, 0, 0, 0, 0, 0]
-
-      addPath(it)
-      addRelationInMapIndexedByNodeId(
-        it,
-        it.from,
-        it.to
-      )
-    })
-  }
-
-  onMounted(() => {
-    loadCanvasFromSerializedStatus()
-  })
 }
 
