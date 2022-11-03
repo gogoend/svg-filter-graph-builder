@@ -79,4 +79,5 @@ export const getTopoOrder = (paths: Path[]) => {
   }
   return result
 }
+export const noop = (..._args: unknown[]) => { void 0 }
 

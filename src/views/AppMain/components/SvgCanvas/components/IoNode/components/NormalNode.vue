@@ -27,6 +27,7 @@ import fe from '../fe-definition-config'
 import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
+import { noop } from '@/utils'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -121,6 +122,7 @@ export default defineComponent({
       feAttrValue,
       foreignPortValue,
       mergedFeAttrValue,
+      afterConnected: noop,
 
       handlePortMouseenter,
       fe,

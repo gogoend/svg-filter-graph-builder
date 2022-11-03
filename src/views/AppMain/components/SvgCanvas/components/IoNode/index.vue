@@ -85,8 +85,8 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const vm = shallowRef(getCurrentInstance()!.proxy)
-    const fromPort = inject<Ref<Port<any>>>('fromPort')
-    const toPort = inject<Ref<Port<any>>>('toPort')
+    const fromPort = inject<Ref<Port<typeof vm>>>('fromPort')
+    const toPort = inject<Ref<Port<typeof vm>>>('toPort')
 
     const ioNodeEl = ref<SVGGElement>()
 
@@ -108,8 +108,8 @@ export default defineComponent({
      * feAttrValue 供下层（各类型Node）组件递归组件树时使用，直接在本层级获得feAttrValue而无需进入到下层组件
      * 去掉此变量会使得 filterThumb 一片空白，且生成的滤镜标签中无任何属性
      */
-    const mergedFeAttrValue = computed<Dictionary<unknown> | unknown[]>(() => {
-      return (nodeConfigRef.value as any).mergedFeAttrValue
+    const mergedFeAttrValue = computed(() => {
+      return nodeConfigRef.value?.mergedFeAttrValue ?? {}
     })
     /**
      * getVNodeFragment 供下层（各类型Node）组件递归组件树时使用，用于获得滤镜VNode
@@ -119,7 +119,7 @@ export default defineComponent({
     })
 
     const afterConnected = computed(() => {
-      return (nodeConfigRef.value as any)?.afterConnected ?? (() => void 0)
+      return nodeConfigRef.value?.afterConnected ?? (() => void 0)
     })
 
     const canvasScrollEl = inject('canvasScrollEl') as Ref<HTMLElement>

@@ -308,7 +308,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       try {
         assertPortCanBeConnected(linkedPath)
         addPath(linkedPath)
-        ;(toPort.value?.vm as any)?.afterConnected?.()
+        toPort.value?.vm?.afterConnected?.()
 
         addRelationInMapIndexedByNodeId(
           linkedPath,
