@@ -150,12 +150,12 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       if (getPortElType(el) === 'in') {
         ghostPathDArguments.value = [
           coord[0],
-          coord[1],
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[1] + POINT_R,
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
 
-          coord[0] - HANDLE_LENGTH,
-          coord[1],
+          coord[0] - HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
         ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
@@ -164,10 +164,10 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ghostPathDArguments.value = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
 
-          coord[0] - HANDLE_LENGTH,
+          coord[0] - HANDLE_LENGTH + POINT_R,
           coord[1],
           coord[0],
           coord[1]
@@ -251,8 +251,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         pathDArguments = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           ...ghostPathDArguments.value.slice(4)
         ].map((p, i) => {
           if (i <= 3) {
@@ -277,8 +277,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       if (getPortElType(originEl) === 'out') {
         pathDArguments = [
           ...ghostPathDArguments.value.slice(0, 4),
-          coord[0] - HANDLE_LENGTH,
-          coord[1],
+          coord[0] - HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
         ].map((p, i) => {
@@ -351,8 +351,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         item.pathDArguments = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           ...item.pathDArguments.slice(4)
         ].map((p, i) => {
           if (i <= 3) {
@@ -373,8 +373,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
         item.pathDArguments = [
           ...item.pathDArguments.slice(0, 4),
-          coord[0] - HANDLE_LENGTH,
-          coord[1],
+          coord[0] - HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
         ].map((p, i) => {
@@ -434,11 +434,11 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           newIt.pathDArguments = [
             fromPortCoord[0] + 2 * POINT_R,
             fromPortCoord[1] + POINT_R,
-            fromPortCoord[0] + HANDLE_LENGTH,
-            fromPortCoord[1],
+            fromPortCoord[0] + HANDLE_LENGTH + POINT_R,
+            fromPortCoord[1] + POINT_R,
 
-            toPortCoord[0] - HANDLE_LENGTH,
-            toPortCoord[1],
+            toPortCoord[0] - HANDLE_LENGTH + POINT_R,
+            toPortCoord[1] + POINT_R,
             toPortCoord[0],
             toPortCoord[1] + POINT_R
           ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
