@@ -5,6 +5,11 @@
     :key="`in-${index}`">
     <em
       class="port in"
+      :style="{
+        width: `${2 * POINT_R}px`,
+        height: `${ 2 * POINT_R }px`,
+        borderWidth: `${ POINT_BORDER_W }px`
+      }"
       data-port-type="in"
       r="10"
       :data-fe-attr="`in-${index}`"
@@ -25,6 +30,7 @@ import fe from '../fe-definition-config'
 
 import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { Dictionary } from '@/utils/type'
+import { POINT_BORDER_W, POINT_R } from '@/config/ui'
 
 export default defineComponent({
   name: 'MergeNode',
@@ -55,8 +61,8 @@ export default defineComponent({
 
     // const feAttrValue = computed<string[]>(() => {
     //   return props.relativePaths.in.map(item => {
-    //     console.log(item.from.vm.props.nodeId)
-    //     return item.from.vm.props.nodeId
+    //     console.log(item.from.vm.nodeId)
+    //     return item.from.vm.nodeId
     //   })
     // })
 
@@ -68,7 +74,7 @@ export default defineComponent({
 
     const afterConnected = () => {
       console.log(toPort, fromPort)
-      feAttrValue.value[feAttrValue.value.length - 1] = fromPort?.value.vm.props.nodeId
+      feAttrValue.value[feAttrValue.value.length - 1] = fromPort!.value.vm.nodeId
       feAttrValue.value.push('')
     }
 
@@ -82,6 +88,9 @@ export default defineComponent({
     }
 
     return {
+      POINT_R,
+      POINT_BORDER_W,
+
       fromPort,
 
       ioNodeEl,

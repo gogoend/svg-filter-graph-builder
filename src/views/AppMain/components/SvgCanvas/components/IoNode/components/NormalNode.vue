@@ -5,6 +5,11 @@
     :key="key">
     <em
       class="port in"
+      :style="{
+        width: `${2 * POINT_R}px`,
+        height: `${ 2 * POINT_R }px`,
+        borderWidth: `${ POINT_BORDER_W }px`
+      }"
       data-port-type="in"
       r="10"
       :data-fe-attr="key"
@@ -13,7 +18,7 @@
     />
     <label class="io-node__port-text">
       <span class="port-name">{{ key }}</span>
-      <input v-model="feAttrValue[key]" />
+      <!-- <input v-model="feAttrValue[key]" /> -->
     </label>
   </div>
 
@@ -24,9 +29,11 @@ import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
 
-import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import type { OverwrittenIoNodeType, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
+import { noop } from '@/utils'
+import { POINT_BORDER_W, POINT_R } from '@/config/ui'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -61,7 +68,7 @@ export default defineComponent({
       const newValueMap: Dictionary<string | number> = {}
 
       props.relativePaths.in.forEach(p => {
-        newValueMap[p.to.attr] = p.from.vm.proxy.mergedFeAttrValue[p.from.attr]
+        newValueMap[p.to.attr] = p.from.vm.mergedFeAttrValue[p.from.attr]
       })
       return newValueMap
     })
@@ -72,11 +79,11 @@ export default defineComponent({
       result: props.nodeId
     }))
 
-    const getVNodeFragment = (item: any, index: number): VNode => {
-      const is = item.props.is as keyof typeof fe
-      const { mergedFeAttrValue } = item.setupState
+    const getVNodeFragment = (item: OverwrittenIoNodeType, index: number): VNode => {
+      const is = item.is
+      const { mergedFeAttrValue } = item
 
-      const nodeAttrs: Dictionary<string> = {}
+      const nodeAttrs: Dictionary<string | number> = {}
       Object.keys(mergedFeAttrValue || {}).forEach(key => {
         if (mergedFeAttrValue[key] !== undefined) {
           nodeAttrs[key] = mergedFeAttrValue[key] || ''
@@ -113,6 +120,9 @@ export default defineComponent({
       })
     }
     return {
+      POINT_R,
+      POINT_BORDER_W,
+
       fromPort,
 
       ioNodeEl,
@@ -121,6 +131,7 @@ export default defineComponent({
       feAttrValue,
       foreignPortValue,
       mergedFeAttrValue,
+      afterConnected: noop,
 
       handlePortMouseenter,
       fe,

@@ -1,8 +1,9 @@
 import { NodeInStore } from '@/schema/IoNode'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
-import { Ref, ref, InjectionKey, provide } from 'vue'
+import { Ref, ref, InjectionKey, provide, onMounted, unref } from 'vue'
+import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
 
-export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<NodeInStore[]>> = Symbol('Canvas上的所有节点')
+export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
 export const ADD_NODES_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
 export const REMOVE_NODES_SYMBOL: InjectionKey<(nodeId: string) => void> = Symbol('移除节点函数')
 
@@ -10,6 +11,7 @@ export const ALL_LINKED_PATH_ON_CANVAS_SYMBOL: InjectionKey<Ref<Path[]>> = Symbo
 
 export const RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<Ref<Record<string, any>>> = Symbol('节点对应所有出、入连线的映射关系')
 export const REMOVE_PATH_SYMBOL: InjectionKey<(pathId: string) => void> = Symbol('删除连线函数')
+export const ADD_PATH_SYMBOL: InjectionKey<(path: Path) => void> = Symbol('添加连线函数')
 
 export const ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<(
   linkedPath: any,
@@ -17,37 +19,27 @@ export const ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<(
   toPort: any
 ) => void> = Symbol('向 节点id->出、入连线 的映射中添加连线关系')
 
+export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<typeof IoNode>>>> = Symbol('Node组件映射')
+
 export default function canvasStuff() {
-  const nodes = ref<NodeInStore[]>([])
-  nodes.value = [
-    {
-      is: 'feTurbulence',
-      id: '91914e37-f574-52cd-9157-bdc30073796a',
-      position: [80, 30]
-    },
-    {
-      is: 'feDisplacementMap',
-      id: '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
-      position: [720, 640]
-    }
-  ]
+  const nodes = ref<Record<NodeInStore['id'], NodeInStore>>({})
   provide(ALL_NODES_ON_CANVAS_SYMBOL, nodes)
 
   const addNode = (node: NodeInStore) => {
-    nodes.value.push(node)
+    nodes.value[node.id] = node
   }
   provide(ADD_NODES_SYMBOL, addNode)
 
   const removeNode = (nodeId: string) => {
-    for (let i = 0; i < nodes.value.length;) {
-      if (nodeId === nodes.value[i].id) {
-        nodes.value.splice(i, 1)
-        return
-      }
-      i++
-    }
+    delete nodes.value[nodeId]
   }
   provide(REMOVE_NODES_SYMBOL, removeNode)
+
+  const nodeRefMap = ref<Record<string, InstanceType<typeof IoNode>>>({})
+  provide(NODE_REF_MAP_SYMBOL, nodeRefMap)
+
+  const linkedPathsForSerialize = ref<Record<string, any>>({})
+  provide('tempLinkedPathsForSerialize', linkedPathsForSerialize)
 
   const linkedPaths = ref<Path[]>([])
   provide(ALL_LINKED_PATH_ON_CANVAS_SYMBOL, linkedPaths)
@@ -55,9 +47,27 @@ export default function canvasStuff() {
   const relativePathMapIndexedByNodeId = ref<Record<string, any>>({})
   provide(RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL, relativePathMapIndexedByNodeId)
 
+  const addPath = (path: Path) => {
+    linkedPaths.value.push(path)
+    linkedPathsForSerialize.value[path.id] = {
+      id: path.id,
+      from: {
+        vmId: path.from.vm.nodeId,
+        attr: path.from.attr
+      },
+      to: {
+        vmId: path.to.vm.nodeId,
+        attr: path.to.attr
+      }
+    }
+  }
+  provide(ADD_PATH_SYMBOL, addPath)
+
   const removePath = (pathId: string) => {
     const targetIndex = linkedPaths.value.findIndex(path => path.id === pathId)
     linkedPaths.value.splice(targetIndex, 1)
+
+    delete linkedPathsForSerialize.value[pathId]
 
     Object.values(relativePathMapIndexedByNodeId.value).forEach(
       it => {
@@ -85,21 +95,21 @@ export default function canvasStuff() {
     fromPort: any,
     toPort: any
   ) => {
-    if (!relativePathMapIndexedByNodeId.value[fromPort.value!.vm.proxy!.$props!.nodeId]) {
-      relativePathMapIndexedByNodeId.value[fromPort.value!.vm.proxy!.$props!.nodeId] = {
+    if (!relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.nodeId]) {
+      relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.nodeId] = {
         in: [],
         out: []
       }
     }
-    relativePathMapIndexedByNodeId.value[fromPort.value!.vm.proxy!.$props!.nodeId].out.push(linkedPath)
+    relativePathMapIndexedByNodeId.value[unref(fromPort)!.vm.nodeId].out.push(linkedPath)
 
-    if (!relativePathMapIndexedByNodeId.value[toPort.value!.vm.proxy!.$props!.nodeId]) {
-      relativePathMapIndexedByNodeId.value[toPort.value!.vm.proxy!.$props!.nodeId] = {
+    if (!relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.nodeId]) {
+      relativePathMapIndexedByNodeId.value[unref(toPort)!.vm.nodeId] = {
         in: [],
         out: []
       }
     }
-    relativePathMapIndexedByNodeId.value[toPort.value?.vm.proxy?.$props?.nodeId].in.push(linkedPath)
+    relativePathMapIndexedByNodeId.value[unref(toPort).vm.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
 }

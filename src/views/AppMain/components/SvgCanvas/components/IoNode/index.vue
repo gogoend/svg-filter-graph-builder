@@ -19,8 +19,11 @@
           <em
             class="port out"
             data-port-type="out"
-            r="10"
-            cx="250"
+            :style="{
+              width: `${2 * POINT_R}px`,
+              height: `${ 2 * POINT_R }px`,
+              borderWidth: `${ POINT_BORDER_W }px`
+            }"
             data-fe-attr="result"
             :ref="setFeAttrEls"
             @mouseenter="handlePortMouseenter"
@@ -50,19 +53,21 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, ShallowRef, shallowRef, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
-import type { Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import type { OverwrittenIoNodeType, Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { getTopoOrder, isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
-import { filterLibraryPanelWidth } from '@/config/ui'
+import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 
-export default defineComponent({
+const IoNode: {
+  new(): OverwrittenIoNodeType
+} = defineComponent({
   components: { NormalNode, MergeNode },
   name: 'IoNode',
   props: {
@@ -84,9 +89,9 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const vm = ref(getCurrentInstance())
-    const fromPort = inject<Ref<Port<any>>>('fromPort')
-    const toPort = inject<Ref<Port<any>>>('toPort')
+    const vm = getCurrentInstance()!.proxy as unknown as OverwrittenIoNodeType
+    const fromPort = inject<Ref<Port<typeof vm>>>('fromPort')
+    const toPort = inject<Ref<Port<typeof vm>>>('toPort')
 
     const ioNodeEl = ref<SVGGElement>()
 
@@ -108,8 +113,8 @@ export default defineComponent({
      * feAttrValue 供下层（各类型Node）组件递归组件树时使用，直接在本层级获得feAttrValue而无需进入到下层组件
      * 去掉此变量会使得 filterThumb 一片空白，且生成的滤镜标签中无任何属性
      */
-    const mergedFeAttrValue = computed<Dictionary<unknown> | unknown[]>(() => {
-      return (nodeConfigRef.value as any).mergedFeAttrValue
+    const mergedFeAttrValue = computed(() => {
+      return nodeConfigRef.value?.mergedFeAttrValue ?? {}
     })
     /**
      * getVNodeFragment 供下层（各类型Node）组件递归组件树时使用，用于获得滤镜VNode
@@ -119,7 +124,7 @@ export default defineComponent({
     })
 
     const afterConnected = computed(() => {
-      return (nodeConfigRef.value as any)?.afterConnected ?? (() => void 0)
+      return nodeConfigRef.value?.afterConnected ?? (() => void 0)
     })
 
     const canvasScrollEl = inject('canvasScrollEl') as Ref<HTMLElement>
@@ -198,37 +203,40 @@ export default defineComponent({
     provide('handlePortMouseenter', handlePortMouseenter)
 
     // 计算属性，表示当前节点下的所有的后代节点
-    const allDescendants = computed<any[]>(() => {
-      const allDescendants = new Set()
-      const innerLoop = (vm: any) => {
+    const allDescendants = computed<OverwrittenIoNodeType[]>(() => {
+      const allDescendants = new Set<OverwrittenIoNodeType>()
+      const innerLoop = (vm: OverwrittenIoNodeType) => {
         allDescendants.add(vm)
 
-        vm.props.relativePaths.in.forEach((item: any) => {
+        vm.relativePaths.in.forEach((item) => {
           innerLoop(item.from.vm)
         })
-        // [0].from.vm.setupState.allDescendants[0]
+        // [0].from.vm.allDescendants[0]
       }
-      innerLoop(unref(vm))
-      // props.relativePaths.in[0].from.vm.props.relativePaths.in[0].from.vm.props.relativePaths.in[0]
+      innerLoop(vm)
+      // props.relativePaths.in[0].from.vm.relativePaths.in[0].from.vm.relativePaths.in[0]
       return [...allDescendants]
     })
     provide('allDescendants', allDescendants)
 
-    const orderedAllDescendants = computed<any[]>(() => {
+    const orderedAllDescendants = computed<OverwrittenIoNodeType[]>(() => {
       const allInPaths: Path[] = []
       allDescendants?.value.forEach(item => {
-        allInPaths.push(...item.props.relativePaths.in)
+        allInPaths.push(...item.relativePaths.in)
       })
 
       if (allInPaths.length) {
         return getTopoOrder(allInPaths)
       } else {
-        return [vm.value]
+        return [vm]
       }
     })
     provide('orderedAllDescendants', orderedAllDescendants)
 
     return {
+      POINT_R,
+      POINT_BORDER_W,
+
       fromPort,
 
       ioNodeEl,
@@ -249,6 +257,8 @@ export default defineComponent({
     }
   }
 })
+
+export default IoNode
 </script>
 
 <style lang="scss" scoped>
@@ -266,14 +276,14 @@ export default defineComponent({
     overflow: visible;
   }
   &__body {
-    width: 20em;
+    width: fit-content;
+    min-width: 10em;
     background-color: #333333;
     padding: 0.5em 0;
     position: relative;
     font-size: 12px;
   }
   .module-name {
-    font-size: 1.25em;
   }
   &__filter-thumb {
     position: absolute;
@@ -285,10 +295,10 @@ export default defineComponent({
     background-color: #f0f0f0;
   }
   :deep(.port) {
+    display: block;
+    box-sizing: border-box;
     background-color: #333333;
-    border: 4px solid;
-    width: 0.75em;
-    height: 0.75em;
+    border-style: solid;
     border-radius: 50%;
     flex: 0 0 auto;
     cursor: grab;
@@ -320,7 +330,6 @@ export default defineComponent({
       justify-content: space-between;
       align-items: center;
       .port-name {
-        font-size: 1.25em;
       }
       input {
         width: 6em;

@@ -1,16 +1,16 @@
-import { Path, Port } from '@/views/AppMain/components/SvgCanvas/type'
+import { OverwrittenIoNodeType, Path, Port } from '@/views/AppMain/components/SvgCanvas/type'
 
 function checkLoop(path: Path) {
   const { to, from } = path
   let hasLoop = false
-  const innerLoop = (from: Port<any>) => {
+  const innerLoop = (from: Port<OverwrittenIoNodeType>) => {
     if (to.vm === from.vm) {
       hasLoop = true
       return
     }
-    for (let i = 0; i < from.vm.props.relativePaths.in.length; i++) {
+    for (let i = 0; i < from.vm.relativePaths.in.length; i++) {
       if (hasLoop) break
-      const item = from.vm.props.relativePaths.in[i]
+      const item = from.vm.relativePaths.in[i]
       innerLoop(item.from)
     }
   }
@@ -21,7 +21,7 @@ function checkLoop(path: Path) {
 function checkDuplicateLink(path: Path) {
   const { to, from } = path
 
-  const duplicatedLinks = to.vm.props.relativePaths.in.filter((path: Path) => {
+  const duplicatedLinks = to.vm.relativePaths.in.filter((path: Path) => {
     // out port可以连出多条线，但in port只能连入一条线
     return (
       to.attr === path.to.attr && to.vm === path.to.vm
@@ -49,8 +49,8 @@ export function assertPortCanBeConnected(path: Path) {
     throw new TypeError('连接产生了环')
   }
   console.log(
-    path.to.vm.props.relativePaths.in[0]
-      ?.from.vm.props.relativePaths.in[0]
-      ?.from.vm.props.relativePaths.in
+    path.to.vm.relativePaths.in[0]
+      ?.from.vm.relativePaths.in[0]
+      ?.from.vm.relativePaths.in
   )
 }

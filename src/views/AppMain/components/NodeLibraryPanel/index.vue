@@ -50,11 +50,11 @@ export default defineComponent({
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
           draggingNodeIcon.value = icon.title
-          nextTick(() => ghostNodeRef.value.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY]))
+          nextTick(() => ghostNodeRef.value!.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY]))
         },
         move(ev, { originEl }) {
           console.log(ghostNodeRef.value)
-          ghostNodeRef.value.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY])
+          ghostNodeRef.value!.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY])
           void 0
         },
         up(ev, { originEl }) {

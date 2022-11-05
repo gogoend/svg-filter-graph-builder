@@ -13,7 +13,7 @@
     }"
   >
     <io-node
-      :ref="setNodeRefs"
+      :ref="setNodeRefMap"
       v-for="node in nodes"
       :key="node.id"
       :is="node.is"
@@ -62,17 +62,20 @@ import IoPath from './components/IoPath/index.vue'
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
-import { filterLibraryPanelWidth } from '@/config/ui'
-import { ALL_LINKED_PATH_ON_CANVAS_SYMBOL, ALL_NODES_ON_CANVAS_SYMBOL, REMOVE_PATH_SYMBOL, RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL, ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL } from '@/store/canvasStuff'
+import { filterLibraryPanelWidth, HANDLE_LENGTH, POINT_R } from '@/config/ui'
+import {
+  ALL_LINKED_PATH_ON_CANVAS_SYMBOL,
+  ALL_NODES_ON_CANVAS_SYMBOL,
+  REMOVE_PATH_SYMBOL,
+  RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL,
+  ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL,
+  ADD_PATH_SYMBOL,
+  NODE_REF_MAP_SYMBOL,
+  ADD_NODES_SYMBOL
+} from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
-
-// 圆形半径
-const POINT_R = 10
-// 曲线手柄长度
-const HANDLE_LENGTH = 150
-
-//
-let id = 0
+import { getLinks, getNodes } from '@/api/graph'
+import { uuid } from '@/utils/uuid'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -85,6 +88,7 @@ export default defineComponent({
     provide('canvasScrollEl', canvasScrollEl)
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
+    const addPath = inject(ADD_PATH_SYMBOL)!
     const removePath = inject(REMOVE_PATH_SYMBOL)!
 
     const nodes = inject(ALL_NODES_ON_CANVAS_SYMBOL)!
@@ -92,11 +96,13 @@ export default defineComponent({
     const relativePathMapIndexedByNodeId = inject(RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL)!
     const addRelationInMapIndexedByNodeId = inject(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL)!
 
-    const nodeRefs = ref<InstanceType<typeof IoNode>[]>([])
-    const setNodeRefs = (ref?: InstanceType<typeof IoNode>) => {
-      if (ref) { nodeRefs.value.push(ref as any) }
+    const nodeRefMap = inject(NODE_REF_MAP_SYMBOL)!
+    const setNodeRefMap = (ref?: InstanceType<typeof IoNode>) => {
+      if (ref) {
+        nodeRefMap.value[ref.nodeId] = ref
+      }
     }
-    onBeforeUpdate(() => { nodeRefs.value = [] })
+    onBeforeUpdate(() => { nodeRefMap.value = {} })
 
     /**
      * 鬼影路径参数
@@ -144,12 +150,12 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       if (getPortElType(el) === 'in') {
         ghostPathDArguments.value = [
           coord[0],
-          coord[1],
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[1] + POINT_R,
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
 
-          coord[0] - HANDLE_LENGTH,
-          coord[1],
+          coord[0] - HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
         ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
@@ -158,10 +164,10 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ghostPathDArguments.value = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
 
-          coord[0] - HANDLE_LENGTH,
+          coord[0] - HANDLE_LENGTH + POINT_R,
           coord[1],
           coord[0],
           coord[1]
@@ -245,8 +251,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         pathDArguments = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           ...ghostPathDArguments.value.slice(4)
         ].map((p, i) => {
           if (i <= 3) {
@@ -262,7 +268,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         // 在存储路径时需要将to和from交换，因为连接的出发点是从输入接口，输入接口被存储为了fromPort
         linkedPath = {
           pathDArguments,
-          id: '' + id++,
+          id: uuid(),
           to: fromPort.value as Port<InstanceType<typeof IoNode>>,
           from: toPort.value as Port<InstanceType<typeof IoNode>>
         }
@@ -271,8 +277,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       if (getPortElType(originEl) === 'out') {
         pathDArguments = [
           ...ghostPathDArguments.value.slice(0, 4),
-          coord[0] - HANDLE_LENGTH,
-          coord[1],
+          coord[0] - HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
         ].map((p, i) => {
@@ -288,7 +294,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         })
         linkedPath = {
           pathDArguments,
-          id: '' + id++,
+          id: uuid(),
           from: fromPort.value as Port<InstanceType<typeof IoNode>>,
           to: toPort.value as Port<InstanceType<typeof IoNode>>
         }
@@ -296,8 +302,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       try {
         assertPortCanBeConnected(linkedPath)
-        linkedPaths.value.push(linkedPath)
-        ;(toPort.value?.vm as any)?.setupState?.afterConnected?.()
+        addPath(linkedPath)
+        toPort.value?.vm?.afterConnected?.()
 
         addRelationInMapIndexedByNodeId(
           linkedPath,
@@ -345,8 +351,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         item.pathDArguments = [
           coord[0] + 2 * POINT_R,
           coord[1] + POINT_R,
-          coord[0] + HANDLE_LENGTH,
-          coord[1],
+          coord[0] + HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           ...item.pathDArguments.slice(4)
         ].map((p, i) => {
           if (i <= 3) {
@@ -367,8 +373,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ]
         item.pathDArguments = [
           ...item.pathDArguments.slice(0, 4),
-          coord[0] - HANDLE_LENGTH,
-          coord[1],
+          coord[0] - HANDLE_LENGTH + POINT_R,
+          coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
         ].map((p, i) => {
@@ -398,6 +404,61 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       out: []
     })
 
+    const addNodes = inject(ADD_NODES_SYMBOL)!
+
+    const loadCanvasFromSerializedStatus = async() => {
+      const nodes = await getNodes()
+      Object.values(nodes).forEach(it => {
+        addNodes(it)
+      })
+
+      const links = await getLinks()
+      Object.values(links)
+        .map(it => {
+          const newIt = window.structuredClone(it) as unknown as Path // 强转类型
+
+          newIt.from.vm = nodeRefMap.value[it.from.vmId]
+          newIt.from.el = newIt.from.vm.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)!
+          const fromPortCoord = [
+            newIt.from.el!.getBoundingClientRect().x,
+            newIt.from.el!.getBoundingClientRect().y
+          ]
+
+          newIt.to.vm = nodeRefMap.value[it.to.vmId]
+          newIt.to.el = newIt.to.vm.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
+          const toPortCoord = [
+            newIt.to.el!.getBoundingClientRect().x,
+            newIt.to.el!.getBoundingClientRect().y
+          ]
+
+          newIt.pathDArguments = [
+            fromPortCoord[0] + 2 * POINT_R,
+            fromPortCoord[1] + POINT_R,
+            fromPortCoord[0] + HANDLE_LENGTH + POINT_R,
+            fromPortCoord[1] + POINT_R,
+
+            toPortCoord[0] - HANDLE_LENGTH + POINT_R,
+            toPortCoord[1] + POINT_R,
+            toPortCoord[0],
+            toPortCoord[1] + POINT_R
+          ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
+
+          return newIt
+        })
+        .forEach(it => {
+          addPath(it)
+          addRelationInMapIndexedByNodeId(
+            it,
+            it.from,
+            it.to
+          )
+        })
+    }
+
+    onMounted(() => {
+      loadCanvasFromSerializedStatus()
+    })
+
     return {
       filterLibraryPanelWidth,
 
@@ -407,8 +468,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       ghostNodePosition,
 
       nodes,
-      nodeRefs,
-      setNodeRefs,
+      setNodeRefMap,
 
       linkedPaths,
 
