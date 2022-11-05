@@ -68,7 +68,7 @@ export default defineComponent({
 
     const afterConnected = () => {
       console.log(toPort, fromPort)
-      feAttrValue.value[feAttrValue.value.length - 1] = fromPort?.value.vm.nodeId
+      feAttrValue.value[feAttrValue.value.length - 1] = fromPort!.value.vm.nodeId
       feAttrValue.value.push('')
     }
 

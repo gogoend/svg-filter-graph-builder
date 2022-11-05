@@ -1,11 +1,11 @@
 import { vnode2dom, getTopoOrder } from '@/utils'
 import { Dictionary } from '@/utils/type'
 import { computed, inject, onBeforeUpdate, Ref, ref, h } from 'vue'
-import { Path, Port } from '../../../type'
+import { Path, Port, OverwrittenIoNodeType } from '../../../type'
 
 export default () => {
-  const fromPort = inject<Ref<Port<any>>>('fromPort')
-  const toPort = inject<Ref<Port<any>>>('toPort')
+  const fromPort = inject<Ref<Port<OverwrittenIoNodeType>>>('fromPort')
+  const toPort = inject<Ref<Port<OverwrittenIoNodeType>>>('toPort')
 
   const ioNodeEl = ref<SVGGElement>()
 
@@ -15,10 +15,10 @@ export default () => {
   }
   onBeforeUpdate(() => { feAttrEls.value = [] })
   // 计算属性，表示当前节点下的所有的后代节点
-  const allDescendants = inject<Ref<any[]>>('allDescendants')
-  const orderedAllDescendants = inject<Ref<any[]>>('orderedAllDescendants')
+  const allDescendants = inject<Ref<OverwrittenIoNodeType[]>>('allDescendants')
+  const orderedAllDescendants = inject<Ref<OverwrittenIoNodeType[]>>('orderedAllDescendants')
 
-  const handlePortMouseenter = inject<Ref<any>>('handlePortMouseenter')
+  const handlePortMouseenter = inject<Ref<OverwrittenIoNodeType>>('handlePortMouseenter')
   const filterThumbUrl = computed<string>(() => {
     const prefix = 'data:image/svg+xml,'
     const vnode = h('filter', { id: 'filter' }, (orderedAllDescendants?.value ?? []).map((item, index) => item.getVNodeFragment(item, index)))

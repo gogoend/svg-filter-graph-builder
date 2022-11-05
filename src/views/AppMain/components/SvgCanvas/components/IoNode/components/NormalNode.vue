@@ -24,7 +24,7 @@ import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
 
-import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import type { OverwrittenIoNodeType, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
 import { noop } from '@/utils'
@@ -73,11 +73,11 @@ export default defineComponent({
       result: props.nodeId
     }))
 
-    const getVNodeFragment = (item: any, index: number): VNode => {
-      const is = item.is as keyof typeof fe
+    const getVNodeFragment = (item: OverwrittenIoNodeType, index: number): VNode => {
+      const is = item.is
       const { mergedFeAttrValue } = item
 
-      const nodeAttrs: Dictionary<string> = {}
+      const nodeAttrs: Dictionary<string | number> = {}
       Object.keys(mergedFeAttrValue || {}).forEach(key => {
         if (mergedFeAttrValue[key] !== undefined) {
           nodeAttrs[key] = mergedFeAttrValue[key] || ''

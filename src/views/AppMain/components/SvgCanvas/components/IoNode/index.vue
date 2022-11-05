@@ -50,19 +50,21 @@
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, shallowRef, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, ShallowRef, shallowRef, unref } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
-import type { Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import type { OverwrittenIoNodeType, Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { getTopoOrder, isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth } from '@/config/ui'
 
-export default defineComponent({
+const IoNode: {
+  new(): OverwrittenIoNodeType
+} = defineComponent({
   components: { NormalNode, MergeNode },
   name: 'IoNode',
   props: {
@@ -84,7 +86,7 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const vm = shallowRef(getCurrentInstance()!.proxy)
+    const vm = getCurrentInstance()!.proxy as unknown as OverwrittenIoNodeType
     const fromPort = inject<Ref<Port<typeof vm>>>('fromPort')
     const toPort = inject<Ref<Port<typeof vm>>>('toPort')
 
@@ -198,23 +200,23 @@ export default defineComponent({
     provide('handlePortMouseenter', handlePortMouseenter)
 
     // 计算属性，表示当前节点下的所有的后代节点
-    const allDescendants = computed<any[]>(() => {
-      const allDescendants = new Set()
-      const innerLoop = (vm: any) => {
+    const allDescendants = computed<OverwrittenIoNodeType[]>(() => {
+      const allDescendants = new Set<OverwrittenIoNodeType>()
+      const innerLoop = (vm: OverwrittenIoNodeType) => {
         allDescendants.add(vm)
 
-        vm.relativePaths.in.forEach((item: any) => {
+        vm.relativePaths.in.forEach((item) => {
           innerLoop(item.from.vm)
         })
         // [0].from.vm.allDescendants[0]
       }
-      innerLoop(unref(vm))
+      innerLoop(vm)
       // props.relativePaths.in[0].from.vm.relativePaths.in[0].from.vm.relativePaths.in[0]
       return [...allDescendants]
     })
     provide('allDescendants', allDescendants)
 
-    const orderedAllDescendants = computed<any[]>(() => {
+    const orderedAllDescendants = computed<OverwrittenIoNodeType[]>(() => {
       const allInPaths: Path[] = []
       allDescendants?.value.forEach(item => {
         allInPaths.push(...item.relativePaths.in)
@@ -223,7 +225,7 @@ export default defineComponent({
       if (allInPaths.length) {
         return getTopoOrder(allInPaths)
       } else {
-        return [vm.value]
+        return [vm]
       }
     })
     provide('orderedAllDescendants', orderedAllDescendants)
@@ -249,6 +251,8 @@ export default defineComponent({
     }
   }
 })
+
+export default IoNode
 </script>
 
 <style lang="scss" scoped>

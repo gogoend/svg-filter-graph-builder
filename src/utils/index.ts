@@ -1,4 +1,4 @@
-import { Path } from '@/views/AppMain/components/SvgCanvas/type'
+import { OverwrittenIoNodeType, Path } from '@/views/AppMain/components/SvgCanvas/type'
 import { VNode } from 'vue'
 import { Dictionary } from './type'
 
@@ -39,9 +39,9 @@ export function vnode2dom(vnode: VNode): HTMLElement {
   return rootEl
 }
 
-export const getTopoOrder = (paths: Path[]) => {
-  const inDegree: Map<unknown, number> = new Map()
-  const graph: Map<unknown, unknown[]> = new Map()
+export const getTopoOrder = (paths: Path[]): OverwrittenIoNodeType[] => {
+  const inDegree: Map<OverwrittenIoNodeType, number> = new Map()
+  const graph: Map<OverwrittenIoNodeType, OverwrittenIoNodeType[]> = new Map()
 
   paths.forEach(path => {
     const [fromVm, toVm] = [path.from.vm, path.to.vm]
@@ -55,20 +55,20 @@ export const getTopoOrder = (paths: Path[]) => {
       graph.set(toVm, [])
     }
     inDegree.set(toVm, (inDegree.get(toVm) as number) + 1)
-    ;(graph.get(fromVm) as unknown[]).push(toVm)
+    graph.get(fromVm)!.push(toVm)
   })
 
-  const queue: unknown[] = []; const result:unknown[] = []
+  const queue: OverwrittenIoNodeType[] = []; const result:OverwrittenIoNodeType[] = []
   for (const key of inDegree) {
     if (key[1] === 0) {
       queue.push(key[0])
     }
   }
   while (queue.length) {
-    const cur = queue.shift()
+    const cur = queue.shift()!
     result.push(cur)
 
-    const toEnQueue = graph.get(cur) as unknown[]
+    const toEnQueue = graph.get(cur)!
 
     toEnQueue.forEach(item => {
       inDegree.set(item, (inDegree.get(item) as number) - 1)

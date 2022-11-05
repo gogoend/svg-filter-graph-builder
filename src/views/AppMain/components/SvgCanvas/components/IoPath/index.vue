@@ -30,7 +30,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
 
-import IoNode from '../IoNode/index.vue'
+import { OverwrittenIoNodeType } from '../../type'
 
 export default defineComponent({
   name: 'IoPath',
@@ -44,11 +44,11 @@ export default defineComponent({
       required: true
     },
     from: {
-      type: Object as PropType<InstanceType<typeof IoNode>>,
+      type: Object as PropType<OverwrittenIoNodeType>,
       required: true
     },
     to: {
-      type: Object as PropType<InstanceType<typeof IoNode>>,
+      type: Object as PropType<OverwrittenIoNodeType>,
       required: true
     }
   },

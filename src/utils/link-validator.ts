@@ -1,9 +1,9 @@
-import { Path, Port } from '@/views/AppMain/components/SvgCanvas/type'
+import { OverwrittenIoNodeType, Path, Port } from '@/views/AppMain/components/SvgCanvas/type'
 
 function checkLoop(path: Path) {
   const { to, from } = path
   let hasLoop = false
-  const innerLoop = (from: Port<any>) => {
+  const innerLoop = (from: Port<OverwrittenIoNodeType>) => {
     if (to.vm === from.vm) {
       hasLoop = true
       return
