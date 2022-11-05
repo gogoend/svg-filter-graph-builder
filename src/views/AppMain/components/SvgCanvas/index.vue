@@ -418,43 +418,47 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       })
 
       const links = await getLinks()
-      Object.values(links).forEach(it => {
-        it = window.structuredClone(it)
+      Object.values(links)
+        .map(it => {
+          const newIt = window.structuredClone(it) as unknown as Path // 强转类型
 
-        it.from.vm = nodeRefMap.value[it.from.vm]
-        it.from.el = it.from.vm.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)
-        const fromPortCoord = [
-          it.from.el.getBoundingClientRect().x,
-          it.from.el.getBoundingClientRect().y
-        ]
+          newIt.from.vm = nodeRefMap.value[it.from.vmId]
+          newIt.from.el = newIt.from.vm.$el.querySelector(`[data-fe-attr="${it.from.attr}"]`)!
+          const fromPortCoord = [
+            newIt.from.el!.getBoundingClientRect().x,
+            newIt.from.el!.getBoundingClientRect().y
+          ]
 
-        it.to.vm = nodeRefMap.value[it.to.vm]
-        it.to.el = it.to.vm.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
-        const toPortCoord = [
-          it.to.el.getBoundingClientRect().x,
-          it.to.el.getBoundingClientRect().y
-        ]
+          newIt.to.vm = nodeRefMap.value[it.to.vmId]
+          newIt.to.el = newIt.to.vm.$el.querySelector(`[data-fe-attr="${it.to.attr}"]`)
+          const toPortCoord = [
+            newIt.to.el!.getBoundingClientRect().x,
+            newIt.to.el!.getBoundingClientRect().y
+          ]
 
-        // FIXME: 修正连线端点位置
-        it.pathDArguments = [
-          fromPortCoord[0],
-          fromPortCoord[1],
-          fromPortCoord[0] + HANDLE_LENGTH,
-          fromPortCoord[1],
+          // FIXME: 修正连线端点位置
+          newIt.pathDArguments = [
+            fromPortCoord[0],
+            fromPortCoord[1],
+            fromPortCoord[0] + HANDLE_LENGTH,
+            fromPortCoord[1],
 
-          toPortCoord[0] - HANDLE_LENGTH,
-          toPortCoord[1],
-          toPortCoord[0],
-          toPortCoord[1] + POINT_R
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
+            toPortCoord[0] - HANDLE_LENGTH,
+            toPortCoord[1],
+            toPortCoord[0],
+            toPortCoord[1] + POINT_R
+          ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
 
-        addPath(it)
-        addRelationInMapIndexedByNodeId(
-          it,
-          it.from,
-          it.to
-        )
-      })
+          return newIt
+        })
+        .forEach(it => {
+          addPath(it)
+          addRelationInMapIndexedByNodeId(
+            it,
+            it.from,
+            it.to
+          )
+        })
     }
 
     onMounted(() => {

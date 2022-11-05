@@ -1,4 +1,6 @@
-export async function getNodes() {
+import { LinkInStore, NodeInStore } from '@/schema/IoNode'
+
+export async function getNodes(): Promise<Record<NodeInStore['id'], NodeInStore>> {
   return new Promise(resolve => {
     setTimeout(
       () => {
@@ -16,7 +18,7 @@ export async function getNodes() {
   })
 }
 
-export async function getLinks() {
+export async function getLinks(): Promise<Record<LinkInStore['id'], LinkInStore>> {
   return new Promise(resolve => {
     setTimeout(
       () => {
@@ -25,33 +27,33 @@ export async function getLinks() {
             '0': {
               'id': '0',
               'from': {
-                'vm': 'C63FCDE9-79FB-4243-90E1-D44258C8902D',
+                'vmId': 'C63FCDE9-79FB-4243-90E1-D44258C8902D',
                 'attr': 'result'
               },
               'to': {
-                'vm': '4DEDA0C9-30A4-42FC-987F-A0F968C47631',
+                'vmId': '4DEDA0C9-30A4-42FC-987F-A0F968C47631',
                 'attr': 'in'
               }
             },
             '2': {
               'id': '2',
               'from': {
-                'vm': '4DEDA0C9-30A4-42FC-987F-A0F968C47631',
+                'vmId': '4DEDA0C9-30A4-42FC-987F-A0F968C47631',
                 'attr': 'result'
               },
               'to': {
-                'vm': '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
+                'vmId': '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
                 'attr': 'in'
               }
             },
             '3': {
               'id': '3',
               'from': {
-                'vm': '98538604-3FD4-4215-8ED9-A4B6882A9AE7',
+                'vmId': '98538604-3FD4-4215-8ED9-A4B6882A9AE7',
                 'attr': 'result'
               },
               'to': {
-                'vm': '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
+                'vmId': '45c3ab87-518c-5e30-89e6-910f9fa6f1dd',
                 'attr': 'in2'
               }
             }

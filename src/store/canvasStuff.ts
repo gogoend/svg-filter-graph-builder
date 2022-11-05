@@ -52,11 +52,11 @@ export default function canvasStuff() {
     linkedPathsForSerialize.value[path.id] = {
       id: path.id,
       from: {
-        vm: path.from.vm.nodeId,
+        vmId: path.from.vm.nodeId,
         attr: path.from.attr
       },
       to: {
-        vm: path.to.vm.nodeId,
+        vmId: path.to.vm.nodeId,
         attr: path.to.attr
       }
     }

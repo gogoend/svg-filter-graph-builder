@@ -3,3 +3,15 @@ export interface NodeInStore {
   id: string,
   position: [number, number]
 }
+
+export interface LinkInStore {
+  id: string,
+  from: {
+    vmId: string
+    attr: string
+  }
+  to: {
+    vmId: string
+    attr: string
+  }
+}
