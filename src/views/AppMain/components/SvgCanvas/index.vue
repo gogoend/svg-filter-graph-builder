@@ -196,9 +196,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
             } else {
-              return p
+              return p + canvasScrollEl.value!.scrollTop
             }
           } else {
             return p
@@ -212,9 +212,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
             } else {
-              return p
+              return p + canvasScrollEl.value!.scrollTop
             }
           } else {
             return p
