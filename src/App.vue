@@ -1,27 +1,34 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <DemoSteps>
+    <DemoStepItem
+      v-for="i in stepArr"
+      :key="i"
+    >
+      {{ i }} <button @click="stepArr = stepArr.filter(it => it !== i)">删除</button>
+    </DemoStepItem>
+  </DemoSteps>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import DemoSteps from './components/Steps.vue'
+import DemoStepItem from './components/StepItem.vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld
+    DemoSteps,
+    DemoStepItem
+  },
+  setup() {
+    return {
+      stepArr: ref([
+        0, 1, 2, 3, 4, 5, 6
+      ])
+    }
   }
-});
+})
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style>
 </style>
