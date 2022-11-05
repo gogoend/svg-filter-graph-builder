@@ -1,13 +1,11 @@
 <template>
   <div class="app-wrap">
-    <div
-      class="svg-canvas-wrap"
+    <svg-canvas
+      class="svg-canvas"
       :style="{
         left: filterLibraryPanelWidth + 'px'
       }"
-    >
-      <svg-canvas />
-    </div>
+    />
     <node-library-panel />
   </div>
 </template>
@@ -36,7 +34,7 @@ export default defineComponent({
   right: 0;
   bottom: 0;
   left: 0;
-  .svg-canvas-wrap {
+  .svg-canvas {
     overflow: auto;
     position: absolute;
     top: 0;

@@ -1,58 +1,60 @@
 <template>
-  <svg
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    x="0px"
-    y="0px"
-    viewBox="0 0 4000 4000"
-    xml:space="preserve"
-    class="svg-canvas"
-  >
-    <io-node
-      :ref="setNodeRefMap"
-      v-for="node in nodes"
-      :key="node.id"
-      :is="node.is"
-      :node-id="node.id"
-      @port-start="handlePortStart"
-      @port-move="handlePortMove"
-      @port-connect="handlePortConnect"
-      @port-cancel="handlePortCancel"
-      @destination-change="handleDestinationChange"
-      :relative-paths="
-        relativePathMapIndexedByNodeId[node.id] ?? defaultRelativePath
-      "
-      @node-move="handleNodeMove"
-      v-model:position="node.position"
-    />
-    <io-path
-      v-for="path in linkedPaths"
-      :key="path.id"
-      :path-id="path.id"
-      :path-d-arguments="path.pathDArguments"
-      :from="path.from"
-      :to="path.to"
-      @remove="removePath"
-    ></io-path>
-    <g class="ghost">
-      <path
-        class="ghost-path"
-        :d="ghostPathD"
-      />
+  <div ref="canvasScrollEl">
+    <svg
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      viewBox="0 0 4000 4000"
+      xml:space="preserve"
+      class="svg-canvas-board"
+    >
       <io-node
-        v-if="ghostNodeType"
-        ref="ghostNodeRef"
-        style="opacity: 0.5"
-        :is="ghostNodeType"
-        nodeId="0"
-        v-model:position="ghostNodePosition"
-        :relativePaths="defaultRelativePath" />
-    </g>
-  </svg>
+        :ref="setNodeRefMap"
+        v-for="node in nodes"
+        :key="node.id"
+        :is="node.is"
+        :node-id="node.id"
+        @port-start="handlePortStart"
+        @port-move="handlePortMove"
+        @port-connect="handlePortConnect"
+        @port-cancel="handlePortCancel"
+        @destination-change="handleDestinationChange"
+        :relative-paths="
+          relativePathMapIndexedByNodeId[node.id] ?? defaultRelativePath
+        "
+        @node-move="handleNodeMove"
+        v-model:position="node.position"
+      />
+      <io-path
+        v-for="path in linkedPaths"
+        :key="path.id"
+        :path-id="path.id"
+        :path-d-arguments="path.pathDArguments"
+        :from="path.from"
+        :to="path.to"
+        @remove="removePath"
+      ></io-path>
+      <g class="ghost">
+        <path
+          class="ghost-path"
+          :d="ghostPathD"
+        />
+        <io-node
+          v-if="ghostNodeType"
+          ref="ghostNodeRef"
+          style="opacity: 0.5"
+          :is="ghostNodeType"
+          nodeId="0"
+          v-model:position="ghostNodePosition"
+          :relativePaths="defaultRelativePath" />
+      </g>
+    </svg>
+  </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 
@@ -81,7 +83,7 @@ export default defineComponent({
     IoPath
   },
   setup() {
-    const canvasScrollEl = ref(document.documentElement)
+    const canvasScrollEl = shallowRef<HTMLDivElement>()
     provide('canvasScrollEl', canvasScrollEl)
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
@@ -155,7 +157,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value!.scrollTop)
       }
       if (getPortElType(el) === 'out') {
         ghostPathDArguments.value = [
@@ -168,7 +170,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1]
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value!.scrollTop)
       }
     }
 
@@ -254,9 +256,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
             } else {
-              return p + canvasScrollEl.value.scrollTop
+              return p + canvasScrollEl.value!.scrollTop
             }
           } else {
             return p
@@ -281,9 +283,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
             } else {
-              return p + canvasScrollEl.value.scrollTop
+              return p + canvasScrollEl.value!.scrollTop
             }
           } else {
             return p
@@ -364,9 +366,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
             } else {
-              return p + canvasScrollEl.value.scrollTop
+              return p + canvasScrollEl.value!.scrollTop
             }
           } else {
             return p
@@ -387,9 +389,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
             } else {
-              return p + canvasScrollEl.value.scrollTop
+              return p + canvasScrollEl.value!.scrollTop
             }
           } else {
             return p
@@ -448,7 +450,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             toPortCoord[1] + POINT_R,
             toPortCoord[0],
             toPortCoord[1] + POINT_R
-          ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value.scrollTop)
+          ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value!.scrollTop)
 
           return newIt
         })
@@ -467,6 +469,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
 
     return {
+      canvasScrollEl,
       filterLibraryPanelWidth,
 
       ghostPathD,
@@ -498,7 +501,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 </script>
 
 <style lang="scss" scoped>
-.svg-canvas {
+.svg-canvas-board {
   enable-background: new 0 0 4000 4000;
   width: 4000px;
   height: 4000px;
