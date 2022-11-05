@@ -8,6 +8,7 @@
     <path
       class="linked-path-path"
       :class="{ 'linked-path__focused-path': focused }"
+      :style="{ strokeWidth: `${PATH_STROKE_W}px` }"
       :d="pathD"
       @click="handlePathClick"
       ref="pathRef"
@@ -28,6 +29,7 @@
 </template>
 
 <script lang="ts">
+import { PATH_STROKE_W } from '@/config/ui'
 import { computed, defineComponent, PropType, ref } from 'vue'
 
 import { OverwrittenIoNodeType } from '../../type'
@@ -77,6 +79,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       console.log(ev)
     }
     return {
+      PATH_STROKE_W,
+
       focused,
       pathRef,
       pathD,

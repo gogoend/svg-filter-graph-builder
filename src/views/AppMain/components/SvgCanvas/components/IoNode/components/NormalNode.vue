@@ -5,6 +5,11 @@
     :key="key">
     <em
       class="port in"
+      :style="{
+        width: `${2 * POINT_R}px`,
+        height: `${ 2 * POINT_R }px`,
+        borderWidth: `${ POINT_BORDER_W }px`
+      }"
       data-port-type="in"
       r="10"
       :data-fe-attr="key"
@@ -13,7 +18,7 @@
     />
     <label class="io-node__port-text">
       <span class="port-name">{{ key }}</span>
-      <input v-model="feAttrValue[key]" />
+      <!-- <input v-model="feAttrValue[key]" /> -->
     </label>
   </div>
 
@@ -28,6 +33,7 @@ import type { OverwrittenIoNodeType, RelativePathForNode } from '@/views/AppMain
 import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
 import { noop } from '@/utils'
+import { POINT_BORDER_W, POINT_R } from '@/config/ui'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -114,6 +120,9 @@ export default defineComponent({
       })
     }
     return {
+      POINT_R,
+      POINT_BORDER_W,
+
       fromPort,
 
       ioNodeEl,

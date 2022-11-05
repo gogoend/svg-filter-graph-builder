@@ -19,8 +19,11 @@
           <em
             class="port out"
             data-port-type="out"
-            r="10"
-            cx="250"
+            :style="{
+              width: `${2 * POINT_R}px`,
+              height: `${ 2 * POINT_R }px`,
+              borderWidth: `${ POINT_BORDER_W }px`
+            }"
             data-fe-attr="result"
             :ref="setFeAttrEls"
             @mouseenter="handlePortMouseenter"
@@ -60,7 +63,7 @@ import { getTopoOrder, isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
-import { filterLibraryPanelWidth } from '@/config/ui'
+import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 
 const IoNode: {
   new(): OverwrittenIoNodeType
@@ -231,6 +234,9 @@ const IoNode: {
     provide('orderedAllDescendants', orderedAllDescendants)
 
     return {
+      POINT_R,
+      POINT_BORDER_W,
+
       fromPort,
 
       ioNodeEl,
@@ -270,14 +276,14 @@ export default IoNode
     overflow: visible;
   }
   &__body {
-    width: 20em;
+    width: fit-content;
+    min-width: 10em;
     background-color: #333333;
     padding: 0.5em 0;
     position: relative;
     font-size: 12px;
   }
   .module-name {
-    font-size: 1.25em;
   }
   &__filter-thumb {
     position: absolute;
@@ -289,10 +295,10 @@ export default IoNode
     background-color: #f0f0f0;
   }
   :deep(.port) {
+    display: block;
+    box-sizing: border-box;
     background-color: #333333;
-    border: 4px solid;
-    width: 0.75em;
-    height: 0.75em;
+    border-style: solid;
     border-radius: 50%;
     flex: 0 0 auto;
     cursor: grab;
@@ -324,7 +330,6 @@ export default IoNode
       justify-content: space-between;
       align-items: center;
       .port-name {
-        font-size: 1.25em;
       }
       input {
         width: 6em;

@@ -62,7 +62,7 @@ import IoPath from './components/IoPath/index.vue'
 import type { Port, Path, Node, RelativePathForNode } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
-import { filterLibraryPanelWidth } from '@/config/ui'
+import { filterLibraryPanelWidth, HANDLE_LENGTH, POINT_R } from '@/config/ui'
 import {
   ALL_LINKED_PATH_ON_CANVAS_SYMBOL,
   ALL_NODES_ON_CANVAS_SYMBOL,
@@ -76,11 +76,6 @@ import {
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 import { getLinks, getNodes } from '@/api/graph'
 import { uuid } from '@/utils/uuid'
-
-// 圆形半径
-const POINT_R = 10
-// 曲线手柄长度
-const HANDLE_LENGTH = 150
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -436,10 +431,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             newIt.to.el!.getBoundingClientRect().y
           ]
 
-          // FIXME: 修正连线端点位置
           newIt.pathDArguments = [
-            fromPortCoord[0],
-            fromPortCoord[1],
+            fromPortCoord[0] + 2 * POINT_R,
+            fromPortCoord[1] + POINT_R,
             fromPortCoord[0] + HANDLE_LENGTH,
             fromPortCoord[1],
 
