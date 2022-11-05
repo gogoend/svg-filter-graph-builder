@@ -3,10 +3,17 @@
     <svg-canvas
       class="svg-canvas"
       :style="{
-        left: filterLibraryPanelWidth + 'px'
+        left: filterLibraryPanelWidth + 'px',
+        right: 0
       }"
     />
-    <node-library-panel />
+    <node-library-panel
+      class="node-library-panel"
+      :style="{
+        left: 0,
+        width: filterLibraryPanelWidth + 'px'
+      }"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -17,7 +24,10 @@ import { filterLibraryPanelWidth } from '@/config/ui'
 
 export default defineComponent({
   name: 'AppMain',
-  components: { SvgCanvas, NodeLibraryPanel },
+  components: {
+    SvgCanvas,
+    NodeLibraryPanel
+  },
   setup() {
     return {
       filterLibraryPanelWidth
@@ -38,8 +48,13 @@ export default defineComponent({
     overflow: auto;
     position: absolute;
     top: 0;
-    right: 0;
     bottom: 0;
+  }
+  .node-library-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow: auto;
   }
 }
 </style>
