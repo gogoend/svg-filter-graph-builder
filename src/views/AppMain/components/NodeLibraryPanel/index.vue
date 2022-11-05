@@ -20,13 +20,15 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, inject } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
-import { useStore } from 'vuex'
 import { uuid } from '@/utils/uuid'
 
 import fe from '@/views/AppMain/components/SvgCanvas/components/IoNode/fe-definition-config'
 import { filterLibraryPanelWidth } from '@/config/ui'
+
+import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
+import { ADD_NODES_SYMBOL } from '@/store/canvasStuff'
 
 const menuGroup = [
   {
@@ -40,13 +42,14 @@ const menuGroup = [
 export default defineComponent({
   name: 'NodeLibraryPanel',
   setup(props, { emit }) {
-    const store = useStore()
+    const ghostNodeRef = inject(GHOST_NODE_REF_SYMBOL)!
+    const draggingNodeIcon = inject(DRAGGING_NODE_ICON_SYMBOL)!
+    const addNodes = inject(ADD_NODES_SYMBOL)!
 
-    const ghostNodeRef = computed(() => store.state.ghostNodeRef)
     const handleIconMousedown = function(ev: MouseEvent, icon: any) {
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
-          store.commit('SET_DRAGGING_NODE_ICON', icon.title)
+          draggingNodeIcon.value = icon.title
           nextTick(() => ghostNodeRef.value.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY]))
         },
         move(ev, { originEl }) {
@@ -55,12 +58,12 @@ export default defineComponent({
           void 0
         },
         up(ev, { originEl }) {
-          store.commit('ADD_NODE', {
+          addNodes({
             is: icon.title,
             id: uuid(),
             position: [ev.clientX - filterLibraryPanelWidth, ev.clientY]
           })
-          store.commit('SET_DRAGGING_NODE_ICON', null)
+          draggingNodeIcon.value = null
           void 0
         }
       })
