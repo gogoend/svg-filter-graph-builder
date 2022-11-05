@@ -305,11 +305,21 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         addPath(linkedPath)
         toPort.value?.vm?.afterConnected?.()
 
-        addRelationInMapIndexedByNodeId(
-          linkedPath,
-          fromPort,
-          toPort
-        )
+        // 处理开始端口为out端口
+        if (getPortElType(originEl) === 'out') {
+          addRelationInMapIndexedByNodeId(
+            linkedPath,
+            fromPort,
+            toPort
+          )
+        } else {
+          // 处理开始端口为in端口
+          addRelationInMapIndexedByNodeId(
+            linkedPath,
+            toPort,
+            fromPort
+          )
+        }
       } catch (err) {
         console.error(err)
       }
