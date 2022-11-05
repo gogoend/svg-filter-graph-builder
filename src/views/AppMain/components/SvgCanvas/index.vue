@@ -5,12 +5,9 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     x="0px"
     y="0px"
-    viewBox="0 0 1920 1080"
+    viewBox="0 0 4000 4000"
     xml:space="preserve"
     class="svg-canvas"
-    :style="{
-      marginLeft: filterLibraryPanelWidth + 'px'
-    }"
   >
     <io-node
       :ref="setNodeRefMap"
@@ -492,9 +489,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
 <style lang="scss" scoped>
 .svg-canvas {
-  enable-background: new 0 0 1920 1080;
-  width: 1920px;
-  height: 1080px;
+  enable-background: new 0 0 4000 4000;
+  width: 4000px;
+  height: 4000px;
   .draggable {
     cursor: grab;
   }
