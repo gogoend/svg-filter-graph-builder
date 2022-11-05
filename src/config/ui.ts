@@ -1,4 +1,5 @@
-export const filterLibraryPanelWidth = 200
+export const filterLibraryPanelWidth = 150
+export const stuffConfigPanelWidth = 300
 
 // 圆形半径
 export const POINT_R = 10
