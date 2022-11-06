@@ -152,6 +152,9 @@ const IoNode: {
     const afterPathConnected = computed(() => {
       return nodeConfigRef.value?.afterPathConnected ?? (() => void 0)
     })
+    const afterPathRemoved = computed(() => {
+      return nodeConfigRef.value?.afterPathRemoved ?? (() => void 0)
+    })
 
     const canvasScrollEl = inject('canvasScrollEl') as Ref<HTMLElement>
     const handleNodeMousedown = function(ev: MouseEvent) {
@@ -280,6 +283,7 @@ const IoNode: {
       fe,
       allDescendants,
       afterPathConnected,
+      afterPathRemoved,
 
       nodeConfigRef,
       filterThumbUrl,

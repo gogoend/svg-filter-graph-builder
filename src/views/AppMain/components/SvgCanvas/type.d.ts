@@ -36,4 +36,5 @@ export interface OverwrittenIoNodeType extends ComponentPublicInstance {
   getVNodeFragment: (item: OverwrittenIoNodeType, index: number) => VNode,
   is: keyof typeof fe,
   afterPathConnected?: () => void
+  afterPathRemoved?: (targetPath: Path) => void
 }

@@ -65,7 +65,7 @@ export default function canvasStuff() {
 
   const removePath = (pathId: string) => {
     const targetIndex = linkedPaths.value.findIndex(path => path.id === pathId)
-    linkedPaths.value.splice(targetIndex, 1)
+    const [targetPath] = linkedPaths.value.splice(targetIndex, 1)
 
     delete linkedPathsForSerialize.value[pathId]
 
@@ -87,6 +87,7 @@ export default function canvasStuff() {
         }
       }
     )
+    targetPath.to.vm.afterPathRemoved?.(targetPath)
   }
   provide(REMOVE_PATH_SYMBOL, removePath)
 

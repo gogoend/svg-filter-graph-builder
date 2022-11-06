@@ -32,6 +32,7 @@ import fe from '../fe-definition-config'
 import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { Dictionary } from '@/utils/type'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
+import { Path } from '@/views/AppMain/components/SvgCanvas/type'
 
 export default defineComponent({
   name: 'MergeNode',
@@ -85,6 +86,10 @@ export default defineComponent({
         feAttrValue.value[index + 1] = ''
       }
     }
+    const afterPathRemoved = (removedPath: Path) => {
+      const { attr } = removedPath.to
+      feAttrValue.value[Number(attr)] = ''
+    }
 
     const getVNodeFragment = (): VNode => {
       const { is, nodeId } = props
@@ -107,6 +112,7 @@ export default defineComponent({
       feAttrValue,
       mergedFeAttrValue,
       afterPathConnected,
+      afterPathRemoved,
 
       handlePortMouseenter,
       allDescendants,
