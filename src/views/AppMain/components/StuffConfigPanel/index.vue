@@ -3,7 +3,14 @@
     class="stuff-config-panel"
     :style="{width: stuffConfigPanelWidth+'px'}"
   >
-    {{ formForUserFill }}
+    <form is="ui-form">
+      <form-item
+        v-for="(port, key) in formFieldConfig.ports"
+        :key="key"
+        :schema="port"
+        :field-id="key"
+      ></form-item>
+    </form>
   </div>
 </template>
 <script lang="ts">
@@ -14,18 +21,29 @@ import { uuid } from '@/utils/uuid'
 import fe from '@/views/AppMain/components/SvgCanvas/components/IoNode/fe-definition-config'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 
+import FormItem from './components/FormItem.vue'
+
 export default defineComponent({
   name: 'StuffConfigPanel',
+  components: { FormItem },
   setup(props, { emit }) {
     const [focusingNode] = inject(FOCUSING_NODE_SYMBOL)!
-    const formForUserFill = computed(() => {
-      return unref(focusingNode)?.nodeConfigRef.mergedFeAttrValue ?? {}
+
+    const formFieldConfig = computed(() => {
+      if (
+        unref(focusingNode) && unref(focusingNode)?.is
+      ) {
+        return fe[unref(focusingNode)!.is]
+      } else {
+        return {}
+      }
     })
 
     return {
-      formForUserFill,
+      stuffConfigPanelWidth,
+
       focusingNode,
-      stuffConfigPanelWidth
+      formFieldConfig
     }
   }
 })
