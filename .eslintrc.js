@@ -12,6 +12,7 @@ module.exports = {
     ecmaVersion: 2020
   },
   rules: {
+    'vue/no-deprecated-html-element-is': 'off',
     'vue/max-attributes-per-line': [1, {
       'singleline': {
         'max': 1
