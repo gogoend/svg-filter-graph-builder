@@ -26,8 +26,8 @@ export interface RelativePathForNode {
 
 import { VNode, ComponentPublicInstance } from 'vue'
 import fe from './components/IoNode/fe-definition-config'
-import NormalNode from './components/NormalNode.vue'
-import MergeNode from './components/MergeNode.vue'
+import NormalNode from './components/IoNode/components/NormalNode.vue'
+import MergeNode from './components/IoNode/components/MergeNode.vue'
 export interface OverwrittenIoNodeType extends ComponentPublicInstance {
   nodeConfigRef: InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>
   nodeId: string,
