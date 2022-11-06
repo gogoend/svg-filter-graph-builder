@@ -1,7 +1,6 @@
 <template>
   <div
     class="node-library-panel"
-    :style="{width: filterLibraryPanelWidth+'px'}"
   >
     <div
       v-for="(group, index) in menuGroup"
@@ -78,10 +77,6 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .node-library-panel {
-  position: fixed;
-  height: 100vh;
-  top: 0;
-  overflow: hidden;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   user-select: none;
