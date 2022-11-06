@@ -208,6 +208,16 @@ export const feBlend: SVGFilterConfig.Node = {
     }
   }
 }
+
+export const StringLiteral: SVGFilterConfig.Node = {
+  type: 'string-literal',
+  ports: {
+    value: {
+      type: 'text'
+    }
+  }
+}
+
 export default {
   SourceGraphic,
   SourceAlpha,
@@ -220,5 +230,7 @@ export default {
   feTile,
   feDisplacementMap,
   feImage,
-  feBlend
+  feBlend,
+
+  StringLiteral
 }

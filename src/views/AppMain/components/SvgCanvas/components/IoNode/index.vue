@@ -61,6 +61,14 @@
             ref="nodeConfigRef"
           />
         </template>
+        <template v-else-if="['string-literal'].includes(fe[is].type)">
+          <string-literal-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
       </div>
     </foreignObject>
   </g>
@@ -73,9 +81,12 @@ import fe from './fe-definition-config'
 
 import type { OverwrittenIoNodeType, Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { getTopoOrder, isPortEl } from '@/utils'
+
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import SourceNode from './components/SourceNode.vue'
+import StringLiteralNode from './components/StringLiteralNode.vue'
+
 import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
@@ -83,7 +94,7 @@ import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 const IoNode: {
   new(): OverwrittenIoNodeType
 } = defineComponent({
-  components: { NormalNode, MergeNode, SourceNode },
+  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode },
   name: 'IoNode',
   props: {
     is: {
