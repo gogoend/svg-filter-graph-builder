@@ -33,6 +33,11 @@ export namespace SVGFilterConfig {
         }
     }
 
+    export interface SourceNode {
+        type: 'source';
+        ports: Record<string, never>
+    }
+
     export type Port = NormalPort | NumberPort
-    export type Node = NormalNode | MergeNode
+    export type Node = NormalNode | MergeNode | SourceNode
 }

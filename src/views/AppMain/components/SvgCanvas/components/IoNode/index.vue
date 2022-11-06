@@ -53,6 +53,14 @@
             ref="nodeConfigRef"
           />
         </template>
+        <template v-else-if="['source'].includes(fe[is].type)">
+          <source-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
       </div>
     </foreignObject>
   </g>
@@ -67,6 +75,7 @@ import type { OverwrittenIoNodeType, Path, Port, RelativePathForNode } from '@/v
 import { getTopoOrder, isPortEl } from '@/utils'
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
+import SourceNode from './components/SourceNode.vue'
 import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
@@ -74,7 +83,7 @@ import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 const IoNode: {
   new(): OverwrittenIoNodeType
 } = defineComponent({
-  components: { NormalNode, MergeNode },
+  components: { NormalNode, MergeNode, SourceNode },
   name: 'IoNode',
   props: {
     is: {
