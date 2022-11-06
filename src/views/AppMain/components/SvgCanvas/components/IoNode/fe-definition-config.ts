@@ -1,5 +1,15 @@
 import { SVGFilterConfig } from './type'
 
+export const SourceGraphic: SVGFilterConfig.Node = {
+  type: 'source',
+  ports: {}
+}
+
+export const SourceAlpha: SVGFilterConfig.Node = {
+  type: 'source',
+  ports: {}
+}
+
 export const feConvolveMatrix: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
@@ -198,7 +208,19 @@ export const feBlend: SVGFilterConfig.Node = {
     }
   }
 }
+
+export const StringLiteral: SVGFilterConfig.Node = {
+  type: 'string-literal',
+  ports: {
+    value: {
+      type: 'text'
+    }
+  }
+}
+
 export default {
+  SourceGraphic,
+  SourceAlpha,
   feConvolveMatrix,
   feTurbulence,
   feDropShadow,
@@ -208,5 +230,7 @@ export default {
   feTile,
   feDisplacementMap,
   feImage,
-  feBlend
+  feBlend,
+
+  StringLiteral
 }
