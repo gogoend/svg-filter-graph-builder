@@ -2,7 +2,8 @@
   <div
     class="io-node__li"
     v-for="(item, index) in feAttrValue"
-    :key="`in-${index}`">
+    :key="index"
+  >
     <em
       class="port in"
       :style="{
@@ -12,7 +13,7 @@
       }"
       data-port-type="in"
       r="10"
-      :data-fe-attr="`in-${index}`"
+      :data-fe-attr="index"
       :ref="setFeAttrEls"
       @mouseenter="handlePortMouseenter"
     />
@@ -23,7 +24,7 @@
 
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, PropType, ref, unref, VNode } from 'vue'
+import { computed, defineComponent, h, PropType, ref, unref, VNode, getCurrentInstance } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -31,6 +32,7 @@ import fe from '../fe-definition-config'
 import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
 import { Dictionary } from '@/utils/type'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
+import { Path } from '@/views/AppMain/components/SvgCanvas/type'
 
 export default defineComponent({
   name: 'MergeNode',
@@ -72,10 +74,21 @@ export default defineComponent({
       result: props.nodeId
     }))
 
-    const afterConnected = () => {
-      console.log(toPort, fromPort)
-      feAttrValue.value[feAttrValue.value.length - 1] = fromPort!.value.vm.nodeId
-      feAttrValue.value.push('')
+    const parentVm = getCurrentInstance()!.parent?.proxy
+    const afterPathConnected = () => {
+      console.log(toPort?.value, fromPort?.value)
+
+      const { attr } = [toPort?.value, fromPort?.value].find(it => it?.vm === parentVm)!
+      const index = Number(attr)
+
+      feAttrValue.value[index] = fromPort!.value.vm.nodeId
+      if (!feAttrValue.value[index + 1]) {
+        feAttrValue.value[index + 1] = ''
+      }
+    }
+    const afterPathRemoved = (removedPath: Path) => {
+      const { attr } = removedPath.to
+      feAttrValue.value[Number(attr)] = ''
     }
 
     const getVNodeFragment = (): VNode => {
@@ -98,7 +111,8 @@ export default defineComponent({
       setFeAttrEls,
       feAttrValue,
       mergedFeAttrValue,
-      afterConnected,
+      afterPathConnected,
+      afterPathRemoved,
 
       handlePortMouseenter,
       allDescendants,

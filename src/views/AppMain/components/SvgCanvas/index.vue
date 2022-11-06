@@ -302,7 +302,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       try {
         assertPortCanBeConnected(linkedPath)
         addPath(linkedPath)
-        toPort.value?.vm?.afterConnected?.()
 
         // 处理开始端口为out端口
         if (getPortElType(originEl) === 'out') {
@@ -311,6 +310,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             fromPort,
             toPort
           )
+          toPort.value?.vm?.afterPathConnected?.()
         } else {
           // 处理开始端口为in端口
           addRelationInMapIndexedByNodeId(
@@ -318,6 +318,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             toPort,
             fromPort
           )
+          fromPort.value?.vm?.afterPathConnected?.()
         }
       } catch (err) {
         console.error(err)
@@ -455,12 +456,22 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           return newIt
         })
         .forEach(it => {
-          addPath(it)
-          addRelationInMapIndexedByNodeId(
-            it,
-            it.from,
-            it.to
-          )
+          try {
+            assertPortCanBeConnected(it)
+            addPath(it)
+            addRelationInMapIndexedByNodeId(
+              it,
+              it.from,
+              it.to
+            )
+            toPort.value = it.to
+            fromPort.value = it.from
+            it.to.vm?.afterPathConnected?.()
+          } catch (err) {
+            console.error(err)
+          }
+          fromPort.value = null
+          toPort.value = null
         })
     }
 
