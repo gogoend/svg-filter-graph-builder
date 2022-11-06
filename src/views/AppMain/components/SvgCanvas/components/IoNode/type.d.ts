@@ -28,7 +28,7 @@ export namespace SVGFilterConfig {
         type: 'merge';
         ports: {
             in: {
-                type: 'text'
+                type: 'hidden'
             }
         }
     }

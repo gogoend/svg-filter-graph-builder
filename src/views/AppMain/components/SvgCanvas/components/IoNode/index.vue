@@ -1,14 +1,19 @@
 <template>
   <g
     class="io-node"
-    @mousedown="handleNodeMousedown"
+    :class="{
+      'io-node--focused': isFocused
+    }"
+    @mousedown.prevent="handleNodeMousedown"
     :transform="`translate(${position[0]}, ${position[1]})`"
     ref="ioNodeEl"
   >
     <foreignObject class="io-node__inner">
       <div
         class="io-node__body"
-        xmlns="http://www.w3.org/1999/xhtml">
+        xmlns="http://www.w3.org/1999/xhtml"
+        @click.exact.stop="handleNodeBodyClick"
+      >
         <img
           class="io-node__filter-thumb"
           :src="filterThumbUrl"
@@ -64,6 +69,7 @@ import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
+import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 
 const IoNode: {
   new(): OverwrittenIoNodeType
@@ -233,6 +239,12 @@ const IoNode: {
     })
     provide('orderedAllDescendants', orderedAllDescendants)
 
+    const [focusingNode, setFocusingNode] = inject(FOCUSING_NODE_SYMBOL)!
+    const handleNodeBodyClick = () => {
+      setFocusingNode(vm)
+    }
+    const isFocused = computed(() => focusingNode.value === vm)
+
     return {
       POINT_R,
       POINT_BORDER_W,
@@ -253,7 +265,11 @@ const IoNode: {
       filterThumbUrl,
       mergedFeAttrValue,
       getVNodeFragment,
-      orderedAllDescendants
+      orderedAllDescendants,
+
+      focusingNode,
+      handleNodeBodyClick,
+      isFocused
     }
   }
 })
@@ -336,6 +352,12 @@ export default IoNode
         flex: 0 1 auto;
       }
     }
+  }
+}
+
+.io-node.io-node--focused {
+  .io-node__body {
+    box-shadow: 0 0 8px #00f9f9;
   }
 }
 

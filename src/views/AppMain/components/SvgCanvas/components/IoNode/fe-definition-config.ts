@@ -63,7 +63,8 @@ export const feTurbulence: SVGFilterConfig.Node = {
       ]
     },
     baseFrequency: {
-      defaultValue: '0.05'
+      type: 'number',
+      defaultValue: 0.05
     },
     numOctaves: {
       type: 'number',
@@ -84,10 +85,18 @@ export const feTurbulence: SVGFilterConfig.Node = {
 export const feDropShadow: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
-    in: {},
-    dx: {},
-    dy: {},
-    stdDeviation: {},
+    in: {
+      type: 'hidden'
+    },
+    dx: {
+      type: 'number'
+    },
+    dy: {
+      type: 'number'
+    },
+    stdDeviation: {
+      type: 'number'
+    },
     seed: {},
     'flood-color': {},
     'flood-opacity': {}
@@ -98,7 +107,7 @@ export const feMerge: SVGFilterConfig.Node = {
   type: 'merge',
   ports: {
     in: {
-      type: 'text'
+      type: 'hidden'
     }
   }
 }
@@ -106,9 +115,15 @@ export const feMerge: SVGFilterConfig.Node = {
 export const feOffset: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
-    in: {},
-    dx: {},
-    dy: {}
+    in: {
+      type: 'hidden'
+    },
+    dx: {
+      type: 'number'
+    },
+    dy: {
+      type: 'number'
+    }
   }
 }
 
@@ -116,7 +131,7 @@ export const feColorMatrix: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-
+      type: 'hidden'
     },
     type: {
       type: 'text',
@@ -137,15 +152,21 @@ export const feColorMatrix: SVGFilterConfig.Node = {
 export const feTile: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
-    in: {}
+    in: {
+      type: 'hidden'
+    }
   }
 }
 
 export const feDisplacementMap: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
-    in: {},
-    in2: {},
+    in: {
+      type: 'hidden'
+    },
+    in2: {
+      type: 'hidden'
+    },
     scale: {},
     xChannelSelector: {},
     yChannelSelector: {}
@@ -162,8 +183,12 @@ export const feImage: SVGFilterConfig.Node = {
 export const feBlend: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
-    in: {},
-    in2: {},
+    in: {
+      type: 'hidden'
+    },
+    in2: {
+      type: 'hidden'
+    },
     mode: {
       defaultValue: 'normal',
       enum: [
