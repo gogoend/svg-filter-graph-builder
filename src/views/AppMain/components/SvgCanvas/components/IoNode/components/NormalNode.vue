@@ -132,6 +132,7 @@ export default defineComponent({
       foreignPortValue,
       mergedFeAttrValue,
       afterPathConnected: noop,
+      afterPathRemoved: noop,
 
       handlePortMouseenter,
       fe,
