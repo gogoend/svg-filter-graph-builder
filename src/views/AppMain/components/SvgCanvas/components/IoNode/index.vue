@@ -149,8 +149,8 @@ const IoNode: {
       return nodeConfigRef.value?.getVNodeFragment
     })
 
-    const afterConnected = computed(() => {
-      return nodeConfigRef.value?.afterConnected ?? (() => void 0)
+    const afterPathConnected = computed(() => {
+      return nodeConfigRef.value?.afterPathConnected ?? (() => void 0)
     })
 
     const canvasScrollEl = inject('canvasScrollEl') as Ref<HTMLElement>
@@ -279,7 +279,7 @@ const IoNode: {
       handlePortMouseenter,
       fe,
       allDescendants,
-      afterConnected,
+      afterPathConnected,
 
       nodeConfigRef,
       filterThumbUrl,

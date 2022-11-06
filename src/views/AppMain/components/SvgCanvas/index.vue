@@ -310,7 +310,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             fromPort,
             toPort
           )
-          toPort.value?.vm?.afterConnected?.()
+          toPort.value?.vm?.afterPathConnected?.()
         } else {
           // 处理开始端口为in端口
           addRelationInMapIndexedByNodeId(
@@ -318,7 +318,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             toPort,
             fromPort
           )
-          fromPort.value?.vm?.afterConnected?.()
+          fromPort.value?.vm?.afterPathConnected?.()
         }
       } catch (err) {
         console.error(err)
@@ -466,7 +466,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             )
             toPort.value = it.to
             fromPort.value = it.from
-            it.to.vm?.afterConnected?.()
+            it.to.vm?.afterPathConnected?.()
           } catch (err) {
             console.error(err)
           }

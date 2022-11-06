@@ -74,7 +74,7 @@ export default defineComponent({
     }))
 
     const parentVm = getCurrentInstance()!.parent?.proxy
-    const afterConnected = () => {
+    const afterPathConnected = () => {
       console.log(toPort?.value, fromPort?.value)
 
       const { attr } = [toPort?.value, fromPort?.value].find(it => it?.vm === parentVm)!
@@ -106,7 +106,7 @@ export default defineComponent({
       setFeAttrEls,
       feAttrValue,
       mergedFeAttrValue,
-      afterConnected,
+      afterPathConnected,
 
       handlePortMouseenter,
       allDescendants,

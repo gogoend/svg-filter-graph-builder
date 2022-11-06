@@ -35,5 +35,5 @@ export interface OverwrittenIoNodeType extends ComponentPublicInstance {
   mergedFeAttrValue: Dictionary<string | number>,
   getVNodeFragment: (item: OverwrittenIoNodeType, index: number) => VNode,
   is: keyof typeof fe,
-  afterConnected?: () => void
+  afterPathConnected?: () => void
 }
