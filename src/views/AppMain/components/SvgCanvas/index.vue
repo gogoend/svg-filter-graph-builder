@@ -54,7 +54,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef, nextTick } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 
@@ -73,8 +73,10 @@ import {
   ADD_NODES_SYMBOL
 } from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
-import { getLinks, getNodes } from '@/api/graph'
+import { getLinks, getNodeValueMap, getNodes } from '@/api/graph'
 import { uuid } from '@/utils/uuid'
+// eslint-disable-next-line vue/prefer-import-from-vue
+import { hasOwn } from '@vue/shared'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -417,12 +419,27 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     const addNodes = inject(ADD_NODES_SYMBOL)!
 
     const loadCanvasFromSerializedStatus = async() => {
-      const nodes = await getNodes()
-      Object.values(nodes).forEach(it => {
-        addNodes(it)
+      const [nodes, nodeFormValues, links] = await Promise.all(
+        [
+          getNodes(),
+          getNodeValueMap(),
+          getLinks()
+        ]
+      )
+      Object.values(nodes)
+        .forEach(it => {
+          addNodes(it)
+        })
+      // 等待节点都挂载后，再回填表单、创建连接
+      await nextTick()
+      Object.entries(nodeFormValues).forEach(([nodeId, nodeFormValue], index) => {
+        Object.keys(nodeFormValue).forEach((key: keyof typeof nodeFormValue) => {
+          // FIXME: 修正类型
+          if (hasOwn(nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue, key as any)) {
+            (nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue as any)[key] = nodeFormValue[key]
+          }
+        })
       })
-
-      const links = await getLinks()
       Object.values(links)
         .map(it => {
           const newIt = window.structuredClone(it) as unknown as Path // 强转类型

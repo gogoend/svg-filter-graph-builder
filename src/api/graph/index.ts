@@ -1,4 +1,4 @@
-import { LinkInStore, NodeInStore } from '@/schema/IoNode'
+import { LinkInStore, NodeFormValue, NodeInStore } from '@/schema/IoNode'
 
 export async function getNodes(): Promise<Record<NodeInStore['id'], NodeInStore>> {
   return new Promise(resolve => {
@@ -10,6 +10,26 @@ export async function getNodes(): Promise<Record<NodeInStore['id'], NodeInStore>
             'CF377972-589A-40C1-ADD8-BF85A6B70D97': { 'is': 'SourceAlpha', 'id': 'CF377972-589A-40C1-ADD8-BF85A6B70D97', 'position': [238, 57] },
             '5EC6CD3D-E50E-4BD9-B732-53B885A77FA3': { 'is': 'StringLiteral', 'id': '5EC6CD3D-E50E-4BD9-B732-53B885A77FA3', 'position': [-47, 290] },
             'D86EB3F2-AF69-4F6B-85AA-46DA42F68F90': { 'is': 'feMerge', 'id': 'D86EB3F2-AF69-4F6B-85AA-46DA42F68F90', 'position': [409, 467] }
+          }
+        )
+      },
+      500
+    )
+  })
+}
+
+export async function getNodeValueMap(): Promise<Record<NodeInStore['id'], NodeFormValue>> {
+  return new Promise(resolve => {
+    setTimeout(
+      () => {
+        resolve(
+          {
+            'C63FCDE9-79FB-4243-90E1-D44258C8902D': { },
+            'CF377972-589A-40C1-ADD8-BF85A6B70D97': { },
+            '5EC6CD3D-E50E-4BD9-B732-53B885A77FA3': {
+              value: 'sample string'
+            },
+            'D86EB3F2-AF69-4F6B-85AA-46DA42F68F90': { }
           }
         )
       },

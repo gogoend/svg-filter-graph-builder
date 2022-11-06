@@ -15,3 +15,5 @@ export interface LinkInStore {
     attr: string
   }
 }
+
+export type NodeFormValue = Record<string | number, string>
