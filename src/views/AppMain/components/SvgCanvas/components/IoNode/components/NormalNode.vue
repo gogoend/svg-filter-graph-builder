@@ -102,7 +102,8 @@ export default defineComponent({
           nodeAttrs.in2 = 'SourceGraphic'
         }
       })
-      return h(is, nodeAttrs)
+      const tag = (fe[is] as any).tag ?? is
+      return h(tag, nodeAttrs)
     }
 
     // 填充默认值
