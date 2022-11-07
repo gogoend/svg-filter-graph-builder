@@ -3,6 +3,9 @@ import { Path } from '@/views/AppMain/components/SvgCanvas/type'
 import { Ref, ref, InjectionKey, provide, unref, computed } from 'vue'
 import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
 
+import packageInfo from '../../package.json'
+import { uuid } from '../utils/uuid'
+
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
 export const ADD_NODES_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
 export const REMOVE_NODES_SYMBOL: InjectionKey<(nodeId: string) => void> = Symbol('移除节点函数')
@@ -129,11 +132,27 @@ export default function canvasStuff() {
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
 
   const saveFilter = () => {
-    console.log(
-      nodes.value,
-      nodeFormValueMap.value,
-      linkedPathsForSerialize.value
-    )
+    const stuff = {
+      nodes: nodes.value,
+      nodeForms: nodeFormValueMap.value,
+      links: linkedPathsForSerialize.value
+    }
+    const product = {
+      name: packageInfo.name,
+      version: packageInfo.version
+    }
+    const document = {
+      author: 'gogoend',
+      createdTime: Number(new Date()),
+      modifiedTime: Number(new Date())
+    }
+
+    console.log({
+      uuid: uuid(),
+      stuff,
+      product,
+      document
+    })
   }
   provide(SAVE_FILTER_SYMBOL, saveFilter)
 }
