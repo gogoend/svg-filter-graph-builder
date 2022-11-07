@@ -11,12 +11,16 @@ export namespace SVGFilterConfig {
         defaultValue?: number;
         enum?: Enum[];
         range?: [number, number];
+        showInConfigPanel?: false;
+        showOnNode?: false
     }
 
     export interface NormalPort {
-        type?: 'text' | 'hidden';
+        type?: 'text';
         defaultValue?: string;
         enum?: Enum[];
+        showInConfigPanel?: false;
+        showOnNode?: false
     }
 
     export interface NormalNode {
@@ -29,7 +33,7 @@ export namespace SVGFilterConfig {
         type: 'merge';
         ports: {
             in: {
-                type: 'hidden'
+                showInConfigPanel?: false
             }
         }
     }
