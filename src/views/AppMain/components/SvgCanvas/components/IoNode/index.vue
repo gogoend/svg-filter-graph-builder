@@ -15,6 +15,7 @@
         @click.exact.stop="handleNodeBodyClick"
       >
         <img
+          v-if="false"
           class="io-node__filter-thumb"
           :src="filterThumbUrl"
         />

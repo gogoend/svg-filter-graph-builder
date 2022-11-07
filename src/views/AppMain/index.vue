@@ -21,6 +21,15 @@
         left: `calc(100% - ${stuffConfigPanelWidth}px)`
       }"
     />
+    <output-preview-panel
+      class="output-preview-panel"
+      :style="{
+        width: '640px',
+        height: '360px',
+        bottom: '0px',
+        right: '0px',
+      }"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -28,6 +37,7 @@ import { defineComponent } from 'vue'
 import SvgCanvas from './components/SvgCanvas/index.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
+import OutputPreviewPanel from './components/OutputPreviewPanel/index.vue'
 import { filterLibraryPanelWidth, stuffConfigPanelWidth } from '@/config/ui'
 
 export default defineComponent({
@@ -35,7 +45,8 @@ export default defineComponent({
   components: {
     SvgCanvas,
     NodeLibraryPanel,
-    StuffConfigPanel
+    StuffConfigPanel,
+    OutputPreviewPanel
   },
   setup() {
     return {
@@ -71,6 +82,9 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     overflow: auto;
+  }
+  .output-preview-panel {
+    position: fixed;
   }
 }
 </style>
