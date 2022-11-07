@@ -5,6 +5,7 @@ import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index
 
 import packageInfo from '../../package.json'
 import { uuid } from '../utils/uuid'
+import { setLocal } from '@/utils/storage'
 
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
 export const ADD_NODES_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
@@ -147,7 +148,7 @@ export default function canvasStuff() {
       modifiedTime: Number(new Date())
     }
 
-    console.log({
+    setLocal('savedGraph', {
       uuid: uuid(),
       stuff,
       product,
