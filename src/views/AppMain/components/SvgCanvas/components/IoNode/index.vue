@@ -4,7 +4,7 @@
     :class="{
       'io-node--focused': isFocused
     }"
-    @mousedown.prevent="handleNodeMousedown"
+    @mousedown.stop="handleNodeMousedown"
     :transform="`translate(${position[0]}, ${position[1]})`"
     ref="ioNodeEl"
   >
