@@ -6,11 +6,9 @@
           :id="filterElId"
         >
           <component
-            v-for="(desc) in orderedAllDescendants"
-            :key="desc.id"
-            :is="desc.is"
-            :id="desc.nodeId"
-            v-bind="desc.mergedFeAttrValue"
+            v-for="(render, index) in renderOfOrderedAllDescendants"
+            :key="index"
+            :is="render"
           />
         </filter>
       </defs>
@@ -28,19 +26,19 @@ export default defineComponent({
       type: String
     }
   },
-  setup(props, { emit }) {
+  setup() {
     const [focusingNode] = inject(FOCUSING_NODE_SYMBOL)!
-    const orderedAllDescendants = computed(() => {
-      if (!focusingNode.value) {
-        return []
-      } else {
-        return focusingNode.value!.orderedAllDescendants
-      }
+    const renderOfOrderedAllDescendants = computed(() => {
+      const allOrderedDescendants = focusingNode.value ? focusingNode.value!.orderedAllDescendants : []
+
+      return allOrderedDescendants.map(it => {
+        return () => it.getVNodeFragment(it)
+      })
     })
 
     return {
       focusingNode,
-      orderedAllDescendants
+      renderOfOrderedAllDescendants
     }
   }
 })

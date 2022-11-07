@@ -29,11 +29,12 @@ import fe from './components/IoNode/fe-definition-config'
 import NormalNode from './components/IoNode/components/NormalNode.vue'
 import MergeNode from './components/IoNode/components/MergeNode.vue'
 export interface OverwrittenIoNodeType extends ComponentPublicInstance {
+  orderedAllDescendants: OverwrittenIoNodeType[];
   nodeConfigRef: InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>
   nodeId: string,
   relativePaths: RelativePathForNode,
   mergedFeAttrValue: Dictionary<string | number>,
-  getVNodeFragment: (item: OverwrittenIoNodeType, index: number) => VNode,
+  getVNodeFragment: (item: OverwrittenIoNodeType, index?: number) => VNode,
   is: keyof typeof fe,
   afterPathConnected?: () => void
   afterPathRemoved?: (targetPath: Path) => void
