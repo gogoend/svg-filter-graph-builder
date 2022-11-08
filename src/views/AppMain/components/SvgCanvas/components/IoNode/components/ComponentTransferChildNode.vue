@@ -84,9 +84,7 @@ export default defineComponent({
       result: props.nodeId
     }))
 
-    const getVNodeFragment = (item: OverwrittenIoNodeType): VNode => {
-      return null as any
-    }
+    const getVNodeFragment = (): VNode | null => null
 
     // 填充默认值
     console.log(fe[props.is])
