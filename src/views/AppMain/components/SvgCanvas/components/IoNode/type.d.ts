@@ -52,10 +52,31 @@ export namespace SVGFilterConfig {
         }
     }
 
+    export interface ComponentTransferNode {
+        type: 'component-transfer-root'
+        ports: {
+            in: {
+                showInConfigPanel: false
+            }
+            R: {
+                showInConfigPanel: false
+            }
+            G: {
+                showInConfigPanel: false
+            }
+            B: {
+                showInConfigPanel: false
+            }
+            A: {
+                showInConfigPanel: false
+            }
+        }
+    }
+
     export interface MatrixInFeColorMatrixNode {
         type: 'matrix-in-fe-color-matrix';
         ports: Record<string | symbol | number, never>
     }
     export type Port = NormalPort | NumberPort
-    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode
+    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode | ComponentTransferNode
 }

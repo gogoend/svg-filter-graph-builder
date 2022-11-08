@@ -369,6 +369,92 @@ export const feMorphology: SVGFilterConfig.NormalNode = {
   }
 }
 
+export const feComponentTransfer: SVGFilterConfig.ComponentTransferNode = {
+  type: 'component-transfer-root',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    R: {
+      showInConfigPanel: false
+    },
+    G: {
+      showInConfigPanel: false
+    },
+    B: {
+      showInConfigPanel: false
+    },
+    A: {
+      showInConfigPanel: false
+    }
+  }
+}
+
+export const feFuncXUsingIdentity: SVGFilterConfig.NormalNode = {
+  ports: {
+    type: {
+      defaultValue: 'identity',
+      showInConfigPanel: false,
+      showOnNode: false
+    }
+  }
+}
+
+export const feFuncXUsingTable: SVGFilterConfig.NormalNode = {
+  ports: {
+    type: {
+      defaultValue: 'table',
+      showInConfigPanel: false,
+      showOnNode: false
+    },
+    tableValues: {
+      defaultValue: '1 1 1 1'
+    }
+  }
+}
+
+export const feFuncXUsingLinearOrDiscrete: SVGFilterConfig.NormalNode = {
+  ports: {
+    type: {
+      defaultValue: 'linear',
+      enum: [
+        'linear',
+        'discrete'
+      ]
+    },
+    slope: {
+      type: 'number',
+      defaultValue: 1
+    },
+    intercept: {
+      type: 'number',
+      defaultValue: 0
+    }
+  }
+}
+
+export const feFuncXUsingGamma: SVGFilterConfig.NormalNode = {
+  ports: {
+    type: {
+      defaultValue: 'gamma',
+      showInConfigPanel: false,
+      showOnNode: false
+    },
+    amplitude: {
+      type: 'number',
+      defaultValue: 1
+    },
+    exponent: {
+      type: 'number',
+      defaultValue: 0
+    },
+    offset: {
+      type: 'number',
+      defaultValue: 0
+    }
+  }
+}
+
 export const StringLiteral: SVGFilterConfig.Node = {
   type: 'string-literal',
   ports: {
@@ -400,6 +486,12 @@ export default {
   feFlood,
   feGaussianBlur,
   feMorphology,
+
+  feComponentTransfer,
+  feFuncXUsingIdentity,
+  feFuncXUsingTable,
+  feFuncXUsingLinearOrDiscrete,
+  feFuncXUsingGamma,
 
   StringLiteral
 }
