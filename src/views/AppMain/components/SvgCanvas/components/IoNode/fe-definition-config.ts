@@ -41,7 +41,7 @@ export const feConvolveMatrix: SVGFilterConfig.Node = {
     },
     edgeMode: {
       type: 'text',
-      defaultValue: 'none',
+      defaultValue: 'duplicate',
       enum: ['duplicate', 'wrap', 'none']
     },
     kernelUnitLength: {
@@ -139,6 +139,7 @@ export const feOffset: SVGFilterConfig.Node = {
 
 export const feColorMatrixUsingMatrix: SVGFilterConfig.Node = {
   type: 'normal',
+  tag: 'feColorMatrix',
   ports: {
     in: {
       showInConfigPanel: false
@@ -158,6 +159,11 @@ export const feColorMatrixUsingMatrix: SVGFilterConfig.Node = {
     }
   }
 }
+export const matrixInFeColorMatrix: SVGFilterConfig.Node = {
+  type: 'matrix-in-fe-color-matrix',
+  ports: {}
+}
+
 export const feColorMatrixUsingSaturate: SVGFilterConfig.Node = {
   tag: 'feColorMatrix',
   type: 'normal',
@@ -259,6 +265,200 @@ export const feBlend: SVGFilterConfig.Node = {
   }
 }
 
+export const feCompositeWithoutK: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  tag: 'feComposite',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    in2: {
+      showInConfigPanel: false
+    },
+    operator: {
+      enum: [
+        'over', 'in', 'out', 'atop', 'xor', 'lighter'
+      ]
+    }
+  }
+}
+
+export const feCompositeWithK: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  tag: 'feComposite',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    in2: {
+      showInConfigPanel: false
+    },
+    operator: {
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'arithmetic'
+    },
+    k1: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k2: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k3: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k4: {
+      type: 'number',
+      defaultValue: 0.5
+    }
+  }
+}
+
+export const feFlood: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    'flood-color': {
+    },
+    'flood-opacity': {
+      type: 'number'
+    }
+  }
+}
+
+export const feGaussianBlur: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    stdDeviation: {
+      type: 'number'
+    },
+    edgeMode: {
+      type: 'text',
+      enum: [
+        'duplicate',
+        'wrap',
+        'none'
+      ],
+      defaultValue: 'none'
+    }
+  }
+}
+
+export const feMorphology: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    operator: {
+      enum: [
+        'erode',
+        'dilate'
+      ],
+      defaultValue: 'erode'
+    },
+    radius: {
+      type: 'number',
+      defaultValue: 2
+    }
+  }
+}
+
+export const feComponentTransfer: SVGFilterConfig.ComponentTransferRootNode = {
+  type: 'component-transfer-root',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    R: {
+      showInConfigPanel: false
+    },
+    G: {
+      showInConfigPanel: false
+    },
+    B: {
+      showInConfigPanel: false
+    },
+    A: {
+      showInConfigPanel: false
+    }
+  }
+}
+
+export const feFuncXUsingIdentity: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'identity',
+      showInConfigPanel: false,
+      showOnNode: false
+    }
+  }
+}
+
+export const feFuncXUsingTable: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'table',
+      showInConfigPanel: false,
+      showOnNode: false
+    },
+    tableValues: {
+      defaultValue: '1 1 1 1'
+    }
+  }
+}
+
+export const feFuncXUsingLinearOrDiscrete: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'linear',
+      enum: [
+        'linear',
+        'discrete'
+      ]
+    },
+    slope: {
+      type: 'number',
+      defaultValue: 1
+    },
+    intercept: {
+      type: 'number',
+      defaultValue: 0
+    }
+  }
+}
+
+export const feFuncXUsingGamma: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'gamma',
+      showInConfigPanel: false,
+      showOnNode: false
+    },
+    amplitude: {
+      type: 'number',
+      defaultValue: 1
+    },
+    exponent: {
+      type: 'number',
+      defaultValue: 0
+    },
+    offset: {
+      type: 'number',
+      defaultValue: 0
+    }
+  }
+}
+
 export const StringLiteral: SVGFilterConfig.Node = {
   type: 'string-literal',
   ports: {
@@ -276,6 +476,8 @@ export default {
   feDropShadow,
   feMerge,
   feOffset,
+  feColorMatrixUsingMatrix,
+  matrixInFeColorMatrix,
   feColorMatrixUsingSaturate,
   feColorMatrixUsingHueRotate,
   feColorMatrixUsingLuminanceToAlpha,
@@ -283,6 +485,17 @@ export default {
   feDisplacementMap,
   feImage,
   feBlend,
+  feCompositeWithoutK,
+  feCompositeWithK,
+  feFlood,
+  feGaussianBlur,
+  feMorphology,
+
+  feComponentTransfer,
+  feFuncXUsingIdentity,
+  feFuncXUsingTable,
+  feFuncXUsingLinearOrDiscrete,
+  feFuncXUsingGamma,
 
   StringLiteral
 }

@@ -4,7 +4,7 @@
     :class="{
       'io-node--focused': isFocused
     }"
-    @mousedown.prevent="handleNodeMousedown"
+    @mousedown.stop="handleNodeMousedown"
     :transform="`translate(${position[0]}, ${position[1]})`"
     ref="ioNodeEl"
   >
@@ -70,6 +70,30 @@
             ref="nodeConfigRef"
           />
         </template>
+        <template v-else-if="['matrix-in-fe-color-matrix'].includes(fe[is].type)">
+          <matrix-in-fe-color-matrix-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
+        <template v-else-if="['component-transfer-root'].includes(fe[is].type)">
+          <component-transfer-root-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
+        <template v-else-if="['component-transfer-child'].includes(fe[is].type)">
+          <component-transfer-child-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
       </div>
     </foreignObject>
   </g>
@@ -87,6 +111,9 @@ import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import SourceNode from './components/SourceNode.vue'
 import StringLiteralNode from './components/StringLiteralNode.vue'
+import MatrixInFeColorMatrixNode from './components/MatrixInFeColorMatrixNode.vue'
+import ComponentTransferRootNode from './components/ComponentTransferRootNode.vue'
+import ComponentTransferChildNode from './components/ComponentTransferChildNode.vue'
 
 import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
@@ -95,7 +122,7 @@ import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 const IoNode: {
   new(): OverwrittenIoNodeType
 } = defineComponent({
-  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode },
+  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode, MatrixInFeColorMatrixNode, ComponentTransferRootNode, ComponentTransferChildNode },
   name: 'IoNode',
   props: {
     is: {
