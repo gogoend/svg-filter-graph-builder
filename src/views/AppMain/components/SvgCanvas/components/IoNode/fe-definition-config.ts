@@ -317,6 +317,17 @@ export const feCompositeWithK: SVGFilterConfig.NormalNode = {
   }
 }
 
+export const feFlood: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    'flood-color': {
+    },
+    'flood-opacity': {
+      type: 'number'
+    }
+  }
+}
+
 export const StringLiteral: SVGFilterConfig.Node = {
   type: 'string-literal',
   ports: {
@@ -345,6 +356,7 @@ export default {
   feBlend,
   feCompositeWithoutK,
   feCompositeWithK,
+  feFlood,
 
   StringLiteral
 }
