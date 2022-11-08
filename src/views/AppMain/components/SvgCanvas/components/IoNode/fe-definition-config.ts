@@ -265,6 +265,58 @@ export const feBlend: SVGFilterConfig.Node = {
   }
 }
 
+export const feCompositeWithoutK: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  tag: 'feComposite',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    in2: {
+      showInConfigPanel: false
+    },
+    operator: {
+      enum: [
+        'over', 'in', 'out', 'atop', 'xor', 'lighter'
+      ]
+    }
+  }
+}
+
+export const feCompositeWithK: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  tag: 'feComposite',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    in2: {
+      showInConfigPanel: false
+    },
+    operator: {
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'arithmetic'
+    },
+    k1: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k2: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k3: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k4: {
+      type: 'number',
+      defaultValue: 0.5
+    }
+  }
+}
+
 export const StringLiteral: SVGFilterConfig.Node = {
   type: 'string-literal',
   ports: {
@@ -291,6 +343,8 @@ export default {
   feDisplacementMap,
   feImage,
   feBlend,
+  feCompositeWithoutK,
+  feCompositeWithK,
 
   StringLiteral
 }
