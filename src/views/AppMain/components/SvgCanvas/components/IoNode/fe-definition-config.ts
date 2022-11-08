@@ -348,6 +348,27 @@ export const feGaussianBlur: SVGFilterConfig.NormalNode = {
     }
   }
 }
+
+export const feMorphology: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    operator: {
+      enum: [
+        'erode',
+        'dilate'
+      ],
+      defaultValue: 'erode'
+    },
+    radius: {
+      type: 'number',
+      defaultValue: 2
+    }
+  }
+}
+
 export const StringLiteral: SVGFilterConfig.Node = {
   type: 'string-literal',
   ports: {
@@ -378,6 +399,7 @@ export default {
   feCompositeWithK,
   feFlood,
   feGaussianBlur,
+  feMorphology,
 
   StringLiteral
 }
