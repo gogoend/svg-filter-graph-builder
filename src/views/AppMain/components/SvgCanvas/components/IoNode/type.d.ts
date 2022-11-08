@@ -52,7 +52,7 @@ export namespace SVGFilterConfig {
         }
     }
 
-    export interface ComponentTransferNode {
+    export interface ComponentTransferRootNode {
         type: 'component-transfer-root'
         ports: {
             in: {
@@ -73,10 +73,14 @@ export namespace SVGFilterConfig {
         }
     }
 
+    export type ComponentTransferChildNode = Omit<NormalNode, 'type'> & {
+        type: 'component-transfer-child'
+    }
+
     export interface MatrixInFeColorMatrixNode {
         type: 'matrix-in-fe-color-matrix';
         ports: Record<string | symbol | number, never>
     }
     export type Port = NormalPort | NumberPort
-    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode | ComponentTransferNode
+    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode | ComponentTransferRootNode
 }

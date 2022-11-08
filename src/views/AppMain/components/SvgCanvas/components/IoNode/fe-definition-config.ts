@@ -369,7 +369,7 @@ export const feMorphology: SVGFilterConfig.NormalNode = {
   }
 }
 
-export const feComponentTransfer: SVGFilterConfig.ComponentTransferNode = {
+export const feComponentTransfer: SVGFilterConfig.ComponentTransferRootNode = {
   type: 'component-transfer-root',
   ports: {
     in: {
@@ -390,7 +390,8 @@ export const feComponentTransfer: SVGFilterConfig.ComponentTransferNode = {
   }
 }
 
-export const feFuncXUsingIdentity: SVGFilterConfig.NormalNode = {
+export const feFuncXUsingIdentity: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
   ports: {
     type: {
       defaultValue: 'identity',
@@ -400,7 +401,8 @@ export const feFuncXUsingIdentity: SVGFilterConfig.NormalNode = {
   }
 }
 
-export const feFuncXUsingTable: SVGFilterConfig.NormalNode = {
+export const feFuncXUsingTable: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
   ports: {
     type: {
       defaultValue: 'table',
@@ -413,7 +415,8 @@ export const feFuncXUsingTable: SVGFilterConfig.NormalNode = {
   }
 }
 
-export const feFuncXUsingLinearOrDiscrete: SVGFilterConfig.NormalNode = {
+export const feFuncXUsingLinearOrDiscrete: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
   ports: {
     type: {
       defaultValue: 'linear',
@@ -433,7 +436,8 @@ export const feFuncXUsingLinearOrDiscrete: SVGFilterConfig.NormalNode = {
   }
 }
 
-export const feFuncXUsingGamma: SVGFilterConfig.NormalNode = {
+export const feFuncXUsingGamma: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
   ports: {
     type: {
       defaultValue: 'gamma',
