@@ -70,6 +70,14 @@
             ref="nodeConfigRef"
           />
         </template>
+        <template v-else-if="['matrix-in-fe-color-matrix'].includes(fe[is].type)">
+          <matrix-in-fe-color-matrix-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
       </div>
     </foreignObject>
   </g>
@@ -87,6 +95,7 @@ import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import SourceNode from './components/SourceNode.vue'
 import StringLiteralNode from './components/StringLiteralNode.vue'
+import MatrixInFeColorMatrixNode from './components/MatrixInFeColorMatrixNode.vue'
 
 import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
@@ -95,7 +104,7 @@ import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 const IoNode: {
   new(): OverwrittenIoNodeType
 } = defineComponent({
-  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode },
+  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode, MatrixInFeColorMatrixNode },
   name: 'IoNode',
   props: {
     is: {

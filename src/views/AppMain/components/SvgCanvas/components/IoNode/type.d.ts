@@ -52,6 +52,10 @@ export namespace SVGFilterConfig {
         }
     }
 
+    export interface MatrixInFeColorMatrixNode {
+        type: 'matrix-in-fe-color-matrix';
+        ports: Record<string | symbol | number, never>
+    }
     export type Port = NormalPort | NumberPort
-    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode
+    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode
 }

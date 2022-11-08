@@ -139,6 +139,7 @@ export const feOffset: SVGFilterConfig.Node = {
 
 export const feColorMatrixUsingMatrix: SVGFilterConfig.Node = {
   type: 'normal',
+  tag: 'feColorMatrix',
   ports: {
     in: {
       showInConfigPanel: false
@@ -158,6 +159,11 @@ export const feColorMatrixUsingMatrix: SVGFilterConfig.Node = {
     }
   }
 }
+export const matrixInFeColorMatrix: SVGFilterConfig.Node = {
+  type: 'matrix-in-fe-color-matrix',
+  ports: {}
+}
+
 export const feColorMatrixUsingSaturate: SVGFilterConfig.Node = {
   tag: 'feColorMatrix',
   type: 'normal',
@@ -276,6 +282,8 @@ export default {
   feDropShadow,
   feMerge,
   feOffset,
+  feColorMatrixUsingMatrix,
+  matrixInFeColorMatrix,
   feColorMatrixUsingSaturate,
   feColorMatrixUsingHueRotate,
   feColorMatrixUsingLuminanceToAlpha,
