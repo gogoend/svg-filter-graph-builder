@@ -1,27 +1,31 @@
 <template>
-  <div
-    class="io-node__li"
+  <template
     v-for="(item, key) in fe[is].ports"
-    :key="key">
-    <em
-      class="port in"
-      :style="{
-        width: `${2 * POINT_R}px`,
-        height: `${ 2 * POINT_R }px`,
-        borderWidth: `${ POINT_BORDER_W }px`
-      }"
-      data-port-type="in"
-      r="10"
-      :data-fe-attr="key"
-      :ref="setFeAttrEls"
-      @mouseenter="handlePortMouseenter"
-    />
-    <label class="io-node__port-text">
-      <span class="port-name">{{ key }}</span>
-      <!-- <input v-model="feAttrValue[key]" /> -->
-    </label>
-  </div>
-
+    :key="key"
+  >
+    <div
+      class="io-node__li"
+      v-if="item.showOnNode !== false"
+    >
+      <em
+        class="port in"
+        :style="{
+          width: `${2 * POINT_R}px`,
+          height: `${ 2 * POINT_R }px`,
+          borderWidth: `${ POINT_BORDER_W }px`
+        }"
+        data-port-type="in"
+        r="10"
+        :data-fe-attr="key"
+        :ref="setFeAttrEls"
+        @mouseenter="handlePortMouseenter"
+      />
+      <label class="io-node__port-text">
+        <span class="port-name">{{ key }}</span>
+        <!-- <input v-model="feAttrValue[key]" /> -->
+      </label>
+    </div>
+  </template>
 </template>
 <script lang="ts">
 import { computed, defineComponent, h, PropType, ref, VNode } from 'vue'
@@ -102,7 +106,8 @@ export default defineComponent({
           nodeAttrs.in2 = 'SourceGraphic'
         }
       })
-      return h(is, nodeAttrs)
+      const tag = (fe[is] as any).tag ?? is
+      return h(tag, nodeAttrs)
     }
 
     // 填充默认值

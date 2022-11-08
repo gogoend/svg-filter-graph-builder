@@ -1,7 +1,11 @@
 import { NodeInStore } from '@/schema/IoNode'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
-import { Ref, ref, InjectionKey, provide, onMounted, unref } from 'vue'
+import { Ref, ref, InjectionKey, provide, unref, computed } from 'vue'
 import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
+
+import packageInfo from '../../package.json'
+import { uuid } from '../utils/uuid'
+import { setLocal } from '@/utils/storage'
 
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
 export const ADD_NODES_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
@@ -21,6 +25,8 @@ export const ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<(
 
 export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<typeof IoNode>>>> = Symbol('Node组件映射')
 
+export const SAVE_FILTER_SYMBOL: InjectionKey<() => void> = Symbol('保存滤镜函数')
+
 export default function canvasStuff() {
   const nodes = ref<Record<NodeInStore['id'], NodeInStore>>({})
   provide(ALL_NODES_ON_CANVAS_SYMBOL, nodes)
@@ -37,6 +43,18 @@ export default function canvasStuff() {
 
   const nodeRefMap = ref<Record<string, InstanceType<typeof IoNode>>>({})
   provide(NODE_REF_MAP_SYMBOL, nodeRefMap)
+
+  const nodeFormValueMap = computed(() => {
+    const nodeFormValueMap: Record<string, Record<string, string>> = {}
+
+    Object.entries(nodeRefMap.value).forEach(
+      ([nodeId, nodeRef]) => {
+        nodeFormValueMap[nodeId] = nodeRef.nodeConfigRef.feAttrValue as Record<number| string, string>
+      }
+    )
+
+    return nodeFormValueMap
+  })
 
   const linkedPathsForSerialize = ref<Record<string, any>>({})
   provide('tempLinkedPathsForSerialize', linkedPathsForSerialize)
@@ -113,5 +131,30 @@ export default function canvasStuff() {
     relativePathMapIndexedByNodeId.value[unref(toPort).vm.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
+
+  const saveFilter = () => {
+    const stuff = {
+      nodes: nodes.value,
+      nodeForms: nodeFormValueMap.value,
+      links: linkedPathsForSerialize.value
+    }
+    const product = {
+      name: packageInfo.name,
+      version: packageInfo.version
+    }
+    const document = {
+      author: 'gogoend',
+      createdTime: Number(new Date()),
+      modifiedTime: Number(new Date())
+    }
+
+    setLocal('savedGraph', {
+      uuid: uuid(),
+      stuff,
+      product,
+      document
+    })
+  }
+  provide(SAVE_FILTER_SYMBOL, saveFilter)
 }
 

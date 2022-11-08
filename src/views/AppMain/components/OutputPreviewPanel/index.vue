@@ -13,10 +13,14 @@
     >
       <img :src="sourceImageSrc" />
     </div>
+    <div class="output-preview-panel__tools">
+      <button @click="saveFilter">保存滤镜</button>
+    </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { SAVE_FILTER_SYMBOL } from '@/store/canvasStuff'
+import { defineComponent, inject, ref } from 'vue'
 import FilterDef from './components/FilterDef.vue'
 
 export default defineComponent({
@@ -24,8 +28,11 @@ export default defineComponent({
   components: { FilterDef },
   setup() {
     const sourceImageSrc = ref('/demo/assets/rinkysplash.jpg')
+    const saveFilter = inject(SAVE_FILTER_SYMBOL)!
+
     return {
-      sourceImageSrc
+      sourceImageSrc,
+      saveFilter
     }
   }
 })
@@ -46,6 +53,9 @@ export default defineComponent({
       height: 100%;
       object-fit: cover;
     }
+  }
+  &__tools {
+    position: relative;
   }
 }
 </style>
