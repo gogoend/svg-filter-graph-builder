@@ -41,7 +41,7 @@ export const feConvolveMatrix: SVGFilterConfig.Node = {
     },
     edgeMode: {
       type: 'text',
-      defaultValue: 'none',
+      defaultValue: 'duplicate',
       enum: ['duplicate', 'wrap', 'none']
     },
     kernelUnitLength: {
