@@ -27,7 +27,7 @@ export default defineComponent({
   name: 'OutputPreviewPanel',
   components: { FilterDef },
   setup() {
-    const sourceImageSrc = ref('/demo/assets/rinkysplash.jpg')
+    const sourceImageSrc = ref('./demo/assets/rinkysplash.jpg')
     const saveFilter = inject(SAVE_FILTER_SYMBOL)!
 
     return {
