@@ -2,6 +2,9 @@ import { execSync } from 'child_process'
 
 async function release() {
   execSync(
+    'git fetch'
+  )
+  execSync(
     'git reset --hard'
   )
   execSync(
