@@ -80,7 +80,10 @@ export default defineComponent({
     })
 
     const mergedFeAttrValue = computed<Dictionary<string | number>>(() => ({
-      in: foreignPortValue.value.in,
+      // FIXME: any
+      type: (fe[props.is].ports as any).type.defaultValue,
+      ...feAttrValue.value,
+      ...foreignPortValue.value,
       result: props.nodeId
     }))
 
