@@ -32,8 +32,7 @@ jobs:
       
       - name: Install & Build # 執行指令
         run: |
-          yarn
-          yarn build
+          yarn deploy:gh-pages
           
       # Runs a single command using the runners shell
       - name: Deploy
