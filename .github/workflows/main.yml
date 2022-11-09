@@ -9,12 +9,12 @@ on:
   push:
     branches:
       - master
-      - build/gh-page-src
+      - build/gh-pages-src
       - build/github-ci
   pull_request:
     branches:
       - master
-      - build/gh-page-src
+      - build/gh-pages-src
       - build/github-ci
 
   # Allows you to run this workflow manually from the Actions tab
