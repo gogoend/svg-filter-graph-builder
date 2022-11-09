@@ -8,7 +8,7 @@ async function release() {
     'git reset --hard'
   )
   execSync(
-    'git checkout build/gh-page-src'
+    'git checkout build/gh-pages-src'
   )
   execSync(
     'yarn version --patch --no-git-tag-version'
