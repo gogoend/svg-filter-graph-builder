@@ -1,7 +1,7 @@
 # 参考 https://tzuhui.io/2020/12/11/Vue/Vue-deploy-github-actions/
 
 # This is a basic workflow to help you get started with Actions
-name: deploy
+name: Deploy to GitHub Pages
 
 # Controls when the action will run. 
 on:
@@ -10,10 +10,12 @@ on:
     branches:
       - master
       - quest/test-for-github-action
+      - build/github-ci
   pull_request:
     branches:
       - master
       - quest/test-for-github-action
+      - build/github-ci
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
