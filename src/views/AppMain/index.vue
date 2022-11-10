@@ -51,7 +51,7 @@ import SvgCanvas from './components/SvgCanvas/index.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
 import OutputPreviewPanel from './components/OutputPreviewPanel/index.vue'
-import TopMenuBar from './components/TopMenuBar/index.vue'
+import TopMenuBar from './components/TopMenuBar.vue'
 import { filterLibraryPanelWidth, stuffConfigPanelWidth } from '@/config/ui'
 import { topMenuBarHeight } from '../../config/ui'
 
