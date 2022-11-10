@@ -430,16 +430,23 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         .forEach(it => {
           addNodes(it)
         })
-      // 等待节点都挂载后，再回填表单、创建连接
+      // 等待节点都挂载后，再回填表单
       await nextTick()
       Object.entries(nodeFormValues).forEach(([nodeId, nodeFormValue], index) => {
         Object.keys(nodeFormValue).forEach((key: keyof typeof nodeFormValue) => {
           // FIXME: 修正类型
-          if (hasOwn(nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue, key as any)) {
+          if (
+            [
+              hasOwn(nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue, key as any), // 仅回填节点定义中包含的字段
+              nodes[nodeId].is === 'feMerge' // 如果是feMerge节点，则全部回填 // TODO: 此处应该枚举出所有类似的元素
+            ].includes(true)
+          ) {
             (nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue as any)[key] = nodeFormValue[key]
           }
         })
       })
+      // 等待节点都正确后，再创建连接
+      await nextTick()
       Object.values(links)
         .map(it => {
           const newIt = window.structuredClone(it) as unknown as Path // 强转类型
