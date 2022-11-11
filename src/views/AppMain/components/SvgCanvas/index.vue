@@ -54,11 +54,11 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef, nextTick, onUnmounted, getCurrentInstance, ShallowRef } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef, nextTick, onUnmounted, getCurrentInstance, ShallowRef, InjectionKey } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 
-import type { Port, Path, Node, RelativePathForNode } from './type'
+import { Port, Path, Node, RelativePathForNode, SVG_CANVAS_RECT_SYMBOL } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
 import { HANDLE_LENGTH, POINT_R } from '@/config/ui'
@@ -78,7 +78,7 @@ import { uuid } from '@/utils/uuid'
 // eslint-disable-next-line vue/prefer-import-from-vue
 import { hasOwn } from '@vue/shared'
 
-import useLayoutCache from '@/views/AppMain/hooks/useLayoutCache'
+import useLayoutCache from './hooks/useLayoutCache'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -90,9 +90,8 @@ export default defineComponent({
     const canvasScrollEl = shallowRef<HTMLDivElement>()
     provide('canvasScrollEl', canvasScrollEl)
 
-    const vm = getCurrentInstance()!.proxy!
-
-    const svgCanvasRect = useLayoutCache(vm).elRect as ShallowRef<DOMRectReadOnly>
+    const svgCanvasRect = useLayoutCache().elRect as ShallowRef<DOMRectReadOnly>
+    provide(SVG_CANVAS_RECT_SYMBOL, svgCanvasRect)
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
     const addPath = inject(ADD_PATH_SYMBOL)!
