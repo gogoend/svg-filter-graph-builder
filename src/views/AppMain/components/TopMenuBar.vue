@@ -120,10 +120,24 @@ const menuTemplate = computed(() => [
       //   label: 'About'
       // },
       {
-        id: 'Contact @gogoend',
-        label: 'Contact @gogoend',
+        id: 'Contact @gogoend via mail',
+        label: 'Contact @gogoend via mail',
         onClick() {
           window.open('mailto:gogoend@qq.com')
+        }
+      },
+      {
+        id: 'SVG Filter specification on W3C',
+        label: 'SVG Filter specification on W3C',
+        onClick() {
+          window.open('https://www.w3.org/TR/filter-effects-1/')
+        }
+      },
+      {
+        id: 'SVG Filter documents on MDN',
+        label: 'SVG Filter documents on MDN',
+        onClick() {
+          window.open('https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter')
         }
       }
     ]
