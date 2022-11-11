@@ -18,6 +18,9 @@
           left: filterLibraryPanelWidth + 'px',
           width: `calc(100% - ${stuffConfigPanelWidth}px - ${filterLibraryPanelWidth}px)`
         }"
+        @vnode-mounted="(vnode) => {
+          setSvgCanvasVm(vnode.component.proxy)
+        }"
       />
       <node-library-panel
         class="node-library-panel"
@@ -46,7 +49,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, inject } from 'vue'
 import SvgCanvas from './components/SvgCanvas/index.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
@@ -54,6 +57,7 @@ import OutputPreviewPanel from './components/OutputPreviewPanel/index.vue'
 import TopMenuBar from './components/TopMenuBar.vue'
 import { filterLibraryPanelWidth, stuffConfigPanelWidth } from '@/config/ui'
 import { topMenuBarHeight } from '../../config/ui'
+import { SET_SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
 
 export default defineComponent({
   name: 'AppMain',
@@ -65,7 +69,10 @@ export default defineComponent({
     OutputPreviewPanel
   },
   setup() {
+    const setSvgCanvasVm = inject(SET_SVG_CANVAS_VM_SYMBOL)!
     return {
+      setSvgCanvasVm,
+
       filterLibraryPanelWidth,
       stuffConfigPanelWidth,
       topMenuBarHeight

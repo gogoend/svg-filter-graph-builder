@@ -510,6 +510,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
     return {
       canvasScrollEl,
+      svgCanvasRect,
 
       ghostPathD,
       ghostNodeRef,
