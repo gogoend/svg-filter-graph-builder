@@ -78,6 +78,8 @@ import { uuid } from '@/utils/uuid'
 // eslint-disable-next-line vue/prefer-import-from-vue
 import { hasOwn } from '@vue/shared'
 
+import useLayoutCache from '@/views/AppMain/hooks/useLayoutCache'
+
 export default defineComponent({
   name: 'SvgCanvas',
   components: {
@@ -87,6 +89,10 @@ export default defineComponent({
   setup() {
     const canvasScrollEl = shallowRef<HTMLDivElement>()
     provide('canvasScrollEl', canvasScrollEl)
+
+    const vm = getCurrentInstance()!.proxy!
+
+    const svgCanvasRect = useLayoutCache(vm).elRect as ShallowRef<DOMRectReadOnly>
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
     const addPath = inject(ADD_PATH_SYMBOL)!
