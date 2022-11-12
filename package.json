@@ -5,10 +5,10 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "deploy:gh-pages": "node ./scripts/deploy-gh-pages.mjs",
-    "deploy:local": "node ./scripts/deploy-local.mjs"
+    "ci:deploy-gh-pages": "node ./scripts/deploy-gh-pages.mjs",
+    "ci:deploy-local": "node ./scripts/deploy-local.mjs",
+    "ci:test-dev-branch": "node ./scripts/test-dev-branch.mjs"
   },
   "dependencies": {
     "core-js": "^3.26.0",
