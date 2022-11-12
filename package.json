@@ -1,5 +1,5 @@
 {
-  "name": "gogoend-node-link-builder",
+  "name": "@gogoend/svg-filter-graph-builder",
   "version": "0.1.0",
   "private": true,
   "scripts": {
