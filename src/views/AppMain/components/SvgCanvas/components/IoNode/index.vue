@@ -104,7 +104,7 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
-import type { OverwrittenIoNodeType, Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import { OverwrittenIoNodeType, Path, Port, RelativePathForNode, SVG_CANVAS_RECT_SYMBOL } from '@/views/AppMain/components/SvgCanvas/type'
 import { getTopoOrder, isPortEl } from '@/utils'
 
 import NormalNode from './components/NormalNode.vue'
@@ -115,7 +115,6 @@ import MatrixInFeColorMatrixNode from './components/MatrixInFeColorMatrixNode.vu
 import ComponentTransferRootNode from './components/ComponentTransferRootNode.vue'
 import ComponentTransferChildNode from './components/ComponentTransferChildNode.vue'
 
-import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 
@@ -144,6 +143,9 @@ const IoNode: {
   },
   setup(props, { emit }) {
     const vm = getCurrentInstance()!.proxy as unknown as OverwrittenIoNodeType
+
+    const svgCanvasRect = inject(SVG_CANVAS_RECT_SYMBOL)!
+
     const fromPort = inject<Ref<Port<typeof vm>>>('fromPort')
     const toPort = inject<Ref<Port<typeof vm>>>('toPort')
 
@@ -210,8 +212,8 @@ const IoNode: {
           } else {
             // 否则认为是节点移动，此时更新节点的位置
             const newPosition = [
-              ev.pageX - clickedRelativePosition.value[0] - filterLibraryPanelWidth,
-              ev.pageY - clickedRelativePosition.value[1]
+              ev.pageX - clickedRelativePosition.value[0] - svgCanvasRect.value.left,
+              ev.pageY - clickedRelativePosition.value[1] - svgCanvasRect.value.top
             ] // clickedRelativePosition.value.concat()
             emit('update:position', newPosition)
             nextTick(() => {
