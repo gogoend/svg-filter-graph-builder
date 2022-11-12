@@ -19,7 +19,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, inject } from 'vue'
+import { defineComponent, nextTick, inject, computed } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 import { uuid } from '@/utils/uuid'
 
@@ -28,6 +28,7 @@ import { filterLibraryPanelWidth } from '@/config/ui'
 
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 import { ADD_NODES_SYMBOL } from '@/store/canvasStuff'
+import { SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
 
 const menuGroup = [
   {
@@ -41,6 +42,11 @@ const menuGroup = [
 export default defineComponent({
   name: 'NodeLibraryPanel',
   setup(props, { emit }) {
+    const svgCanvasVm = inject(SVG_CANVAS_VM_SYMBOL)!
+    const svgCanvasRect = computed(() => {
+      return svgCanvasVm.value.svgCanvasRect
+    })
+
     const ghostNodeRef = inject(GHOST_NODE_REF_SYMBOL)!
     const draggingNodeIcon = inject(DRAGGING_NODE_ICON_SYMBOL)!
     const addNodes = inject(ADD_NODES_SYMBOL)!
@@ -49,18 +55,26 @@ export default defineComponent({
       mouseEventHelper(ev, {
         start(ev, { originEl }) {
           draggingNodeIcon.value = icon.title
-          nextTick(() => ghostNodeRef.value!.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY]))
+          nextTick(
+            () => ghostNodeRef.value!.$emit(
+              'update:position',
+              [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
+            )
+          )
         },
         move(ev, { originEl }) {
           console.log(ghostNodeRef.value)
-          ghostNodeRef.value!.$emit('update:position', [ev.clientX - filterLibraryPanelWidth, ev.clientY])
+          ghostNodeRef.value!.$emit(
+            'update:position',
+            [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
+          )
           void 0
         },
         up(ev, { originEl }) {
           addNodes({
             is: icon.title,
             id: uuid(),
-            position: [ev.clientX - filterLibraryPanelWidth, ev.clientY]
+            position: [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
           })
           draggingNodeIcon.value = null
           void 0

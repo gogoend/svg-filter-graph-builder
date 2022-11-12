@@ -24,7 +24,7 @@ export interface RelativePathForNode {
   out: Path[]
 }
 
-import { VNode, ComponentPublicInstance } from 'vue'
+import { VNode, ComponentPublicInstance, ShallowRef, InjectionKey } from 'vue'
 import fe from './components/IoNode/fe-definition-config'
 import NormalNode from './components/IoNode/components/NormalNode.vue'
 import MergeNode from './components/IoNode/components/MergeNode.vue'
@@ -39,3 +39,5 @@ export interface OverwrittenIoNodeType extends ComponentPublicInstance {
   afterPathConnected?: () => void
   afterPathRemoved?: (targetPath: Path) => void
 }
+
+export const SVG_CANVAS_RECT_SYMBOL: InjectionKey<ShallowRef<DOMRectReadOnly>> = Symbol('SvgCanvas组件的范围')

@@ -1,5 +1,6 @@
 export const filterLibraryPanelWidth = 150
 export const stuffConfigPanelWidth = 300
+export const topMenuBarHeight = 32
 
 // 圆形半径
 export const POINT_R = 10
