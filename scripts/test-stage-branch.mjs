@@ -1,6 +1,7 @@
 import { execSync } from 'child_process'
 
 async function release() {
+  console.log(process.env)
   execSync(
     `git fetch`
   )
@@ -8,7 +9,8 @@ async function release() {
     `git reset --hard`
   )
   execSync(
-    `git checkout dev`
+    // todo
+    `git checkout $GITHUB_REF`
   )
   execSync(
     `yarn`
