@@ -28,7 +28,7 @@
   </template>
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, PropType, ref, VNode } from 'vue'
+import { computed, defineComponent, h, inject, PropType, ref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -38,6 +38,8 @@ import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
 import { noop } from '@/utils'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
+
+import { NODE_REF_MAP_SYMBOL } from '@/store/canvasStuff'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -78,37 +80,14 @@ export default defineComponent({
     })
 
     const mergedFeAttrValue = computed<Dictionary<string | number>>(() => ({
+      // FIXME: any
+      type: (fe[props.is].ports as any).type.defaultValue,
       ...feAttrValue.value,
       ...foreignPortValue.value,
       result: props.nodeId
     }))
 
-    const getVNodeFragment = (item: OverwrittenIoNodeType, index: number): VNode => {
-      const is = item.is
-      const { mergedFeAttrValue } = item
-
-      const nodeAttrs: Dictionary<string | number> = {}
-      Object.keys(mergedFeAttrValue || {}).forEach(key => {
-        if (mergedFeAttrValue[key] !== undefined) {
-          nodeAttrs[key] = mergedFeAttrValue[key] || ''
-        }
-        if (nodeAttrs.in === nodeAttrs.result) {
-          delete nodeAttrs.in
-        }
-        if (
-          Object.prototype.hasOwnProperty.call(fe[is].ports, 'in') && !nodeAttrs.in
-        ) {
-          nodeAttrs.in = 'SourceGraphic'
-        }
-        if (
-          Object.prototype.hasOwnProperty.call(fe[is].ports, 'in2') && !nodeAttrs.in2
-        ) {
-          nodeAttrs.in2 = 'SourceGraphic'
-        }
-      })
-      const tag = (fe[is] as any).tag ?? is
-      return h(tag, nodeAttrs)
-    }
+    const getVNodeFragment = (): VNode | null => null
 
     // 填充默认值
     console.log(fe[props.is])

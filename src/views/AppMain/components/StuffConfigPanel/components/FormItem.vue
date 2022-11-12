@@ -1,5 +1,5 @@
 <template>
-  <div v-if="schema?.type !== 'hidden'">
+  <div v-if="schema?.showInConfigPanel !== false">
     <label>{{ fieldId }}</label>
     <br />
     <template

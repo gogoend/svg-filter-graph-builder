@@ -11,15 +11,20 @@ export namespace SVGFilterConfig {
         defaultValue?: number;
         enum?: Enum[];
         range?: [number, number];
+        showInConfigPanel?: false;
+        showOnNode?: false
     }
 
     export interface NormalPort {
-        type?: 'text' | 'hidden';
+        type?: 'text';
         defaultValue?: string;
         enum?: Enum[];
+        showInConfigPanel?: false;
+        showOnNode?: false
     }
 
     export interface NormalNode {
+        tag?: string;
         type?: 'normal';
         ports: Dictionary<Port>
     }
@@ -28,7 +33,7 @@ export namespace SVGFilterConfig {
         type: 'merge';
         ports: {
             in: {
-                type: 'hidden'
+                showInConfigPanel?: false
             }
         }
     }
@@ -47,6 +52,35 @@ export namespace SVGFilterConfig {
         }
     }
 
+    export interface ComponentTransferRootNode {
+        type: 'component-transfer-root'
+        ports: {
+            in: {
+                showInConfigPanel: false
+            }
+            R: {
+                showInConfigPanel: false
+            }
+            G: {
+                showInConfigPanel: false
+            }
+            B: {
+                showInConfigPanel: false
+            }
+            A: {
+                showInConfigPanel: false
+            }
+        }
+    }
+
+    export type ComponentTransferChildNode = Omit<NormalNode, 'type'> & {
+        type: 'component-transfer-child'
+    }
+
+    export interface MatrixInFeColorMatrixNode {
+        type: 'matrix-in-fe-color-matrix';
+        ports: Record<string | symbol | number, never>
+    }
     export type Port = NormalPort | NumberPort
-    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode
+    export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode | ComponentTransferRootNode
 }

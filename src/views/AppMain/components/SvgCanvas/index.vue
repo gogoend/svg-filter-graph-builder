@@ -54,14 +54,14 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef, nextTick } from 'vue'
+import { computed, defineComponent, ref, provide, onBeforeUpdate, onMounted, watch, readonly, inject, shallowRef, nextTick, onUnmounted, getCurrentInstance, ShallowRef, InjectionKey } from 'vue'
 import IoNode from './components/IoNode/index.vue'
 import IoPath from './components/IoPath/index.vue'
 
-import type { Port, Path, Node, RelativePathForNode } from './type'
+import { Port, Path, Node, RelativePathForNode, SVG_CANVAS_RECT_SYMBOL } from './type'
 import { getPortElType } from '@/utils'
 import { assertPortCanBeConnected } from '@/utils/link-validator'
-import { filterLibraryPanelWidth, HANDLE_LENGTH, POINT_R } from '@/config/ui'
+import { HANDLE_LENGTH, POINT_R } from '@/config/ui'
 import {
   ALL_LINKED_PATH_ON_CANVAS_SYMBOL,
   ALL_NODES_ON_CANVAS_SYMBOL,
@@ -78,6 +78,8 @@ import { uuid } from '@/utils/uuid'
 // eslint-disable-next-line vue/prefer-import-from-vue
 import { hasOwn } from '@vue/shared'
 
+import useLayoutCache from './hooks/useLayoutCache'
+
 export default defineComponent({
   name: 'SvgCanvas',
   components: {
@@ -87,6 +89,9 @@ export default defineComponent({
   setup() {
     const canvasScrollEl = shallowRef<HTMLDivElement>()
     provide('canvasScrollEl', canvasScrollEl)
+
+    const svgCanvasRect = useLayoutCache().elRect as ShallowRef<DOMRectReadOnly>
+    provide(SVG_CANVAS_RECT_SYMBOL, svgCanvasRect)
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
     const addPath = inject(ADD_PATH_SYMBOL)!
@@ -159,7 +164,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1] + POINT_R,
           coord[0],
           coord[1] + POINT_R
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value!.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left : p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top)
       }
       if (getPortElType(el) === 'out') {
         ghostPathDArguments.value = [
@@ -172,7 +177,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           coord[1],
           coord[0],
           coord[1]
-        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value!.scrollTop)
+        ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left : p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top)
       }
     }
 
@@ -198,9 +203,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left
             } else {
-              return p + canvasScrollEl.value!.scrollTop
+              return p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top
             }
           } else {
             return p
@@ -214,9 +219,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left
             } else {
-              return p + canvasScrollEl.value!.scrollTop
+              return p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top
             }
           } else {
             return p
@@ -258,9 +263,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left
             } else {
-              return p + canvasScrollEl.value!.scrollTop
+              return p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top
             }
           } else {
             return p
@@ -285,9 +290,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left
             } else {
-              return p + canvasScrollEl.value!.scrollTop
+              return p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top
             }
           } else {
             return p
@@ -369,9 +374,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i <= 3) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left
             } else {
-              return p + canvasScrollEl.value!.scrollTop
+              return p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top
             }
           } else {
             return p
@@ -392,9 +397,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         ].map((p, i) => {
           if (i >= 4) {
             if (i % 2 === 0) {
-              return p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth
+              return p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left
             } else {
-              return p + canvasScrollEl.value!.scrollTop
+              return p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top
             }
           } else {
             return p
@@ -430,16 +435,23 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         .forEach(it => {
           addNodes(it)
         })
-      // 等待节点都挂载后，再回填表单、创建连接
+      // 等待节点都挂载后，再回填表单
       await nextTick()
       Object.entries(nodeFormValues).forEach(([nodeId, nodeFormValue], index) => {
         Object.keys(nodeFormValue).forEach((key: keyof typeof nodeFormValue) => {
           // FIXME: 修正类型
-          if (hasOwn(nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue, key as any)) {
+          if (
+            [
+              hasOwn(nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue, key as any), // 仅回填节点定义中包含的字段
+              nodes[nodeId].is === 'feMerge' // 如果是feMerge节点，则全部回填 // TODO: 此处应该枚举出所有类似的元素
+            ].includes(true)
+          ) {
             (nodeRefMap.value[nodeId].nodeConfigRef.feAttrValue as any)[key] = nodeFormValue[key]
           }
         })
       })
+      // 等待节点都正确后，再创建连接
+      await nextTick()
       Object.values(links)
         .map(it => {
           const newIt = window.structuredClone(it) as unknown as Path // 强转类型
@@ -468,7 +480,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             toPortCoord[1] + POINT_R,
             toPortCoord[0],
             toPortCoord[1] + POINT_R
-          ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - filterLibraryPanelWidth : p + canvasScrollEl.value!.scrollTop)
+          ].map((p, i) => i % 2 === 0 ? p + canvasScrollEl.value!.scrollLeft - svgCanvasRect.value.left : p + canvasScrollEl.value!.scrollTop - svgCanvasRect.value.top)
 
           return newIt
         })
@@ -498,7 +510,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
     return {
       canvasScrollEl,
-      filterLibraryPanelWidth,
+      svgCanvasRect,
 
       ghostPathD,
       ghostNodeRef,

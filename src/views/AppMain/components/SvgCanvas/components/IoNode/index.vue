@@ -4,7 +4,7 @@
     :class="{
       'io-node--focused': isFocused
     }"
-    @mousedown.prevent="handleNodeMousedown"
+    @mousedown.stop="handleNodeMousedown"
     :transform="`translate(${position[0]}, ${position[1]})`"
     ref="ioNodeEl"
   >
@@ -70,6 +70,30 @@
             ref="nodeConfigRef"
           />
         </template>
+        <template v-else-if="['matrix-in-fe-color-matrix'].includes(fe[is].type)">
+          <matrix-in-fe-color-matrix-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
+        <template v-else-if="['component-transfer-root'].includes(fe[is].type)">
+          <component-transfer-root-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
+        <template v-else-if="['component-transfer-child'].includes(fe[is].type)">
+          <component-transfer-child-node
+            :is="is"
+            :node-id="nodeId"
+            :relativePaths="relativePaths"
+            ref="nodeConfigRef"
+          />
+        </template>
       </div>
     </foreignObject>
   </g>
@@ -80,22 +104,24 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
 
-import type { OverwrittenIoNodeType, Path, Port, RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/type'
+import { OverwrittenIoNodeType, Path, Port, RelativePathForNode, SVG_CANVAS_RECT_SYMBOL } from '@/views/AppMain/components/SvgCanvas/type'
 import { getTopoOrder, isPortEl } from '@/utils'
 
 import NormalNode from './components/NormalNode.vue'
 import MergeNode from './components/MergeNode.vue'
 import SourceNode from './components/SourceNode.vue'
 import StringLiteralNode from './components/StringLiteralNode.vue'
+import MatrixInFeColorMatrixNode from './components/MatrixInFeColorMatrixNode.vue'
+import ComponentTransferRootNode from './components/ComponentTransferRootNode.vue'
+import ComponentTransferChildNode from './components/ComponentTransferChildNode.vue'
 
-import { Dictionary } from '@/utils/type'
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 
 const IoNode: {
   new(): OverwrittenIoNodeType
 } = defineComponent({
-  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode },
+  components: { NormalNode, MergeNode, SourceNode, StringLiteralNode, MatrixInFeColorMatrixNode, ComponentTransferRootNode, ComponentTransferChildNode },
   name: 'IoNode',
   props: {
     is: {
@@ -117,6 +143,9 @@ const IoNode: {
   },
   setup(props, { emit }) {
     const vm = getCurrentInstance()!.proxy as unknown as OverwrittenIoNodeType
+
+    const svgCanvasRect = inject(SVG_CANVAS_RECT_SYMBOL)!
+
     const fromPort = inject<Ref<Port<typeof vm>>>('fromPort')
     const toPort = inject<Ref<Port<typeof vm>>>('toPort')
 
@@ -183,8 +212,8 @@ const IoNode: {
           } else {
             // 否则认为是节点移动，此时更新节点的位置
             const newPosition = [
-              ev.pageX - clickedRelativePosition.value[0] - filterLibraryPanelWidth,
-              ev.pageY - clickedRelativePosition.value[1]
+              ev.pageX - clickedRelativePosition.value[0] - svgCanvasRect.value.left,
+              ev.pageY - clickedRelativePosition.value[1] - svgCanvasRect.value.top
             ] // clickedRelativePosition.value.concat()
             emit('update:position', newPosition)
             nextTick(() => {

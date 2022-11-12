@@ -1,8 +1,15 @@
 <template>
-  <input v-model.lazy="feAttrValue.value" />
+  <div>
+    <input
+      v-for="(_, index) in feAttrValue"
+      :key="index"
+      v-model="feAttrValue[index]"
+      class="input"
+    />
+  </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, PropType, readonly, ref, unref, VNode } from 'vue'
+import { computed, defineComponent, h, PropType, readonly, ref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -36,17 +43,23 @@ export default defineComponent({
       filterThumbUrl
     } = useIoNode()
 
-    const feAttrValue = ref<Dictionary<string | number>>({
-      value: ''
-    })
+    const feAttrValue = ref<number[]>(
+      (() => {
+        const arr = new Array(20)
 
-    const mergedFeAttrValue = computed<Dictionary<string | number>>(() => {
-      return {
-        result: unref(feAttrValue).value
-      }
-    })
+        arr.fill(0)
+        arr[0] = arr[6] = arr[12] = arr[18] = 1
 
-    // FIXME: 此处节点应该只用于缩略图预览，不应出现在最终结果中
+        return arr
+      })()
+    )
+
+    const mergedFeAttrValue = computed(
+      () => ({
+        result: feAttrValue.value.join(' ')
+      })
+    )
+
     const getVNodeFragment = (): VNode | null => null
 
     return {
@@ -58,14 +71,14 @@ export default defineComponent({
       ioNodeEl,
 
       setFeAttrEls,
+
+      feAttrValue,
       mergedFeAttrValue,
 
       handlePortMouseenter,
 
       filterThumbUrl,
-      getVNodeFragment,
-
-      feAttrValue
+      getVNodeFragment
     }
   }
 })
@@ -73,4 +86,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
   @import url('../styles/public.scss');
+  .input {
+    width: 20%;
+    box-sizing: border-box;
+  }
 </style>

@@ -28,7 +28,7 @@
   </template>
 </template>
 <script lang="ts">
-import { computed, defineComponent, h, PropType, ref, VNode } from 'vue'
+import { computed, defineComponent, h, inject, PropType, ref, VNode } from 'vue'
 import useIoNode from '../hooks/useIoNode'
 
 import fe from '../fe-definition-config'
@@ -38,6 +38,8 @@ import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
 import { noop } from '@/utils'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
+
+import { NODE_REF_MAP_SYMBOL } from '@/store/canvasStuff'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -78,12 +80,12 @@ export default defineComponent({
     })
 
     const mergedFeAttrValue = computed<Dictionary<string | number>>(() => ({
-      ...feAttrValue.value,
-      ...foreignPortValue.value,
+      in: foreignPortValue.value.in,
       result: props.nodeId
     }))
 
-    const getVNodeFragment = (item: OverwrittenIoNodeType, index: number): VNode => {
+    const nodeRefMap = inject(NODE_REF_MAP_SYMBOL)!
+    const getVNodeFragment = (item: OverwrittenIoNodeType): VNode => {
       const is = item.is
       const { mergedFeAttrValue } = item
 
@@ -107,7 +109,35 @@ export default defineComponent({
         }
       })
       const tag = (fe[is] as any).tag ?? is
-      return h(tag, nodeAttrs)
+
+      const childVNodeAttrMap = {
+        R: { type: 'identity' },
+        G: { type: 'identity' },
+        B: { type: 'identity' },
+        A: { type: 'identity' }
+      }
+
+      Object.keys(childVNodeAttrMap).forEach(key => {
+        if (foreignPortValue.value[key]) {
+          Object.assign(
+            (childVNodeAttrMap as any)[key],
+            nodeRefMap.value[
+              foreignPortValue.value[key]
+            ].mergedFeAttrValue
+          )
+        }
+      })
+
+      return h(
+        tag,
+        nodeAttrs,
+        Object.entries(childVNodeAttrMap).map(([key, value]) => {
+          return h(
+            `feFunc${key}`,
+            value
+          )
+        })
+      )
     }
 
     // 填充默认值

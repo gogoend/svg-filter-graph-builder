@@ -14,7 +14,7 @@ export const feConvolveMatrix: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     kernelMatrix: {
       defaultValue: '0 1 0, 1 1 1, 0 1 0'
@@ -41,7 +41,7 @@ export const feConvolveMatrix: SVGFilterConfig.Node = {
     },
     edgeMode: {
       type: 'text',
-      defaultValue: 'none',
+      defaultValue: 'duplicate',
       enum: ['duplicate', 'wrap', 'none']
     },
     kernelUnitLength: {
@@ -96,7 +96,7 @@ export const feDropShadow: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     dx: {
       type: 'number'
@@ -117,7 +117,7 @@ export const feMerge: SVGFilterConfig.Node = {
   type: 'merge',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     }
   }
 }
@@ -126,7 +126,7 @@ export const feOffset: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     dx: {
       type: 'number'
@@ -137,16 +137,17 @@ export const feOffset: SVGFilterConfig.Node = {
   }
 }
 
-export const feColorMatrix: SVGFilterConfig.Node = {
+export const feColorMatrixUsingMatrix: SVGFilterConfig.Node = {
   type: 'normal',
+  tag: 'feColorMatrix',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     type: {
-      type: 'text',
-      defaultValue: 'matrix',
-      enum: ['matrix', 'saturate', 'hueRotate', 'luminanceToAlpha']
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'matrix'
     },
     values: {
       defaultValue: [
@@ -158,12 +159,67 @@ export const feColorMatrix: SVGFilterConfig.Node = {
     }
   }
 }
+export const matrixInFeColorMatrix: SVGFilterConfig.Node = {
+  type: 'matrix-in-fe-color-matrix',
+  ports: {}
+}
+
+export const feColorMatrixUsingSaturate: SVGFilterConfig.Node = {
+  tag: 'feColorMatrix',
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    type: {
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'saturate'
+    },
+    values: {
+      defaultValue: '1'
+    }
+  }
+}
+export const feColorMatrixUsingHueRotate: SVGFilterConfig.Node = {
+  tag: 'feColorMatrix',
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    type: {
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'hueRotate'
+    },
+    values: {
+      defaultValue: '0'
+    }
+  }
+}
+export const feColorMatrixUsingLuminanceToAlpha: SVGFilterConfig.Node = {
+  tag: 'feColorMatrix',
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    type: {
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'luminanceToAlpha'
+    },
+    values: {
+    }
+  }
+}
 
 export const feTile: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     }
   }
 }
@@ -172,10 +228,10 @@ export const feDisplacementMap: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     in2: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     scale: {},
     xChannelSelector: {},
@@ -194,10 +250,10 @@ export const feBlend: SVGFilterConfig.Node = {
   type: 'normal',
   ports: {
     in: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     in2: {
-      type: 'hidden'
+      showInConfigPanel: false
     },
     mode: {
       defaultValue: 'normal',
@@ -205,6 +261,200 @@ export const feBlend: SVGFilterConfig.Node = {
         'normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion',
         'hue', 'saturation', 'color', 'luminosity'
       ]
+    }
+  }
+}
+
+export const feCompositeWithoutK: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  tag: 'feComposite',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    in2: {
+      showInConfigPanel: false
+    },
+    operator: {
+      enum: [
+        'over', 'in', 'out', 'atop', 'xor', 'lighter'
+      ]
+    }
+  }
+}
+
+export const feCompositeWithK: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  tag: 'feComposite',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    in2: {
+      showInConfigPanel: false
+    },
+    operator: {
+      showInConfigPanel: false,
+      showOnNode: false,
+      defaultValue: 'arithmetic'
+    },
+    k1: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k2: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k3: {
+      type: 'number',
+      defaultValue: 0.5
+    },
+    k4: {
+      type: 'number',
+      defaultValue: 0.5
+    }
+  }
+}
+
+export const feFlood: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    'flood-color': {
+    },
+    'flood-opacity': {
+      type: 'number'
+    }
+  }
+}
+
+export const feGaussianBlur: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    stdDeviation: {
+      type: 'number'
+    },
+    edgeMode: {
+      type: 'text',
+      enum: [
+        'duplicate',
+        'wrap',
+        'none'
+      ],
+      defaultValue: 'none'
+    }
+  }
+}
+
+export const feMorphology: SVGFilterConfig.NormalNode = {
+  type: 'normal',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    operator: {
+      enum: [
+        'erode',
+        'dilate'
+      ],
+      defaultValue: 'erode'
+    },
+    radius: {
+      type: 'number',
+      defaultValue: 2
+    }
+  }
+}
+
+export const feComponentTransfer: SVGFilterConfig.ComponentTransferRootNode = {
+  type: 'component-transfer-root',
+  ports: {
+    in: {
+      showInConfigPanel: false
+    },
+    R: {
+      showInConfigPanel: false
+    },
+    G: {
+      showInConfigPanel: false
+    },
+    B: {
+      showInConfigPanel: false
+    },
+    A: {
+      showInConfigPanel: false
+    }
+  }
+}
+
+export const feFuncXUsingIdentity: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'identity',
+      showInConfigPanel: false,
+      showOnNode: false
+    }
+  }
+}
+
+export const feFuncXUsingTable: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'table',
+      showInConfigPanel: false,
+      showOnNode: false
+    },
+    tableValues: {
+      defaultValue: '1 1 1 1'
+    }
+  }
+}
+
+export const feFuncXUsingLinearOrDiscrete: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'linear',
+      enum: [
+        'linear',
+        'discrete'
+      ]
+    },
+    slope: {
+      type: 'number',
+      defaultValue: 1
+    },
+    intercept: {
+      type: 'number',
+      defaultValue: 0
+    }
+  }
+}
+
+export const feFuncXUsingGamma: SVGFilterConfig.ComponentTransferChildNode = {
+  type: 'component-transfer-child',
+  ports: {
+    type: {
+      defaultValue: 'gamma',
+      showInConfigPanel: false,
+      showOnNode: false
+    },
+    amplitude: {
+      type: 'number',
+      defaultValue: 1
+    },
+    exponent: {
+      type: 'number',
+      defaultValue: 0
+    },
+    offset: {
+      type: 'number',
+      defaultValue: 0
     }
   }
 }
@@ -226,11 +476,26 @@ export default {
   feDropShadow,
   feMerge,
   feOffset,
-  feColorMatrix,
+  feColorMatrixUsingMatrix,
+  matrixInFeColorMatrix,
+  feColorMatrixUsingSaturate,
+  feColorMatrixUsingHueRotate,
+  feColorMatrixUsingLuminanceToAlpha,
   feTile,
   feDisplacementMap,
   feImage,
   feBlend,
+  feCompositeWithoutK,
+  feCompositeWithK,
+  feFlood,
+  feGaussianBlur,
+  feMorphology,
+
+  feComponentTransfer,
+  feFuncXUsingIdentity,
+  feFuncXUsingTable,
+  feFuncXUsingLinearOrDiscrete,
+  feFuncXUsingGamma,
 
   StringLiteral
 }

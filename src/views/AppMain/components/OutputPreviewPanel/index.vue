@@ -13,6 +13,9 @@
     >
       <img :src="sourceImageSrc" />
     </div>
+    <div class="output-preview-panel__tools">
+      <!--  -->
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -23,7 +26,8 @@ export default defineComponent({
   name: 'OutputPreviewPanel',
   components: { FilterDef },
   setup() {
-    const sourceImageSrc = ref('/demo/assets/rinkysplash.jpg')
+    const sourceImageSrc = ref('./demo/assets/rinkysplash.jpg')
+
     return {
       sourceImageSrc
     }
@@ -46,6 +50,9 @@ export default defineComponent({
       height: 100%;
       object-fit: cover;
     }
+  }
+  &__tools {
+    position: relative;
   }
 }
 </style>
