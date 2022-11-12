@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint",
     "ci:deploy-gh-pages": "node ./scripts/deploy-gh-pages.mjs",
     "ci:deploy-local": "node ./scripts/deploy-local.mjs",
-    "ci:test-dev-branch": "node ./scripts/test-dev-branch.mjs"
+    "ci:test-stage-branch": "node ./scripts/test-stage-branch.mjs"
   },
   "dependencies": {
     "core-js": "^3.26.0",
