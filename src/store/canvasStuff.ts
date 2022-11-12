@@ -1,6 +1,6 @@
 import { NodeInStore } from '@/schema/IoNode'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
-import { Ref, ref, InjectionKey, provide, unref, computed } from 'vue'
+import { Ref, ref, InjectionKey, provide, unref, computed, inject, getCurrentInstance } from 'vue'
 import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
 
 import packageInfo from '../../package.json'
@@ -28,6 +28,8 @@ export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<t
 export const SAVE_FILTER_SYMBOL: InjectionKey<() => void> = Symbol('保存滤镜函数')
 
 export default function canvasStuff() {
+  const { $eventHub: appEventHub } = getCurrentInstance()!.appContext.config.globalProperties
+
   const nodes = ref<Record<NodeInStore['id'], NodeInStore>>({})
   provide(ALL_NODES_ON_CANVAS_SYMBOL, nodes)
 
@@ -36,8 +38,26 @@ export default function canvasStuff() {
   }
   provide(ADD_NODE_SYMBOL, addNode)
 
+  // 解除所有与当前节点相关的链接
+  const unlinkNode = (nodeId: string) => {
+    const idOfPathsWillBeRemoved = [
+      ...(relativePathMapIndexedByNodeId.value[nodeId]?.in?.map(it => it.id) ?? []),
+      ...(relativePathMapIndexedByNodeId.value[nodeId]?.out?.map(it => it.id) ?? [])
+    ]
+
+    idOfPathsWillBeRemoved.forEach(pathId => {
+      removePath(pathId)
+    })
+
+    delete relativePathMapIndexedByNodeId.value[nodeId]
+  }
   const removeNode = (nodeId: string) => {
+    unlinkNode(nodeId)
     delete nodes.value[nodeId]
+    appEventHub.emit(
+      'svg-canvas:node-removed',
+      nodeId
+    )
   }
   provide(REMOVE_NODE_SYMBOL, removeNode)
 
