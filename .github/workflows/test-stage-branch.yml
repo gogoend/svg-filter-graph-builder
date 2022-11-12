@@ -1,7 +1,7 @@
 # 参考 https://tzuhui.io/2020/12/11/Vue/Vue-deploy-github-actions/
 
 # This is a basic workflow to help you get started with Actions
-name: Test Dev
+name: Test Stage Branch
 
 # Controls when the action will run. 
 on:
@@ -9,6 +9,20 @@ on:
   push:
     branches:
       - dev
+      - feat/*
+      - fix/*
+      - perf/*
+      - refactor/*
+      - build/*
+      - build/github-ci
+  pull_request:
+    branches:
+      - dev
+      - feat/*
+      - fix/*
+      - perf/*
+      - refactor/*
+      - build/*
       - build/github-ci
 
   # Allows you to run this workflow manually from the Actions tab
@@ -28,4 +42,4 @@ jobs:
       
       - name: Install & Build # 執行指令
         run: |
-          yarn ci:test-dev-branch
+          yarn ci:test-stage-branch
