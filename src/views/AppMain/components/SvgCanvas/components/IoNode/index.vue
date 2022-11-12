@@ -94,6 +94,9 @@
             ref="nodeConfigRef"
           />
         </template>
+        <div class="io-node__toolbox">
+          <button @click="removeNode(nodeId)">删除节点</button>
+        </div>
       </div>
     </foreignObject>
   </g>
@@ -117,6 +120,7 @@ import ComponentTransferChildNode from './components/ComponentTransferChildNode.
 
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
+import { REMOVE_NODE_SYMBOL } from '@/store/canvasStuff'
 
 const IoNode: {
   new(): OverwrittenIoNodeType
@@ -298,6 +302,7 @@ const IoNode: {
     }
     const isFocused = computed(() => focusingNode.value === vm)
 
+    const removeNode = inject(REMOVE_NODE_SYMBOL)!
     return {
       POINT_R,
       POINT_BORDER_W,
@@ -323,7 +328,9 @@ const IoNode: {
 
       focusingNode,
       handleNodeBodyClick,
-      isFocused
+      isFocused,
+
+      removeNode
     }
   }
 })

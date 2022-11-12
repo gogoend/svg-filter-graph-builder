@@ -27,7 +27,7 @@ import fe from '@/views/AppMain/components/SvgCanvas/components/IoNode/fe-defini
 import { filterLibraryPanelWidth } from '@/config/ui'
 
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
-import { ADD_NODES_SYMBOL } from '@/store/canvasStuff'
+import { ADD_NODE_SYMBOL } from '@/store/canvasStuff'
 import { SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
 
 const menuGroup = [
@@ -49,7 +49,7 @@ export default defineComponent({
 
     const ghostNodeRef = inject(GHOST_NODE_REF_SYMBOL)!
     const draggingNodeIcon = inject(DRAGGING_NODE_ICON_SYMBOL)!
-    const addNodes = inject(ADD_NODES_SYMBOL)!
+    const addNode = inject(ADD_NODE_SYMBOL)!
 
     const handleIconMousedown = function(ev: MouseEvent, icon: any) {
       mouseEventHelper(ev, {
@@ -71,7 +71,7 @@ export default defineComponent({
           void 0
         },
         up(ev, { originEl }) {
-          addNodes({
+          addNode({
             is: icon.title,
             id: uuid(),
             position: [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]

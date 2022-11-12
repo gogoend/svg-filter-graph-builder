@@ -63,11 +63,11 @@ const fieldId = computed(() => props.fieldId!)
 const [focusingNode] = inject(FOCUSING_NODE_SYMBOL)!
 
 const feAttrValue = computed(() => {
-  return unref(focusingNode)?.nodeConfigRef.feAttrValue ?? {}
+  return unref(focusingNode)?.nodeConfigRef?.feAttrValue ?? {}
 })
 
 const foreignPortValue = computed(() => {
-  return unref(focusingNode)?.nodeConfigRef.foreignPortValue ?? {}
+  return unref(focusingNode)?.nodeConfigRef?.foreignPortValue ?? {}
 })
 
 const fieldValueIsFromForeignPort = computed(() => {
