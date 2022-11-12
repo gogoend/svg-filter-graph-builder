@@ -10,7 +10,7 @@ async function release() {
   )
   execSync(
     // todo
-    `git checkout $GITHUB_REF`
+    `git checkout $GITHUB_HEAD_REF`
   )
   execSync(
     `yarn`
