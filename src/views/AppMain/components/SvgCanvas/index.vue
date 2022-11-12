@@ -70,15 +70,16 @@ import {
   ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL,
   ADD_PATH_SYMBOL,
   NODE_REF_MAP_SYMBOL,
-  ADD_NODE_SYMBOL
+  ADD_NODE_SYMBOL,
+  GET_FILTER_FILE_FROM_DB
 } from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
-import { getLinks, getNodeValueMap, getNodes } from '@/api/graph'
 import { uuid } from '@/utils/uuid'
 // eslint-disable-next-line vue/prefer-import-from-vue
 import { hasOwn } from '@vue/shared'
 
 import useLayoutCache from './hooks/useLayoutCache'
+import { ProjectFile } from '@/schema/ProjectFile'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -423,21 +424,25 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
     const addNode = inject(ADD_NODE_SYMBOL)!
 
+    const getFilterFileListFromDb = inject(
+      GET_FILTER_FILE_FROM_DB
+    )!
     const loadCanvasFromSerializedStatus = async() => {
-      const [nodes, nodeFormValues, links] = await Promise.all(
-        [
-          getNodes(),
-          getNodeValueMap(),
-          getLinks()
-        ]
-      )
+      const projectList = await getFilterFileListFromDb()
+      if (!projectList.length) {
+        return
+      }
+      const {
+        nodes, nodeForms, links
+      } = projectList[0].stuff as ProjectFile['stuff']
+
       Object.values(nodes)
         .forEach(it => {
           addNode(it)
         })
       // 等待节点都挂载后，再回填表单
       await nextTick()
-      Object.entries(nodeFormValues).forEach(([nodeId, nodeFormValue], index) => {
+      Object.entries(nodeForms).forEach(([nodeId, nodeFormValue]) => {
         Object.keys(nodeFormValue).forEach((key: keyof typeof nodeFormValue) => {
           // FIXME: 修正类型
           if (
