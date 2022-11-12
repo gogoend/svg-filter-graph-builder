@@ -70,7 +70,7 @@ import {
   ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL,
   ADD_PATH_SYMBOL,
   NODE_REF_MAP_SYMBOL,
-  ADD_NODES_SYMBOL
+  ADD_NODE_SYMBOL
 } from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 import { getLinks, getNodeValueMap, getNodes } from '@/api/graph'
@@ -421,7 +421,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       out: []
     })
 
-    const addNodes = inject(ADD_NODES_SYMBOL)!
+    const addNode = inject(ADD_NODE_SYMBOL)!
 
     const loadCanvasFromSerializedStatus = async() => {
       const [nodes, nodeFormValues, links] = await Promise.all(
@@ -433,7 +433,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       )
       Object.values(nodes)
         .forEach(it => {
-          addNodes(it)
+          addNode(it)
         })
       // 等待节点都挂载后，再回填表单
       await nextTick()

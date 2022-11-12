@@ -8,8 +8,8 @@ import { uuid } from '../utils/uuid'
 import { setLocal } from '@/utils/storage'
 
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
-export const ADD_NODES_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
-export const REMOVE_NODES_SYMBOL: InjectionKey<(nodeId: string) => void> = Symbol('移除节点函数')
+export const ADD_NODE_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
+export const REMOVE_NODE_SYMBOL: InjectionKey<(nodeId: string) => void> = Symbol('移除节点函数')
 
 export const ALL_LINKED_PATH_ON_CANVAS_SYMBOL: InjectionKey<Ref<Path[]>> = Symbol('Canvas上的所有连线')
 
@@ -34,12 +34,12 @@ export default function canvasStuff() {
   const addNode = (node: NodeInStore) => {
     nodes.value[node.id] = node
   }
-  provide(ADD_NODES_SYMBOL, addNode)
+  provide(ADD_NODE_SYMBOL, addNode)
 
   const removeNode = (nodeId: string) => {
     delete nodes.value[nodeId]
   }
-  provide(REMOVE_NODES_SYMBOL, removeNode)
+  provide(REMOVE_NODE_SYMBOL, removeNode)
 
   const nodeRefMap = ref<Record<string, InstanceType<typeof IoNode>>>({})
   provide(NODE_REF_MAP_SYMBOL, nodeRefMap)
