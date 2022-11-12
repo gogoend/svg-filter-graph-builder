@@ -33,16 +33,22 @@
               :key="subMenu.id"
               class="submenu-item"
               :class="{
-                'submenu-item__active': activeMenuIndexedById[subMenu.id]
+                'submenu-item--active': activeMenuIndexedById[subMenu.id],
+                'submenu-item__is-hr': subMenu.type === 'hr'
               }"
               @mouseenter="handleMouseenter(subMenu.id)"
               @mouseleave="handleMouseleave(subMenu.id)"
               @mousedown.prevent
-              @click="() => {
+              @click.prevent="() => {
                 subMenu.onClick?.()
                 activeMenuIndexedById = {}
               }"
-            >{{ subMenu.label }}</li>
+            >
+              <div v-if="subMenu.type === 'hr'" />
+              <template v-else>
+                {{ subMenu.label }}
+              </template>
+            </li>
           </ul>
         </li>
       </ul>
@@ -120,13 +126,6 @@ const menuTemplate = computed(() => [
       //   label: 'About'
       // },
       {
-        id: 'Contact @gogoend via mail',
-        label: 'Contact @gogoend via mail',
-        onClick() {
-          window.open('mailto:gogoend@qq.com')
-        }
-      },
-      {
         id: 'SVG Filter specification on W3C',
         label: 'SVG Filter specification on W3C',
         onClick() {
@@ -139,6 +138,24 @@ const menuTemplate = computed(() => [
         onClick() {
           window.open('https://developer.mozilla.org/en-US/docs/Web/SVG/Element/filter')
         }
+      },
+      {
+        id: 'Hr between spec and contact',
+        type: 'hr'
+      },
+      {
+        id: 'Issue',
+        label: 'Issue',
+        onClick() {
+          window.open('https://github.com/gogoend/svg-filter-graph-builder/issues')
+        }
+      },
+      {
+        id: 'Contact @gogoend via mail',
+        label: 'Contact @gogoend via mail',
+        onClick() {
+          window.open('mailto:gogoend@qq.com')
+        }
       }
     ]
   }
@@ -148,7 +165,7 @@ const menuTemplate = computed(() => [
 .menu-bar {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  background-color: #f4f4f4;
+  background-color: #eee;
   .seg-content {
     display: inline-flex;
     height: 100%;
@@ -176,18 +193,27 @@ const menuTemplate = computed(() => [
 .submenu-list {
   margin: 0;
   padding: 0;
+  // border: 1px solid #999;
   li.submenu-item {
     list-style: none;
-    min-width: 6em;
-    max-width: 10em;
+    min-width: 8em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: #333;
-    background-color: #eee;
+    background-color: #e8e8e8;
     text-align: left;
     padding: 0.5em 1em;
-    &__active {
+    &__is-hr {
+      pointer-events: none;
+      div {
+        margin: 0;
+        border: 0;
+        height: 1px;
+        background-color: #666;
+      }
+    }
+    &--active {
       background-color: #333333;
       color: #fff;
     }
