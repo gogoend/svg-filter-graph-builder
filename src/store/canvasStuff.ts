@@ -82,7 +82,10 @@ export default function canvasStuff() {
   const linkedPaths = ref<Path[]>([])
   provide(ALL_LINKED_PATH_ON_CANVAS_SYMBOL, linkedPaths)
 
-  const relativePathMapIndexedByNodeId = ref<Record<string, any>>({})
+  const relativePathMapIndexedByNodeId = ref<Record<string, {
+    in: Path[],
+    out: Path[]
+  }>>({})
   provide(RELATIVE_PATH_MAP_INDEXED_BY_NODE_ID_SYMBOL, relativePathMapIndexedByNodeId)
 
   const addPath = (path: Path) => {
