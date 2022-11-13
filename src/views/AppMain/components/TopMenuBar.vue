@@ -107,7 +107,7 @@ const menuTemplate = computed(() => [
         label: 'Save',
         async onClick() {
           await saveCurrentProject()
-          LuLightTip.success('保存成功', 'success')
+          LuLightTip.success('Saved successfully', 'success')
         }
       },
       {
@@ -115,7 +115,7 @@ const menuTemplate = computed(() => [
         label: 'Save As...',
         async onClick() {
           await saveCurrentProjectAs()
-          LuLightTip.success('保存成功', 'success')
+          LuLightTip.success('Saved successfully', 'success')
         }
       },
       {
