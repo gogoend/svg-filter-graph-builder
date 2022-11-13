@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { SAVE_FILTER_SYMBOL } from '@/store/io'
+import { SAVE_FILTER_SYMBOL, SHOW_OPEN_FILE_DIALOG_SYMBOL } from '@/store/io'
 import { computed, inject, ref } from 'vue'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
@@ -90,16 +90,20 @@ const handleMouseleave = (id: string) => {
 }
 
 const saveFilter = inject(SAVE_FILTER_SYMBOL)!
+const showOpenFileDialog = inject(SHOW_OPEN_FILE_DIALOG_SYMBOL)!
 
 const menuTemplate = computed(() => [
   {
     id: 'File',
     label: 'File',
     subMenu: [
-      // {
-      //   id: 'Open',
-      //   label: 'Open...'
-      // },
+      {
+        id: 'Open',
+        label: 'Open...',
+        onClick() {
+          showOpenFileDialog()
+        }
+      },
       {
         id: 'Save',
         label: 'Save',

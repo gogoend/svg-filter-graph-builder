@@ -5,9 +5,12 @@ import { fileStorage } from '../plugins/db'
 import { getCurrentInstance, InjectionKey, provide } from 'vue'
 
 import { ALL_NODES_ON_CANVAS_SYMBOL, NODE_FORM_VALUE_TYPE_SYMBOL, LINKED_PATHS_FOR_SERIALIZE_SYMBOL } from './canvasStuff'
+import { getSelectFileWaitee } from '@/components/FileChooser'
 
 export const SAVE_FILTER_SYMBOL: InjectionKey<() => void> = Symbol('保存滤镜函数')
 export const GET_FILTER_FILE_FROM_DB_SYMBOL: InjectionKey<() => Promise<any[]>> = Symbol('从DB中获取已保存的滤镜的列表')
+
+export const SHOW_OPEN_FILE_DIALOG_SYMBOL: InjectionKey<() => Promise<void>> = Symbol('打开打开文件对话框')
 
 export default function io() {
   const vm = getCurrentInstance()!.proxy
@@ -82,5 +85,14 @@ export default function io() {
   provide(
     GET_FILTER_FILE_FROM_DB_SYMBOL,
     getFilterFileListFromDb
+  )
+
+  const showOpenFileDialog = async() => {
+    const fileIdentifier = await getSelectFileWaitee()
+    console.log(fileIdentifier)
+  }
+  provide(
+    SHOW_OPEN_FILE_DIALOG_SYMBOL,
+    showOpenFileDialog
   )
 }
