@@ -2,25 +2,31 @@
   <div
     class="file-list"
   >
-    <select
-      v-model="selectedValue"
-    >
-      <option
-        v-for="(file, index) in fileList"
-        :key="index"
-        :value="file.id"
-      >{{ file.id }}</option>
-    </select>
-
-    <button
-      is="ui-button"
-      :disabled="!selectedValue"
-      @click.prevent="handleConfirm(selectedValue)"
-    >打开</button>
-    <button
-      is="ui-button"
-      @click.prevent="handleCancel()"
-    >取消</button>
+    <form class="file-list__form">
+      <select
+        v-model="selectedValue"
+        class="file-list__select"
+      >
+        <option
+          v-for="(file, index) in fileList"
+          :key="index"
+          :value="file.id"
+        >{{ file.project.name }}</option>
+      </select>
+    </form>
+    <component :is="'template'" class="file-list__footer-template">
+      <div class="file-list__footer">
+        <button
+          is="ui-button"
+          :disabled="!selectedValue"
+          @click.prevent="handleConfirm(selectedValue)"
+        >打开</button>
+        <button
+          is="ui-button"
+          @click.prevent="handleCancel()"
+        >取消</button>
+      </div>
+    </component>
   </div>
 </template>
 
@@ -53,4 +59,13 @@ getFilterFileListFromDb().then((res) => {
 })
 </script>
 <style lang="scss" scoped>
+.file-list__select {
+  width: 100%;
+  height: 3em;
+}
+.file-list__footer {
+  > button + button {
+    margin-left: 10px;
+  }
+}
 </style>

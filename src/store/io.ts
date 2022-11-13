@@ -62,7 +62,7 @@ export default function io() {
     let fileName = ''
     while (fileName?.trim() === '') {
       fileName = window.prompt(
-        `请输入文件名`
+        `Enter the name of the your project`
       ) as string
     }
 

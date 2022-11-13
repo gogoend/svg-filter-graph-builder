@@ -1,7 +1,7 @@
 import FileList from './FileList.vue'
 
 import LuDialog from 'lu2/theme/edge/js/common/ui/Dialog'
-import { App, createApp } from 'vue'
+import { App, createApp, nextTick } from 'vue'
 
 export function getSelectFileWaitee() {
   let app: App<Element> | null = null
@@ -14,9 +14,9 @@ export function getSelectFileWaitee() {
   })
 
   new LuDialog({
-    title: '选择文件',
+    title: 'Choose a file',
     content: `<div class="file-chooser-dialog" />`,
-    onShow() {
+    async onShow() {
       const el = this.querySelector('.file-chooser-dialog')! as HTMLDivElement
       app = createApp(
         FileList, {
@@ -33,6 +33,13 @@ export function getSelectFileWaitee() {
       app.mount(
         el
       )
+      await nextTick()
+      const footerElOfLuDialog = this.querySelector('.ui-dialog-footer') as HTMLElement
+      const footerTemplateInFileVm = this.querySelector('.file-list__footer-template') as HTMLElement
+
+      while (footerTemplateInFileVm.children.length) {
+        footerElOfLuDialog.appendChild(footerTemplateInFileVm.children[0])
+      }
     },
     onHide() {
       app!.unmount()
