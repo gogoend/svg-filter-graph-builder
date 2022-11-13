@@ -11,7 +11,9 @@
     "ci:test-stage-branch": "node ./scripts/test-stage-branch.mjs"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.0.10",
     "core-js": "^3.26.0",
+    "element-plus": "^2.2.21",
     "lu2": "^2021.12.21",
     "vue": "^3.2.41"
   },

@@ -95,14 +95,38 @@
           />
         </template>
         <div class="io-node__toolbox">
-          <button @click="removeNode(nodeId)">删除节点</button>
+          <button
+            class="io-node__toolbox-button"
+            is="ui-button"
+            @click="copySvgFilterCode(nodeId)"
+            title="Copy SVG Filter Code"
+          >
+            &lt;SVG&gt;
+          </button>
+          <button
+            class="io-node__toolbox-button"
+            is="ui-button"
+            @click="copyCssRule(nodeId)"
+            title="Copy CSS Rule"
+          >
+            CSS Rule
+          </button>
+          <button
+            class="io-node__toolbox-button"
+            is="ui-button"
+            @click="removeNode(nodeId)"
+            title="Remove Node"
+            data-type="danger"
+          >
+            <el-icon><Delete /></el-icon>
+          </button>
         </div>
       </div>
     </foreignObject>
   </g>
 </template>
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, ShallowRef, shallowRef, unref } from 'vue'
+import { computed, defineComponent, getCurrentInstance, inject, nextTick, onBeforeUpdate, PropType, provide, Ref, ref, createApp, h } from 'vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import fe from './fe-definition-config'
@@ -121,6 +145,8 @@ import ComponentTransferChildNode from './components/ComponentTransferChildNode.
 import { filterLibraryPanelWidth, POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 import { REMOVE_NODE_SYMBOL } from '@/store/canvasStuff'
+
+import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 
 const IoNode: {
   new(): OverwrittenIoNodeType
@@ -295,6 +321,11 @@ const IoNode: {
       }
     })
     provide('orderedAllDescendants', orderedAllDescendants)
+    const renderOfOrderedAllDescendants = computed(() => {
+      return orderedAllDescendants.value.map(it => {
+        return () => it.getVNodeFragment(it)
+      })
+    })
 
     const [focusingNode, setFocusingNode] = inject(FOCUSING_NODE_SYMBOL)!
     const handleNodeBodyClick = () => {
@@ -303,6 +334,31 @@ const IoNode: {
     const isFocused = computed(() => focusingNode.value === vm)
 
     const removeNode = inject(REMOVE_NODE_SYMBOL)!
+    const copySvgFilterCode = async() => {
+      const TempComponent = () => h(
+        'filter',
+        {
+          id: props.nodeId
+        },
+        renderOfOrderedAllDescendants.value.map(render => render())
+      )
+      const tempVueApp = createApp(TempComponent)
+
+      const tempEl: SVGSVGElement | null = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+      tempVueApp.mount(tempEl)
+      await nextTick()
+      const svgFilterCode = tempEl.outerHTML
+      tempVueApp.unmount()
+
+      await navigator.clipboard.writeText(svgFilterCode)
+      LuLightTip.success('SVG filter code has been copied successfully.', 'success')
+    }
+    const copyCssRule = async() => {
+      const cssText = `filter: url(#${props.nodeId})`
+      await navigator.clipboard.writeText(cssText)
+      LuLightTip.success('CSS rule code has been copied successfully.', 'success')
+    }
+
     return {
       POINT_R,
       POINT_BORDER_W,
@@ -325,12 +381,15 @@ const IoNode: {
       mergedFeAttrValue,
       getVNodeFragment,
       orderedAllDescendants,
+      renderOfOrderedAllDescendants,
 
       focusingNode,
       handleNodeBodyClick,
       isFocused,
 
-      removeNode
+      removeNode,
+      copySvgFilterCode,
+      copyCssRule
     }
   }
 })
@@ -411,6 +470,26 @@ export default IoNode
       input {
         width: 6em;
         flex: 0 1 auto;
+      }
+    }
+  }
+  .io-node__toolbox {
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    white-space: nowrap;
+    display: flex;
+    // TODO: 为何即使设置padding:0、line-height:1，按钮高度还是14px而非16px？
+    .io-node__toolbox-button[is=ui-button] {
+      padding: 4px;
+      min-width: unset;
+      border: 0;
+      line-height: 1;
+      ::v-deep(.el-icon) {
+        display: flex;
+      }
+      & + .io-node__toolbox-button[is=ui-button] {
+        margin-left: 0.5em
       }
     }
   }
