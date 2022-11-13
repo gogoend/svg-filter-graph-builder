@@ -11,11 +11,14 @@ import SvgCanvas from '@/views/AppMain/components/SvgCanvas/index.vue'
 import { ProjectFile } from '@/schema/ProjectFile'
 
 export const SAVE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('保存项目')
+export const SAVE_CURRENT_PROJECT_AS_SYMBOL: InjectionKey<() => void> = Symbol('另存为项目')
 
 export const CURRENT_PROJECT_SYMBOL: InjectionKey<ShallowRef<ProjectFile | null>> = Symbol('已打开的项目')
 export const SET_CURRENT_PROJECT_SYMBOL: InjectionKey<(project: ProjectFile | null) => void> = Symbol('设置已打开的项目')
-export const CLOSE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭项目')
 
+export const CLOSE_AND_NEW_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭并新建项目')
+
+export const TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭项目')
 export const TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL: InjectionKey<() => void> = Symbol('尝试打开打开文件对话框')
 
 export default function projectInfoState() {
@@ -41,9 +44,7 @@ export default function projectInfoState() {
     emptyCanvasStuff()
     setOpeningProject(null)
   }
-  provide(CLOSE_CURRENT_PROJECT_SYMBOL, closeCurrentProject)
-
-  const tryToShowOpenFileDialog = async() => {
+  const tryToCloseCurrentProject = async() => {
     await new Promise((resolve, reject) => {
       new LuDialog().confirm(`<h6>ATTENTION</h6><p>Any unsaved changes will be lost. Continue?</p>`, {
         buttons: [{
@@ -61,6 +62,11 @@ export default function projectInfoState() {
         }]
       })
     })
+  }
+  provide(TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL, tryToCloseCurrentProject)
+
+  const tryToShowOpenFileDialog = async() => {
+    await tryToCloseCurrentProject()
     const selectedProjectId = await getSelectFileWaitee()
 
     if (selectedProjectId === currentProject.value?.id) {
@@ -126,33 +132,41 @@ export default function projectInfoState() {
     )
   }
   const saveCurrentProject = async() => {
-    const projectFileData = collectCurrentFilterProjectFileData()
-
-    if (!projectFileData.id) {
-      let projectName = ''
-      while (projectName?.trim() === '') {
-        projectName = window.prompt(
-          `Enter the name of the your project`
-        ) as string
-      }
-
-      if (projectName === null) {
-        return
-      }
-
-      projectFileData.project.name = projectName
-      const newProjectFileDataInfo = {
-        id: uuid(),
-        ...projectFileData
-      }
-      await fileStorage.add(newProjectFileDataInfo)
-      // 处理 未保存的项目的情况
-      setOpeningProject(newProjectFileDataInfo)
-    } else {
-      await fileStorage.where('id').equals(projectFileData.id).modify((value, ref) => {
-        ref.value = projectFileData
+    const currentProjectId = currentProject.value?.id
+    if (currentProjectId) {
+      await fileStorage.where('id').equals(currentProjectId).modify((value, ref) => {
+        ref.value = collectCurrentFilterProjectFileData()
       })
+      return
+    } else {
+      saveCurrentProjectAs()
     }
   }
   provide(SAVE_CURRENT_PROJECT_SYMBOL, saveCurrentProject)
+
+  const saveCurrentProjectAs = async() => {
+    const projectFileData = collectCurrentFilterProjectFileData()
+    projectFileData.id = uuid()
+
+    let projectName = ''
+    while (projectName?.trim() === '') {
+      projectName = window.prompt(
+        `Enter the name of the your project`
+      ) as string
+    }
+
+    if (projectName === null) {
+      return
+    }
+
+    projectFileData.project.name = projectName
+    const newProjectFileDataInfo = {
+      id: uuid(),
+      ...projectFileData
+    }
+    await fileStorage.add(newProjectFileDataInfo)
+    // 处理 未保存的项目的情况
+    setOpeningProject(newProjectFileDataInfo)
+  }
+  provide(SAVE_CURRENT_PROJECT_AS_SYMBOL, saveCurrentProjectAs)
 }

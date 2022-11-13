@@ -79,7 +79,7 @@
 
 <script lang="ts" setup>
 import { UNSAVED_PROJECT_NAME } from '@/config/project'
-import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
+import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
 import { computed, inject, ref } from 'vue'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
@@ -91,7 +91,9 @@ const handleMouseleave = (id: string) => {
 }
 
 const saveCurrentProject = inject(SAVE_CURRENT_PROJECT_SYMBOL)!
-const tryToshowOpenFileDialog = inject(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL)!
+const saveCurrentProjectAs = inject(SAVE_CURRENT_PROJECT_AS_SYMBOL)!
+const closeAndNewProject = inject(TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL)!
+const tryToShowOpenFileDialog = inject(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL)!
 
 const menuTemplate = computed(() => [
   {
@@ -102,7 +104,7 @@ const menuTemplate = computed(() => [
         id: 'Open',
         label: 'Open...',
         onClick() {
-          tryToshowOpenFileDialog()
+          tryToShowOpenFileDialog()
         }
       },
       {
@@ -111,15 +113,21 @@ const menuTemplate = computed(() => [
         onClick() {
           saveCurrentProject()
         }
+      },
+      {
+        id: 'Save As...',
+        label: 'Save As...',
+        onClick() {
+          saveCurrentProjectAs()
+        }
+      },
+      {
+        id: 'Close',
+        label: 'Close',
+        onClick() {
+          closeAndNewProject()
+        }
       }
-      // {
-      //   id: 'Save As',
-      //   label: 'Save As'
-      // },
-      // {
-      //   id: 'Close',
-      //   label: 'Close'
-      // }
     ]
   },
   {
