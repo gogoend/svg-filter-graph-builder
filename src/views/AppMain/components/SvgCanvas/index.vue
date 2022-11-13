@@ -70,9 +70,9 @@ import {
   ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL,
   ADD_PATH_SYMBOL,
   NODE_REF_MAP_SYMBOL,
-  ADD_NODE_SYMBOL,
-  GET_FILTER_FILE_FROM_DB
+  ADD_NODE_SYMBOL
 } from '@/store/canvasStuff'
+import { GET_FILTER_FILE_FROM_DB_SYMBOL } from '@/store/io'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 import { uuid } from '@/utils/uuid'
 // eslint-disable-next-line vue/prefer-import-from-vue
@@ -425,7 +425,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     const addNode = inject(ADD_NODE_SYMBOL)!
 
     const getFilterFileListFromDb = inject(
-      GET_FILTER_FILE_FROM_DB
+      GET_FILTER_FILE_FROM_DB_SYMBOL
     )!
     const loadCanvasFromSerializedStatus = async() => {
       const projectList = await getFilterFileListFromDb()

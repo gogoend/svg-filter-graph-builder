@@ -1,13 +1,7 @@
 import { NodeInStore } from '@/schema/IoNode'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
-import { Ref, ref, InjectionKey, provide, unref, computed, inject, getCurrentInstance } from 'vue'
+import { Ref, ref, InjectionKey, provide, unref, computed, inject, getCurrentInstance, ComputedRef } from 'vue'
 import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
-
-import packageInfo from '../../package.json'
-import { uuid } from '../utils/uuid'
-import { setLocal } from '@/utils/storage'
-import { ProjectFile } from '@/schema/ProjectFile'
-import { fileStorage } from '../plugins/db'
 
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
 export const ADD_NODE_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
@@ -26,10 +20,8 @@ export const ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<(
 ) => void> = Symbol('向 节点id->出、入连线 的映射中添加连线关系')
 
 export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<typeof IoNode>>>> = Symbol('Node组件映射')
-
-export const SAVE_FILTER_SYMBOL: InjectionKey<() => void> = Symbol('保存滤镜函数')
-
-export const GET_FILTER_FILE_FROM_DB: InjectionKey<() => Promise<any[]>> = Symbol('从DB中获取已保存的滤镜的列表')
+export const NODE_FORM_VALUE_TYPE_SYMBOL: InjectionKey<ComputedRef<Record<string, Record<string, string>>>> = Symbol('各节点表单内容')
+export const LINKED_PATHS_FOR_SERIALIZE_SYMBOL: InjectionKey<Record<string, any>> = Symbol('序列化的连线')
 
 export default function canvasStuff() {
   const { $eventHub: appEventHub } = getCurrentInstance()!.appContext.config.globalProperties
@@ -79,9 +71,10 @@ export default function canvasStuff() {
 
     return nodeFormValueMap
   })
+  provide(NODE_FORM_VALUE_TYPE_SYMBOL, nodeFormValueMap)
 
   const linkedPathsForSerialize = ref<Record<string, any>>({})
-  provide('tempLinkedPathsForSerialize', linkedPathsForSerialize)
+  provide(LINKED_PATHS_FOR_SERIALIZE_SYMBOL, linkedPathsForSerialize)
 
   const linkedPaths = ref<Path[]>([])
   provide(ALL_LINKED_PATH_ON_CANVAS_SYMBOL, linkedPaths)
@@ -158,67 +151,5 @@ export default function canvasStuff() {
     relativePathMapIndexedByNodeId.value[unref(toPort).vm.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
-
-  const getFilterProjectFileData = () => {
-    const stuff = {
-      nodes: nodes.value,
-      nodeForms: nodeFormValueMap.value,
-      links: linkedPathsForSerialize.value
-    }
-    const product = {
-      name: packageInfo.name,
-      version: packageInfo.version,
-      buildVersion: 0
-    }
-    const project = {
-      author: 'gogoend',
-      createdTime: Number(new Date()),
-      modifiedTime: Number(new Date()),
-      name: ''
-    }
-
-    const projectFile: ProjectFile = {
-      uuid: uuid(),
-      stuff,
-      product,
-      project
-    }
-
-    // 被Proxy处理过的对象不能被结构化克隆算法克隆；但这里已经确保了相关数据被JSON序列化后再反序列化无问题
-    return JSON.parse(
-      JSON.stringify(projectFile)
-    )
-  }
-
-  const saveFilter = () => {
-    const projectFile = getFilterProjectFileData()
-
-    let fileName = ''
-    while (fileName?.trim() === '') {
-      fileName = window.prompt(
-        `请输入文件名`
-      ) as string
-    }
-
-    if (fileName === null) {
-      return
-    }
-
-    projectFile.product.name = fileName
-
-    fileStorage.add({
-      id: uuid(),
-      ...projectFile
-    })
-  }
-  provide(SAVE_FILTER_SYMBOL, saveFilter)
-
-  const getFilterFileListFromDb = async() => {
-    return await fileStorage.toArray()
-  }
-  provide(
-    GET_FILTER_FILE_FROM_DB,
-    getFilterFileListFromDb
-  )
 }
 

@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { SAVE_FILTER_SYMBOL } from '@/store/canvasStuff'
+import { SAVE_FILTER_SYMBOL } from '@/store/io'
 import { computed, inject, ref } from 'vue'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
