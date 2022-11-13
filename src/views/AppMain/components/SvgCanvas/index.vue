@@ -79,6 +79,7 @@ import { hasOwn } from '@vue/shared'
 
 import useLayoutCache from './hooks/useLayoutCache'
 import { ProjectFile } from '@/schema/ProjectFile'
+import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -328,6 +329,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           fromPort.value?.vm?.afterPathConnected?.()
         }
       } catch (err) {
+        LuLightTip.error(
+          (err as Error).message
+        )
         console.error(err)
       }
       fromPort.value = null

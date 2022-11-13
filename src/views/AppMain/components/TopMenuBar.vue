@@ -3,9 +3,7 @@
     class="menu-bar"
   >
     <div
-      :style="{
-        textAlign: 'left'
-      }"
+      class="menu-bar__left"
     >
       <ul class="seg-content menu-entry-list">
         <li
@@ -54,18 +52,14 @@
       </ul>
     </div>
     <div
-      :style="{
-        textAlign: 'center'
-      }"
+      class="menu-bar__center"
     >
       <div class="seg-content">
         {{ titleText }}
       </div>
     </div>
     <div
-      :style="{
-        textAlign: 'right'
-      }"
+      class="menu-bar__right"
     >
       <div class="seg-content">
         <a
@@ -113,7 +107,7 @@ const menuTemplate = computed(() => [
         label: 'Save',
         async onClick() {
           await saveCurrentProject()
-          LuLightTip.success('保存成功', 'success')
+          LuLightTip.success('Saved successfully', 'success')
         }
       },
       {
@@ -121,7 +115,7 @@ const menuTemplate = computed(() => [
         label: 'Save As...',
         async onClick() {
           await saveCurrentProjectAs()
-          LuLightTip.success('保存成功', 'success')
+          LuLightTip.success('Saved successfully', 'success')
         }
       },
       {
@@ -196,10 +190,25 @@ const titleText = computed(() => {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: #eee;
-  .seg-content {
+  > * > .seg-content {
     display: inline-flex;
     height: 100%;
     align-items: center;
+  }
+  &__left {
+    text-align: left;
+  }
+  &__center {
+    text-align: center;
+    user-select: none;
+  }
+  &__right {
+    text-align: right;
+    > .seg-content {
+      * {
+        margin-right: 10px
+      }
+    }
   }
 }
 .menu-entry-list {

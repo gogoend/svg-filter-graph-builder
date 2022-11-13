@@ -23,20 +23,27 @@ export const feConvolveMatrix: SVGFilterConfig.Node = {
       defaultValue: '3, 3'
     },
     divisor: {
-      type: 'number',
+      type: 'range',
+      range: [0.01, 100],
+      step: 0.01,
       defaultValue: 1
     },
     bias: {
-      type: 'number',
-      range: [0, 1],
+      type: 'range',
+      range: [-1, 1],
+      step: 0.01,
       defaultValue: 0
     },
     targetX: {
-      type: 'number',
+      type: 'range',
+      range: [0, 10],
+      step: 1,
       defaultValue: 0
     },
     targetY: {
-      type: 'number',
+      type: 'range',
+      range: [0, 10],
+      step: 1,
       defaultValue: 0
     },
     edgeMode: {
@@ -45,7 +52,9 @@ export const feConvolveMatrix: SVGFilterConfig.Node = {
       enum: ['duplicate', 'wrap', 'none']
     },
     kernelUnitLength: {
-      type: 'number',
+      type: 'range',
+      range: [1, 100],
+      step: 1,
       defaultValue: 2
     },
     preserveAlpha: {
@@ -73,21 +82,26 @@ export const feTurbulence: SVGFilterConfig.Node = {
       ]
     },
     baseFrequency: {
-      type: 'number',
-      defaultValue: 0.05
+      type: 'range',
+      defaultValue: 0.05,
+      range: [0, 1],
+      step: 0.01
     },
     numOctaves: {
-      type: 'number',
-      defaultValue: 0,
-      range: [0, 100]
+      type: 'range',
+      defaultValue: 1,
+      step: 1,
+      range: [0, 20]
     },
     stitchTiles: {
       defaultValue: 'stitch',
       enum: ['stitch', 'noStitch']
     },
     seed: {
-      type: 'number',
-      defaultValue: 0.05
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [-10000, 10000]
     }
   }
 }
@@ -99,17 +113,32 @@ export const feDropShadow: SVGFilterConfig.Node = {
       showInConfigPanel: false
     },
     dx: {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [-1000, 1000]
     },
     dy: {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [-1000, 1000]
     },
     stdDeviation: {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [0, 1000]
     },
-    seed: {},
-    'flood-color': {},
-    'flood-opacity': {}
+    'flood-color': {
+      type: 'color'
+    },
+    'flood-opacity': {
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [0, 100]
+    }
   }
 }
 
@@ -129,10 +158,16 @@ export const feOffset: SVGFilterConfig.Node = {
       showInConfigPanel: false
     },
     dx: {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [-1000, 1000]
     },
     dy: {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [-1000, 1000]
     }
   }
 }
@@ -177,7 +212,10 @@ export const feColorMatrixUsingSaturate: SVGFilterConfig.Node = {
       defaultValue: 'saturate'
     },
     values: {
-      defaultValue: '1'
+      type: 'range',
+      defaultValue: 1,
+      step: 0.01,
+      range: [-10, 10]
     }
   }
 }
@@ -194,7 +232,10 @@ export const feColorMatrixUsingHueRotate: SVGFilterConfig.Node = {
       defaultValue: 'hueRotate'
     },
     values: {
-      defaultValue: '0'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [0, 360]
     }
   }
 }
@@ -233,9 +274,30 @@ export const feDisplacementMap: SVGFilterConfig.Node = {
     in2: {
       showInConfigPanel: false
     },
-    scale: {},
-    xChannelSelector: {},
-    yChannelSelector: {}
+    scale: {
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [-100, 100]
+    },
+    xChannelSelector: {
+      defaultValue: 'A',
+      enum: [
+        'R',
+        'G',
+        'B',
+        'A'
+      ]
+    },
+    yChannelSelector: {
+      defaultValue: 'A',
+      enum: [
+        'R',
+        'G',
+        'B',
+        'A'
+      ]
+    }
   }
 }
 
@@ -299,19 +361,23 @@ export const feCompositeWithK: SVGFilterConfig.NormalNode = {
       defaultValue: 'arithmetic'
     },
     k1: {
-      type: 'number',
+      type: 'range',
+      range: [-5, 5],
       defaultValue: 0.5
     },
     k2: {
-      type: 'number',
+      type: 'range',
+      range: [-5, 5],
       defaultValue: 0.5
     },
     k3: {
-      type: 'number',
+      type: 'range',
+      range: [-5, 5],
       defaultValue: 0.5
     },
     k4: {
-      type: 'number',
+      type: 'range',
+      range: [-5, 5],
       defaultValue: 0.5
     }
   }
@@ -321,9 +387,13 @@ export const feFlood: SVGFilterConfig.NormalNode = {
   type: 'normal',
   ports: {
     'flood-color': {
+      type: 'color'
     },
     'flood-opacity': {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [0, 100]
     }
   }
 }
@@ -335,7 +405,10 @@ export const feGaussianBlur: SVGFilterConfig.NormalNode = {
       showInConfigPanel: false
     },
     stdDeviation: {
-      type: 'number'
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [0, 1000]
     },
     edgeMode: {
       type: 'text',
@@ -363,8 +436,10 @@ export const feMorphology: SVGFilterConfig.NormalNode = {
       defaultValue: 'erode'
     },
     radius: {
-      type: 'number',
-      defaultValue: 2
+      type: 'range',
+      defaultValue: 0,
+      step: 0.01,
+      range: [0, 50]
     }
   }
 }

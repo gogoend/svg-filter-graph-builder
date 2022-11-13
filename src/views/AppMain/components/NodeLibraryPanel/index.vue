@@ -71,11 +71,20 @@ export default defineComponent({
           void 0
         },
         up(ev, { originEl }) {
-          addNode({
-            is: icon.title,
-            id: uuid(),
-            position: [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
-          })
+          const svgCanvasVmElRect = (svgCanvasVm.value?.$el as HTMLElement).getBoundingClientRect()
+          // TODO: 如何判断一个点有没有在矩形范围内？
+          if (
+            ev.clientX > svgCanvasVmElRect.x &&
+            ev.clientX < svgCanvasVmElRect.x + svgCanvasVmElRect.width &&
+            ev.clientY > svgCanvasVmElRect.y &&
+            ev.clientY < svgCanvasVmElRect.y + svgCanvasVmElRect.height
+          ) {
+            addNode({
+              is: icon.title,
+              id: uuid(),
+              position: [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
+            })
+          }
           draggingNodeIcon.value = null
           void 0
         }

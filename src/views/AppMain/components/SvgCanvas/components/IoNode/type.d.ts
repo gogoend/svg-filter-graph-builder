@@ -7,10 +7,18 @@ type Enum = {
 
 export namespace SVGFilterConfig {
     export interface NumberPort {
-        type: 'number' | 'range';
+        type: 'number';
         defaultValue?: number;
         enum?: Enum[];
+        showInConfigPanel?: false;
+        showOnNode?: false
+    }
+
+    export interface RangePort {
+        type: 'range'
+        defaultValue?: number;
         range?: [number, number];
+        step?: number;
         showInConfigPanel?: false;
         showOnNode?: false
     }
@@ -23,9 +31,16 @@ export namespace SVGFilterConfig {
         showOnNode?: false
     }
 
+    export interface ColorPort {
+        type: 'color';
+        defaultValue?: string;
+        showInConfigPanel?: false;
+        showOnNode?: false
+    }
+
     export interface NormalNode {
         tag?: string;
-        type?: 'normal';
+        type: 'normal';
         ports: Dictionary<Port>
     }
 
@@ -81,6 +96,6 @@ export namespace SVGFilterConfig {
         type: 'matrix-in-fe-color-matrix';
         ports: Record<string | symbol | number, never>
     }
-    export type Port = NormalPort | NumberPort
+    export type Port = NormalPort | NumberPort | ColorPort | RangePort
     export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode | ComponentTransferRootNode
 }

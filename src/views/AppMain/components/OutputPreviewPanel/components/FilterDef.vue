@@ -28,13 +28,9 @@ export default defineComponent({
   },
   setup() {
     const [focusingNode] = inject(FOCUSING_NODE_SYMBOL)!
-    const renderOfOrderedAllDescendants = computed(() => {
-      const allOrderedDescendants = focusingNode.value ? focusingNode.value!.orderedAllDescendants : []
-
-      return allOrderedDescendants.map(it => {
-        return () => it.getVNodeFragment(it)
-      })
-    })
+    const renderOfOrderedAllDescendants = computed(
+      () => (focusingNode.value as any)?.renderOfOrderedAllDescendants ?? (() => null)
+    )
 
     return {
       focusingNode,
