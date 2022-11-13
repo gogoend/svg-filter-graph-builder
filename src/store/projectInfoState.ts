@@ -29,7 +29,7 @@ export default function projectInfoState() {
   const emptyCanvasStuff = (vm!.$ as any).provides[EMPTY_CANVAS_STUFF_SYMBOL]
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const svgCanvasVm = (vm!.$ as any).provides[SVG_CANVAS_VM_SYMBOL] as InstanceType<typeof SvgCanvas>
+  const svgCanvasVm = (vm!.$ as any).provides[SVG_CANVAS_VM_SYMBOL] as any
 
   // 没必要深度响应式
   const currentProject = shallowRef<ProjectFile | null>()
