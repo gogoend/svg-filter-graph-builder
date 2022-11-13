@@ -41,24 +41,23 @@ export default function projectInfoState() {
   provide(CLOSE_CURRENT_PROJECT_SYMBOL, closeCurrentProject)
 
   const tryToShowOpenFileDialog = async() => {
-    if (currentProject.value) {
-      await new Promise((resolve, reject) => {
-        new LuDialog().confirm(`当前项目${currentProject.value?.project.name}已经打开，继续打开项目会导致对当前项目所做更改丢失。`, {
-          buttons: [{
-            value: '继续打开',
-            events(ev: any) {
-              resolve(undefined)
-              ev.dialog.remove()
-            }
-          }, {
-            events(ev: any) {
-              reject(new Error('[展示打开文件弹窗] 用户取消了操作'))
-              ev.dialog.remove()
-            }
-          }]
-        })
+    await new Promise((resolve, reject) => {
+      new LuDialog().confirm(`<h6>ATTENTION</h6><p>Any unsaved changes will be lost. Continue?</p>`, {
+        buttons: [{
+          value: 'Continue',
+          events(ev: any) {
+            resolve(undefined)
+            ev.dialog.remove()
+          }
+        }, {
+          value: 'Cancel',
+          events(ev: any) {
+            reject(new Error('[展示打开文件弹窗] 用户取消了操作'))
+            ev.dialog.remove()
+          }
+        }]
       })
-    }
+    })
     const selectedProjectId = await getSelectFileWaitee()
 
     if (selectedProjectId === currentProject.value?.id) {

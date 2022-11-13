@@ -20,11 +20,11 @@
           is="ui-button"
           :disabled="!selectedValue"
           @click.prevent="handleConfirm(selectedValue)"
-        >打开</button>
+        >Open</button>
         <button
           is="ui-button"
           @click.prevent="handleCancel()"
-        >取消</button>
+        >Cancel</button>
       </div>
     </component>
   </div>
