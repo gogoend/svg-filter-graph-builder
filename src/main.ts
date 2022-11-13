@@ -1,4 +1,5 @@
 import '@/plugins/lu2'
+import '@/plugins/db'
 
 import { createApp } from 'vue'
 import App from './App.vue'

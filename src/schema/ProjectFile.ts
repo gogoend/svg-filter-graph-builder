@@ -4,7 +4,7 @@ export type ProjectFile = {
   /**
    * 文件唯一标识
    */
-  uuid: string
+  id: string
   /**
    * 画布内容
    */
