@@ -38,62 +38,15 @@
             transform="matrix(1 0 0 1 0 8)"
             class="fill-fff module-name">{{is}}</span>
         </div>
-        <template v-if="['normal', undefined].includes(fe[is].type)">
-          <normal-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
-        <template v-else-if="['merge'].includes(fe[is].type)">
-          <merge-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
-        <template v-else-if="['source'].includes(fe[is].type)">
-          <source-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
-        <template v-else-if="['string-literal'].includes(fe[is].type)">
-          <string-literal-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
-        <template v-else-if="['matrix-in-fe-color-matrix'].includes(fe[is].type)">
-          <matrix-in-fe-color-matrix-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
-        <template v-else-if="['component-transfer-root'].includes(fe[is].type)">
-          <component-transfer-root-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
-        <template v-else-if="['component-transfer-child'].includes(fe[is].type)">
-          <component-transfer-child-node
-            :is="is"
-            :node-id="nodeId"
-            :relativePaths="relativePaths"
-            ref="nodeConfigRef"
-          />
-        </template>
+        <component
+          :is="InternalNodeImplement"
+          ref="nodeConfigRef"
+          v-bind="{
+            is,
+            nodeId,
+            relativePaths
+          }"
+        />
         <div class="io-node__toolbox">
           <button
             class="io-node__toolbox-button"
@@ -188,6 +141,28 @@ const IoNode: {
       el && feAttrEls.value.push(el)
     }
     onBeforeUpdate(() => { feAttrEls.value = [] })
+
+    const InternalNodeImplement = computed(() => {
+      const is = props.is as keyof typeof fe
+
+      if (['normal', undefined].includes(fe[is].type)) {
+        return NormalNode
+      } else if (['merge'].includes(fe[is].type)) {
+        return MergeNode
+      } else if (['source'].includes(fe[is].type)) {
+        return SourceNode
+      } else if (['string-literal'].includes(fe[is].type)) {
+        return StringLiteralNode
+      } else if (['matrix-in-fe-color-matrix'].includes(fe[is].type)) {
+        return MatrixInFeColorMatrixNode
+      } else if (['component-transfer-root'].includes(fe[is].type)) {
+        return ComponentTransferRootNode
+      } else if (['component-transfer-child'].includes(fe[is].type)) {
+        return ComponentTransferChildNode
+      } else {
+        return 'div'
+      }
+    })
 
     const nodeConfigRef = ref<InstanceType<typeof NormalNode> | InstanceType<typeof MergeNode>>()
 
@@ -366,6 +341,8 @@ const IoNode: {
       fromPort,
 
       ioNodeEl,
+
+      InternalNodeImplement,
 
       setFeAttrEls,
 

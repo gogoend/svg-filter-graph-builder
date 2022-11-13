@@ -25,7 +25,7 @@ export namespace SVGFilterConfig {
 
     export interface NormalNode {
         tag?: string;
-        type?: 'normal';
+        type: 'normal';
         ports: Dictionary<Port>
     }
 
