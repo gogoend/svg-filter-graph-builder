@@ -70,7 +70,7 @@ export default function io() {
       return
     }
 
-    projectFile.product.name = fileName
+    projectFile.project.name = fileName
 
     fileStorage.add({
       id: uuid(),
