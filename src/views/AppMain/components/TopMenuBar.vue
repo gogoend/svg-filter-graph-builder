@@ -3,9 +3,7 @@
     class="menu-bar"
   >
     <div
-      :style="{
-        textAlign: 'left'
-      }"
+      class="menu-bar__left"
     >
       <ul class="seg-content menu-entry-list">
         <li
@@ -54,18 +52,14 @@
       </ul>
     </div>
     <div
-      :style="{
-        textAlign: 'center'
-      }"
+      class="menu-bar__center"
     >
       <div class="seg-content">
-        SVG Filter Graph Builder
+        {{ titleText }}
       </div>
     </div>
     <div
-      :style="{
-        textAlign: 'right'
-      }"
+      class="menu-bar__right"
     >
       <div class="seg-content">
         <a
@@ -78,8 +72,11 @@
 </template>
 
 <script lang="ts" setup>
-import { SAVE_FILTER_SYMBOL } from '@/store/canvasStuff'
+import { UNSAVED_PROJECT_NAME } from '@/config/project'
+import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
 import { computed, inject, ref } from 'vue'
+import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
+import { showAboutDialog } from '@/components/AboutDialog'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
 const handleMouseenter = (id: string) => {
@@ -89,32 +86,46 @@ const handleMouseleave = (id: string) => {
   delete activeMenuIndexedById.value[id]
 }
 
-const saveFilter = inject(SAVE_FILTER_SYMBOL)!
+const saveCurrentProject = inject(SAVE_CURRENT_PROJECT_SYMBOL)!
+const saveCurrentProjectAs = inject(SAVE_CURRENT_PROJECT_AS_SYMBOL)!
+const closeAndNewProject = inject(TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL)!
+const tryToShowOpenFileDialog = inject(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL)!
 
 const menuTemplate = computed(() => [
   {
     id: 'File',
     label: 'File',
     subMenu: [
-      // {
-      //   id: 'Open',
-      //   label: 'Open...'
-      // },
+      {
+        id: 'Open',
+        label: 'Open...',
+        onClick() {
+          tryToShowOpenFileDialog()
+        }
+      },
       {
         id: 'Save',
         label: 'Save',
+        async onClick() {
+          await saveCurrentProject()
+          LuLightTip.success('Saved successfully', 'success')
+        }
+      },
+      {
+        id: 'Save As...',
+        label: 'Save As...',
+        async onClick() {
+          await saveCurrentProjectAs()
+          LuLightTip.success('Saved successfully', 'success')
+        }
+      },
+      {
+        id: 'Close',
+        label: 'Close',
         onClick() {
-          saveFilter()
+          closeAndNewProject()
         }
       }
-      // {
-      //   id: 'Save As',
-      //   label: 'Save As'
-      // },
-      // {
-      //   id: 'Close',
-      //   label: 'Close'
-      // }
     ]
   },
   {
@@ -156,20 +167,56 @@ const menuTemplate = computed(() => [
         onClick() {
           window.open('mailto:gogoend@qq.com')
         }
+      },
+      {
+        id: 'About',
+        label: 'About',
+        onClick() {
+          showAboutDialog()
+        }
       }
     ]
   }
 ])
+
+const currentProject = inject(CURRENT_PROJECT_SYMBOL)
+
+const titleText = computed(() => {
+  const textSegment = ['SVG Filter Graph Builder']
+
+  if (currentProject?.value) {
+    textSegment.unshift(currentProject.value.project.name)
+  } else {
+    textSegment.unshift(UNSAVED_PROJECT_NAME)
+  }
+
+  return textSegment.join(' - ')
+})
 </script>
 <style lang="scss" scoped>
 .menu-bar {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: #eee;
-  .seg-content {
+  > * > .seg-content {
     display: inline-flex;
     height: 100%;
     align-items: center;
+  }
+  &__left {
+    text-align: left;
+  }
+  &__center {
+    text-align: center;
+    user-select: none;
+  }
+  &__right {
+    text-align: right;
+    > .seg-content {
+      * {
+        margin-right: 10px
+      }
+    }
   }
 }
 .menu-entry-list {

@@ -1,5 +1,5 @@
 {
-  "name": "gogoend-node-link-builder",
+  "name": "@gogoend/svg-filter-graph-builder",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,9 @@
     "ci:test-stage-branch": "node ./scripts/test-stage-branch.mjs"
   },
   "dependencies": {
-    "core-js": "^3.26.0",
+    "@element-plus/icons-vue": "^2.0.10",
+    "dexie": "^3.2.2",
+    "element-plus": "^2.2.21",
     "lu2": "^2021.12.21",
     "vue": "^3.2.41"
   },
@@ -27,6 +29,7 @@
     "@vue/compiler-sfc": "^3.2.41",
     "@vue/eslint-config-typescript": "^11.0.2",
     "@vue/test-utils": "^2.2.1",
+    "core-js": "^3.26.0",
     "eslint": "^8.26.0",
     "eslint-plugin-vue": "^9.6.0",
     "sass": "^1.43.5",

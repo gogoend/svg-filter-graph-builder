@@ -13,18 +13,35 @@
       @click="handlePathClick"
       ref="pathRef"
     />
-    <g
-      class="linked-path-tools"
-      v-if="focused">
-      <circle
+    <foreignObject
+      v-if="focused"
+      :transform="`translate(
+        ${p[0]},
+        ${p[1]}
+      )`"
+      style="overflow: visible;"
+    >
+      <div
+        class="linked-path__toolbox"
+        xmlns="http://www.w3.org/1999/xhtml"
+        @click.stop
+      >
+        <button
+          class="linked-path__toolbox-button"
+          is="ui-button"
+          @click="$emit('remove', pathId)"
+          title="Remove Link"
+          data-type="danger"
+        >
+          <el-icon><Delete /></el-icon>
+        </button>
+      </div>
+    </foreignObject>
+    <!-- <circle
         r="10"
-        :cx="p[0]"
-        :cy="p[1]"
         title="移除连线"
         class="remove"
-        @click="$emit('remove', pathId)"
-      />
-    </g>
+      /> -->
   </g>
 </template>
 
@@ -117,10 +134,23 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     cursor: move;
     will-change: stroke-dashoffset, stroke;
   }
-  &-tools {
+  &__toolbox {
     cursor: pointer;
-    .remove {
-      fill: #dd3322
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    display: flex;
+    // TODO: 为何即使设置padding:0、line-height:1，按钮高度还是14px而非16px？
+    &-button[is=ui-button] {
+      padding: 4px;
+      min-width: unset;
+      border: 0;
+      line-height: 1;
+      ::v-deep(.el-icon) {
+        display: flex;
+      }
+      & + .linked-path__toolbox-button[is=ui-button] {
+        margin-left: 0.5em
+      }
     }
   }
 }

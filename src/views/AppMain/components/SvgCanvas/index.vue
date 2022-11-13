@@ -73,12 +73,13 @@ import {
   ADD_NODE_SYMBOL
 } from '@/store/canvasStuff'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
-import { getLinks, getNodeValueMap, getNodes } from '@/api/graph'
 import { uuid } from '@/utils/uuid'
 // eslint-disable-next-line vue/prefer-import-from-vue
 import { hasOwn } from '@vue/shared'
 
 import useLayoutCache from './hooks/useLayoutCache'
+import { ProjectFile } from '@/schema/ProjectFile'
+import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -328,6 +329,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           fromPort.value?.vm?.afterPathConnected?.()
         }
       } catch (err) {
+        LuLightTip.error(
+          (err as Error).message
+        )
         console.error(err)
       }
       fromPort.value = null
@@ -423,21 +427,18 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
     const addNode = inject(ADD_NODE_SYMBOL)!
 
-    const loadCanvasFromSerializedStatus = async() => {
-      const [nodes, nodeFormValues, links] = await Promise.all(
-        [
-          getNodes(),
-          getNodeValueMap(),
-          getLinks()
-        ]
-      )
+    const loadCanvasStuffFromSerializedData = async(data: ProjectFile) => {
+      const {
+        nodes, nodeForms, links
+      } = data.stuff
+
       Object.values(nodes)
         .forEach(it => {
           addNode(it)
         })
       // 等待节点都挂载后，再回填表单
       await nextTick()
-      Object.entries(nodeFormValues).forEach(([nodeId, nodeFormValue], index) => {
+      Object.entries(nodeForms).forEach(([nodeId, nodeFormValue]) => {
         Object.keys(nodeFormValue).forEach((key: keyof typeof nodeFormValue) => {
           // FIXME: 修正类型
           if (
@@ -504,10 +505,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         })
     }
 
-    onMounted(() => {
-      loadCanvasFromSerializedStatus()
-    })
-
     return {
       canvasScrollEl,
       svgCanvasRect,
@@ -534,7 +531,9 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       defaultRelativePath,
       relativePathMapIndexedByNodeId,
-      removePath
+      removePath,
+
+      loadCanvasStuffFromSerializedData
     }
   }
 })

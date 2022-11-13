@@ -24,22 +24,32 @@
         v-bind="commonInputComponentAttrs"
       >
     </template>
-    <template v-else-if="schema?.type === 'number'">
+    <template
+      v-if="schema?.type === 'color'"
+    >
       <input
-        v-if="Array.isArray(schema?.range)"
-        is="ui-range"
-        type="range"
-        :min="schema.range[0]"
-        :max="schema.range[1]"
+        is="ui-color"
+        type="color-opacity"
         v-bind="commonInputComponentAttrs"
       />
+    </template>
+    <template v-else-if="schema?.type === 'number'">
       <input
-        v-else
         is="ui-input"
         type="number"
         size="20"
         v-bind="commonInputComponentAttrs"
       >
+    </template>
+    <template v-else-if="schema?.type === 'range'">
+      <input
+        is="ui-range"
+        type="range"
+        :min="schema.range[0]"
+        :max="schema.range[1]"
+        :step="schema.step ?? 1"
+        v-bind="commonInputComponentAttrs"
+      />
     </template>
   </div>
   <!-- {{ schema }} -->

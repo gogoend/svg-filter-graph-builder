@@ -1,28 +1,25 @@
-# gogoend-node-link-builder
+# @gogoend/svg-filter-graph-builder
+
+A node-based SVG filter graph builder, let you can compose complex SVG filter by dragging nodes, which makes the workflow more easily and visualizing without writing unreadable SVG filter structure.
 
 ## Project setup
 ```
-npm install
+yarn
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+yarn serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
+yarn build
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+yarn lint
 ```
 
 ### Customize configuration

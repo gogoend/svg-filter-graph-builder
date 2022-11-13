@@ -1,11 +1,7 @@
 import { NodeInStore } from '@/schema/IoNode'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
-import { Ref, ref, InjectionKey, provide, unref, computed, inject, getCurrentInstance } from 'vue'
+import { Ref, ref, InjectionKey, provide, unref, computed, inject, getCurrentInstance, ComputedRef } from 'vue'
 import IoNode from '@/views/AppMain/components/SvgCanvas/components/IoNode/index.vue'
-
-import packageInfo from '../../package.json'
-import { uuid } from '../utils/uuid'
-import { setLocal } from '@/utils/storage'
 
 export const ALL_NODES_ON_CANVAS_SYMBOL: InjectionKey<Ref<Record<NodeInStore['id'], NodeInStore>>> = Symbol('Canvas上的所有节点')
 export const ADD_NODE_SYMBOL: InjectionKey<(node: NodeInStore) => void> = Symbol('添加节点函数')
@@ -24,8 +20,10 @@ export const ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL: InjectionKey<(
 ) => void> = Symbol('向 节点id->出、入连线 的映射中添加连线关系')
 
 export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<typeof IoNode>>>> = Symbol('Node组件映射')
+export const NODE_FORM_VALUE_TYPE_SYMBOL: InjectionKey<ComputedRef<Record<string, Record<string, string>>>> = Symbol('各节点表单内容')
+export const LINKED_PATHS_FOR_SERIALIZE_SYMBOL: InjectionKey<Record<string, any>> = Symbol('序列化的连线')
 
-export const SAVE_FILTER_SYMBOL: InjectionKey<() => void> = Symbol('保存滤镜函数')
+export const EMPTY_CANVAS_STUFF_SYMBOL: InjectionKey<() => void> = Symbol('清空Canvas上的所有内容')
 
 export default function canvasStuff() {
   const { $eventHub: appEventHub } = getCurrentInstance()!.appContext.config.globalProperties
@@ -75,9 +73,10 @@ export default function canvasStuff() {
 
     return nodeFormValueMap
   })
+  provide(NODE_FORM_VALUE_TYPE_SYMBOL, nodeFormValueMap)
 
   const linkedPathsForSerialize = ref<Record<string, any>>({})
-  provide('tempLinkedPathsForSerialize', linkedPathsForSerialize)
+  provide(LINKED_PATHS_FOR_SERIALIZE_SYMBOL, linkedPathsForSerialize)
 
   const linkedPaths = ref<Path[]>([])
   provide(ALL_LINKED_PATH_ON_CANVAS_SYMBOL, linkedPaths)
@@ -155,29 +154,11 @@ export default function canvasStuff() {
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
 
-  const saveFilter = () => {
-    const stuff = {
-      nodes: nodes.value,
-      nodeForms: nodeFormValueMap.value,
-      links: linkedPathsForSerialize.value
-    }
-    const product = {
-      name: packageInfo.name,
-      version: packageInfo.version
-    }
-    const document = {
-      author: 'gogoend',
-      createdTime: Number(new Date()),
-      modifiedTime: Number(new Date())
-    }
-
-    setLocal('savedGraph', {
-      uuid: uuid(),
-      stuff,
-      product,
-      document
+  const emptyCanvasStuff = () => {
+    Object.keys(nodes.value).forEach(nodeId => {
+      removeNode(nodeId)
     })
   }
-  provide(SAVE_FILTER_SYMBOL, saveFilter)
+  provide(EMPTY_CANVAS_STUFF_SYMBOL, emptyCanvasStuff)
 }
 
