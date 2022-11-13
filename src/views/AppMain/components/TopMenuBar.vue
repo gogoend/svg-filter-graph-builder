@@ -59,7 +59,7 @@
       }"
     >
       <div class="seg-content">
-        SVG Filter Graph Builder
+        {{ titleText }}
       </div>
     </div>
     <div
@@ -78,7 +78,9 @@
 </template>
 
 <script lang="ts" setup>
-import { SAVE_FILTER_SYMBOL, SHOW_OPEN_FILE_DIALOG_SYMBOL } from '@/store/io'
+import { UNSAVED_PROJECT_NAME } from '@/config/project'
+import { SAVE_FILTER_SYMBOL } from '@/store/io'
+import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL } from '@/store/projectInfoState'
 import { computed, inject, ref } from 'vue'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
@@ -90,7 +92,7 @@ const handleMouseleave = (id: string) => {
 }
 
 const saveFilter = inject(SAVE_FILTER_SYMBOL)!
-const showOpenFileDialog = inject(SHOW_OPEN_FILE_DIALOG_SYMBOL)!
+const tryToshowOpenFileDialog = inject(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL)!
 
 const menuTemplate = computed(() => [
   {
@@ -101,7 +103,7 @@ const menuTemplate = computed(() => [
         id: 'Open',
         label: 'Open...',
         onClick() {
-          showOpenFileDialog()
+          tryToshowOpenFileDialog()
         }
       },
       {
@@ -164,6 +166,20 @@ const menuTemplate = computed(() => [
     ]
   }
 ])
+
+const currentProject = inject(CURRENT_PROJECT_SYMBOL)
+
+const titleText = computed(() => {
+  const textSegment = ['SVG Filter Graph Builder']
+
+  if (currentProject?.value) {
+    textSegment.unshift(currentProject.value.project.name)
+  } else {
+    textSegment.unshift(UNSAVED_PROJECT_NAME)
+  }
+
+  return textSegment.join(' - ')
+})
 </script>
 <style lang="scss" scoped>
 .menu-bar {

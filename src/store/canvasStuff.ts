@@ -23,6 +23,8 @@ export const NODE_REF_MAP_SYMBOL: InjectionKey<Ref<Record<string, InstanceType<t
 export const NODE_FORM_VALUE_TYPE_SYMBOL: InjectionKey<ComputedRef<Record<string, Record<string, string>>>> = Symbol('各节点表单内容')
 export const LINKED_PATHS_FOR_SERIALIZE_SYMBOL: InjectionKey<Record<string, any>> = Symbol('序列化的连线')
 
+export const EMPTY_CANVAS_STUFF_SYMBOL: InjectionKey<() => void> = Symbol('清空Canvas上的所有内容')
+
 export default function canvasStuff() {
   const { $eventHub: appEventHub } = getCurrentInstance()!.appContext.config.globalProperties
 
@@ -151,5 +153,12 @@ export default function canvasStuff() {
     relativePathMapIndexedByNodeId.value[unref(toPort).vm.nodeId].in.push(linkedPath)
   }
   provide(ADD_RELATION_IN_MAP_INDEXED_BY_NODE_ID_SYMBOL, addRelationInMapIndexedByNodeId)
+
+  const emptyCanvasStuff = () => {
+    Object.keys(nodes.value).forEach(nodeId => {
+      removeNode(nodeId)
+    })
+  }
+  provide(EMPTY_CANVAS_STUFF_SYMBOL, emptyCanvasStuff)
 }
 
