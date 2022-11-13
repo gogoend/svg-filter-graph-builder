@@ -1,20 +1,40 @@
 <template>
   <div
     class="stuff-config-panel"
-    :style="{width: stuffConfigPanelWidth+'px'}"
   >
-    <form is="ui-form">
-      <template
-        v-if="formFieldConfig"
-      >
-        <form-item
-          v-for="(port, key) in formFieldConfig.ports"
-          :key="key"
-          :schema="port"
-          :field-id="key"
-        ></form-item>
+    <div class="stuff-config-panel__title-bar">
+      <template v-if="focusingNode">
+        👀 Editing - {{ focusingNode?.is }}
       </template>
-    </form>
+      <template v-else>
+        👈 Click a node, then configure it !
+      </template>
+    </div>
+    <div class="stuff-config-panel__main">
+      <div v-if="focusingNode">
+        <form
+          v-if="
+            formFieldConfig
+              &&
+              Object.values(formFieldConfig.ports).some(it => [undefined, true].includes(it.showInConfigPanel))
+          "
+        >
+          <form-item
+            v-for="(port, key) in formFieldConfig.ports"
+            :key="key"
+            :schema="port"
+            :field-id="key"
+            :style="{ marginBottom: '16px' }"
+          ></form-item>
+        </form>
+        <div v-else>
+          <h3>Opus! 🫢</h3>
+          No field can be edit here.<br />
+          Just look around the canvas, and create links between the available ports.
+        </div>
+
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -54,8 +74,27 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .stuff-config-panel {
+  display: flex;
+  flex-direction: column;
+
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   user-select: none;
+  &__title-bar {
+    display: flex;
+    align-items: center;
+    background-color: #e8e8e8;
+    padding-left: 0.5em;
+    height: 28px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__main {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 10px 20px;
+  }
 }
 </style>
