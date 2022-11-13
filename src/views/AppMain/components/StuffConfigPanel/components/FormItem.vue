@@ -24,6 +24,15 @@
         v-bind="commonInputComponentAttrs"
       >
     </template>
+    <template
+      v-if="schema?.type === 'color'"
+    >
+      <input
+        is="ui-color"
+        type="color-opacity"
+        v-bind="commonInputComponentAttrs"
+      />
+    </template>
     <template v-else-if="schema?.type === 'number'">
       <input
         v-if="Array.isArray(schema?.range)"

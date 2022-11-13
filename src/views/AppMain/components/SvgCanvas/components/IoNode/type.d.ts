@@ -23,6 +23,13 @@ export namespace SVGFilterConfig {
         showOnNode?: false
     }
 
+    export interface ColorPort {
+        type: 'color';
+        defaultValue?: string;
+        showInConfigPanel?: false;
+        showOnNode?: false
+    }
+
     export interface NormalNode {
         tag?: string;
         type: 'normal';
@@ -81,6 +88,6 @@ export namespace SVGFilterConfig {
         type: 'matrix-in-fe-color-matrix';
         ports: Record<string | symbol | number, never>
     }
-    export type Port = NormalPort | NumberPort
+    export type Port = NormalPort | NumberPort | ColorPort
     export type Node = NormalNode | MergeNode | SourceNode | StringLiteralNode | MatrixInFeColorMatrixNode | ComponentTransferRootNode
 }

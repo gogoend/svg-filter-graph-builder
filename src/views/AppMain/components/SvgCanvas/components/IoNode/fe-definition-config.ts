@@ -108,8 +108,12 @@ export const feDropShadow: SVGFilterConfig.Node = {
       type: 'number'
     },
     seed: {},
-    'flood-color': {},
-    'flood-opacity': {}
+    'flood-color': {
+      type: 'color'
+    },
+    'flood-opacity': {
+      type: 'number'
+    }
   }
 }
 
@@ -321,6 +325,7 @@ export const feFlood: SVGFilterConfig.NormalNode = {
   type: 'normal',
   ports: {
     'flood-color': {
+      type: 'color'
     },
     'flood-opacity': {
       type: 'number'
