@@ -1,19 +1,22 @@
-import { getCurrentInstance, InjectionKey, provide, ShallowRef, shallowRef, nextTick } from 'vue';
-
-import { ProjectFile } from '../schema/ProjectFile'
-import { EMPTY_CANVAS_STUFF_SYMBOL } from './canvasStuff'
-
-export const CURRENT_PROJECT_SYMBOL: InjectionKey<ShallowRef<ProjectFile | null>> = Symbol('已打开的项目')
-export const SET_CURRENT_PROJECT_SYMBOL: InjectionKey<(project: ProjectFile | null) => void> = Symbol('设置已打开的项目')
-export const CLOSE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭项目')
-
-export const TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL: InjectionKey<() => void> = Symbol('尝试打开打开文件对话框')
+import packageInfo from '../../package.json'
+import { uuid } from '../utils/uuid'
+import { getCurrentInstance, InjectionKey, provide, ShallowRef, shallowRef, nextTick } from 'vue'
+import { ALL_NODES_ON_CANVAS_SYMBOL, NODE_FORM_VALUE_TYPE_SYMBOL, LINKED_PATHS_FOR_SERIALIZE_SYMBOL, EMPTY_CANVAS_STUFF_SYMBOL } from './canvasStuff'
 
 import LuDialog from 'lu2/theme/edge/js/common/ui/Dialog'
 import { getSelectFileWaitee } from '@/components/FileChooser'
 import { fileStorage } from '@/plugins/db'
 import { SVG_CANVAS_VM_SYMBOL } from './vmStore'
 import SvgCanvas from '@/views/AppMain/components/SvgCanvas/index.vue'
+import { ProjectFile } from '@/schema/ProjectFile'
+
+export const SAVE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('保存项目')
+
+export const CURRENT_PROJECT_SYMBOL: InjectionKey<ShallowRef<ProjectFile | null>> = Symbol('已打开的项目')
+export const SET_CURRENT_PROJECT_SYMBOL: InjectionKey<(project: ProjectFile | null) => void> = Symbol('设置已打开的项目')
+export const CLOSE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭项目')
+
+export const TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL: InjectionKey<() => void> = Symbol('尝试打开打开文件对话框')
 
 export default function projectInfoState() {
   const vm = getCurrentInstance()!.proxy
@@ -81,4 +84,75 @@ export default function projectInfoState() {
     svgCanvasVm.value.loadCanvasStuffFromSerializedData(projectToOpen)
   }
   provide(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, tryToShowOpenFileDialog)
+
+  const collectCurrentFilterProjectFileData = (): Omit<ProjectFile, 'id'> & { id?: string } => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const nodes = (vm!.$ as any).provides[ALL_NODES_ON_CANVAS_SYMBOL]
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const nodeFormValueMap = (vm!.$ as any).provides[NODE_FORM_VALUE_TYPE_SYMBOL]
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const linkedPathsForSerialize = (vm!.$ as any).provides[LINKED_PATHS_FOR_SERIALIZE_SYMBOL]
+
+    const stuff = {
+      nodes: nodes.value,
+      nodeForms: nodeFormValueMap.value,
+      links: linkedPathsForSerialize.value
+    }
+    const product = {
+      name: packageInfo.name,
+      version: packageInfo.version,
+      buildVersion: 0
+    }
+    const project = {
+      author: 'gogoend',
+      createdTime: Number(new Date()),
+      modifiedTime: Number(new Date()),
+      name: ''
+    }
+
+    const projectFileData: Omit<ProjectFile, 'id'> & { id?: string } = {
+      id: currentProject.value?.id,
+      stuff,
+      product,
+      project
+    }
+
+    // 被Proxy处理过的对象不能被结构化克隆算法克隆；但这里已经确保了相关数据被JSON序列化后再反序列化无问题
+    return JSON.parse(
+      JSON.stringify(projectFileData)
+    )
+  }
+  const saveCurrentProject = async() => {
+    const projectFileData = collectCurrentFilterProjectFileData()
+
+    if (!projectFileData.id) {
+      let projectName = ''
+      while (projectName?.trim() === '') {
+        projectName = window.prompt(
+          `Enter the name of the your project`
+        ) as string
+      }
+
+      if (projectName === null) {
+        return
+      }
+
+      projectFileData.project.name = projectName
+      const newProjectFileDataInfo = {
+        id: uuid(),
+        ...projectFileData
+      }
+      await fileStorage.add(newProjectFileDataInfo)
+      // 处理 未保存的项目的情况
+      setOpeningProject(newProjectFileDataInfo)
+    } else {
+      await fileStorage.where('id').equals(projectFileData.id).modify((value, ref) => {
+        ref.value = projectFileData
+      })
+    }
+  }
+  provide(SAVE_CURRENT_PROJECT_SYMBOL, saveCurrentProject)
 }

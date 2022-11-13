@@ -79,8 +79,7 @@
 
 <script lang="ts" setup>
 import { UNSAVED_PROJECT_NAME } from '@/config/project'
-import { SAVE_FILTER_SYMBOL } from '@/store/io'
-import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL } from '@/store/projectInfoState'
+import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
 import { computed, inject, ref } from 'vue'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
@@ -91,7 +90,7 @@ const handleMouseleave = (id: string) => {
   delete activeMenuIndexedById.value[id]
 }
 
-const saveFilter = inject(SAVE_FILTER_SYMBOL)!
+const saveCurrentProject = inject(SAVE_CURRENT_PROJECT_SYMBOL)!
 const tryToshowOpenFileDialog = inject(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL)!
 
 const menuTemplate = computed(() => [
@@ -110,7 +109,7 @@ const menuTemplate = computed(() => [
         id: 'Save',
         label: 'Save',
         onClick() {
-          saveFilter()
+          saveCurrentProject()
         }
       }
       // {
