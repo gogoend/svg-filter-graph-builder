@@ -35,20 +35,21 @@
     </template>
     <template v-else-if="schema?.type === 'number'">
       <input
-        v-if="Array.isArray(schema?.range)"
-        is="ui-range"
-        type="range"
-        :min="schema.range[0]"
-        :max="schema.range[1]"
-        v-bind="commonInputComponentAttrs"
-      />
-      <input
-        v-else
         is="ui-input"
         type="number"
         size="20"
         v-bind="commonInputComponentAttrs"
       >
+    </template>
+    <template v-else-if="schema?.type === 'range'">
+      <input
+        is="ui-range"
+        type="range"
+        :min="schema.range[0]"
+        :max="schema.range[1]"
+        :step="schema.step ?? 1"
+        v-bind="commonInputComponentAttrs"
+      />
     </template>
   </div>
   <!-- {{ schema }} -->
