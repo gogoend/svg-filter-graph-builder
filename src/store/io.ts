@@ -41,7 +41,7 @@ export default function io() {
     }
 
     const projectFile: ProjectFile = {
-      uuid: uuid(),
+      id: uuid(),
       stuff,
       product,
       project
