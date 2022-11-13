@@ -12,6 +12,8 @@ export const TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL: InjectionKey<() => void> = 
 import LuDialog from 'lu2/theme/edge/js/common/ui/Dialog'
 import { getSelectFileWaitee } from '@/components/FileChooser'
 import { fileStorage } from '@/plugins/db'
+import { SVG_CANVAS_VM_SYMBOL } from './vmStore'
+import SvgCanvas from '@/views/AppMain/components/SvgCanvas/index.vue'
 
 export default function projectInfoState() {
   const vm = getCurrentInstance()!.proxy
@@ -19,6 +21,9 @@ export default function projectInfoState() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const emptyCanvasStuff = (vm!.$ as any).provides[EMPTY_CANVAS_STUFF_SYMBOL]
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const svgCanvasVm = (vm!.$ as any).provides[SVG_CANVAS_VM_SYMBOL] as InstanceType<typeof SvgCanvas>
 
   // 没必要深度响应式
   const currentProject = shallowRef<ProjectFile | null>()
@@ -73,6 +78,8 @@ export default function projectInfoState() {
     await nextTick()
 
     setOpeningProject(projectToOpen)
+
+    svgCanvasVm.value.loadCanvasStuffFromSerializedData(projectToOpen)
   }
   provide(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, tryToShowOpenFileDialog)
 }

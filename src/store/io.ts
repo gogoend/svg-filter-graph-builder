@@ -7,7 +7,6 @@ import { getCurrentInstance, InjectionKey, provide } from 'vue'
 import { ALL_NODES_ON_CANVAS_SYMBOL, NODE_FORM_VALUE_TYPE_SYMBOL, LINKED_PATHS_FOR_SERIALIZE_SYMBOL } from './canvasStuff'
 
 export const SAVE_FILTER_SYMBOL: InjectionKey<() => void> = Symbol('保存滤镜函数')
-export const GET_FILTER_FILE_FROM_DB_SYMBOL: InjectionKey<() => Promise<any[]>> = Symbol('从DB中获取已保存的滤镜的列表')
 
 export default function io() {
   const vm = getCurrentInstance()!.proxy
@@ -75,12 +74,4 @@ export default function io() {
     })
   }
   provide(SAVE_FILTER_SYMBOL, saveFilter)
-
-  const getFilterFileListFromDb = async() => {
-    return await fileStorage.toArray()
-  }
-  provide(
-    GET_FILTER_FILE_FROM_DB_SYMBOL,
-    getFilterFileListFromDb
-  )
 }
