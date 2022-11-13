@@ -139,7 +139,7 @@ export default function projectInfoState() {
       })
       return
     } else {
-      saveCurrentProjectAs()
+      await saveCurrentProjectAs()
     }
   }
   provide(SAVE_CURRENT_PROJECT_SYMBOL, saveCurrentProject)
