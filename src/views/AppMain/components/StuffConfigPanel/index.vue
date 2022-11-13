@@ -4,17 +4,21 @@
     :style="{width: stuffConfigPanelWidth+'px'}"
   >
     <form is="ui-form">
-      <form-item
-        v-for="(port, key) in formFieldConfig.ports"
-        :key="key"
-        :schema="port"
-        :field-id="key"
-      ></form-item>
+      <template
+        v-if="formFieldConfig"
+      >
+        <form-item
+          v-for="(port, key) in formFieldConfig.ports"
+          :key="key"
+          :schema="port"
+          :field-id="key"
+        ></form-item>
+      </template>
     </form>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, inject, unref, computed } from 'vue'
+import { defineComponent, nextTick, inject, unref, computed, watch } from 'vue'
 import { stuffConfigPanelWidth } from '@/config/ui'
 import { uuid } from '@/utils/uuid'
 
@@ -35,7 +39,7 @@ export default defineComponent({
       ) {
         return fe[unref(focusingNode)!.is]
       } else {
-        return {}
+        return null
       }
     })
 

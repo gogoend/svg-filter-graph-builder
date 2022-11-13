@@ -24,6 +24,7 @@
       <div
         class="linked-path__toolbox"
         xmlns="http://www.w3.org/1999/xhtml"
+        @click.stop
       >
         <button
           class="linked-path__toolbox-button"

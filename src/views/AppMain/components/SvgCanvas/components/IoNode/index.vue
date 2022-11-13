@@ -47,7 +47,7 @@
             relativePaths
           }"
         />
-        <div class="io-node__toolbox">
+        <div class="io-node__toolbox" @click.stop>
           <button
             class="io-node__toolbox-button"
             is="ui-button"
