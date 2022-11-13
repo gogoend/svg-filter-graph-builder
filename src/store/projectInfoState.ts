@@ -62,6 +62,8 @@ export default function projectInfoState() {
         }]
       })
     })
+
+    closeCurrentProject()
   }
   provide(TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL, tryToCloseCurrentProject)
 
