@@ -76,6 +76,7 @@ import { UNSAVED_PROJECT_NAME } from '@/config/project'
 import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
 import { computed, inject, ref } from 'vue'
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
+import { showAboutDialog } from '@/components/AboutDialog'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
 const handleMouseenter = (id: string) => {
@@ -165,6 +166,13 @@ const menuTemplate = computed(() => [
         label: 'Contact @gogoend via mail',
         onClick() {
           window.open('mailto:gogoend@qq.com')
+        }
+      },
+      {
+        id: 'About',
+        label: 'About',
+        onClick() {
+          showAboutDialog()
         }
       }
     ]
