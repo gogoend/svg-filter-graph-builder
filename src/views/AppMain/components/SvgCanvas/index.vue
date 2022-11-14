@@ -80,6 +80,7 @@ import { hasOwn } from '@vue/shared'
 import useLayoutCache from './hooks/useLayoutCache'
 import { ProjectFile } from '@/schema/ProjectFile'
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
+import gogoendLog from '@/plugins/log'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -332,7 +333,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
         LuLightTip.error(
           (err as Error).message
         )
-        console.error(err)
+        gogoendLog.error(err)
       }
       fromPort.value = null
       toPort.value = null
@@ -343,7 +344,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
      * 用于处理连线取消的逻辑
      */
     const handlePortCancel = () => {
-      console.log('canceled')
+      gogoendLog.debug('canceled')
       fromPort.value = null
       toPort.value = null
       ghostPathDArguments.value.fill(0)
@@ -498,7 +499,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
             fromPort.value = it.from
             it.to.vm?.afterPathConnected?.()
           } catch (err) {
-            console.error(err)
+            gogoendLog.error(err)
           }
           fromPort.value = null
           toPort.value = null

@@ -1,3 +1,4 @@
+import gogoendLog from '@/plugins/log'
 import { OverwrittenIoNodeType, Path, Port } from '@/views/AppMain/components/SvgCanvas/type'
 
 function checkLoop(path: Path) {
@@ -48,7 +49,7 @@ export function assertPortCanBeConnected(path: Path) {
   if (checkLoop(path)) {
     throw new TypeError('Cannot create link when loop is detected')
   }
-  console.log(
+  gogoendLog.debug(
     path.to.vm.relativePaths.in[0]
       ?.from.vm.relativePaths.in[0]
       ?.from.vm.relativePaths.in

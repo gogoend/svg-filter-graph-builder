@@ -1,3 +1,4 @@
+import gogoendLog from '@/plugins/log'
 import { shallowRef, onBeforeUnmount, onMounted, nextTick, getCurrentInstance } from 'vue'
 export default function useLayoutCache() {
   const elRect = shallowRef<null | DOMRectReadOnly>(null)
@@ -8,7 +9,7 @@ export default function useLayoutCache() {
     // and possibly something to the observer itself
 
     elRect.value = entry.target.getBoundingClientRect()
-    console.log(elRect.value)
+    gogoendLog.debug(elRect.value)
   })
   onMounted(() => {
     ro!.observe(vm.$el)

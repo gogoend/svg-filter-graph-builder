@@ -47,6 +47,7 @@
 
 <script lang="ts">
 import { PATH_STROKE_W } from '@/config/ui'
+import gogoendLog from '@/plugins/log'
 import { computed, defineComponent, PropType, ref } from 'vue'
 
 import { OverwrittenIoNodeType } from '../../type'
@@ -89,11 +90,11 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
 
     const handlePathClick = (ev: MouseEvent) => {
-      console.log(ev)
+      gogoendLog.debug(ev)
     }
 
     const handlePathBlur = (ev: Event) => {
-      console.log(ev)
+      gogoendLog.debug(ev)
     }
     return {
       PATH_STROKE_W,

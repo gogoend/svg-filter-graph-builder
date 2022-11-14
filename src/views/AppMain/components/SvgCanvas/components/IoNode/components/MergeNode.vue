@@ -33,6 +33,7 @@ import type { RelativePathForNode } from '@/views/AppMain/components/SvgCanvas/t
 import { Dictionary } from '@/utils/type'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
 import { Path } from '@/views/AppMain/components/SvgCanvas/type'
+import gogoendLog from '@/plugins/log'
 
 export default defineComponent({
   name: 'MergeNode',
@@ -63,7 +64,7 @@ export default defineComponent({
 
     // const feAttrValue = computed<string[]>(() => {
     //   return props.relativePaths.in.map(item => {
-    //     console.log(item.from.vm.nodeId)
+    //     gogoendLog.debug(item.from.vm.nodeId)
     //     return item.from.vm.nodeId
     //   })
     // })
@@ -76,7 +77,7 @@ export default defineComponent({
 
     const parentVm = getCurrentInstance()!.parent?.proxy
     const afterPathConnected = () => {
-      console.log(toPort?.value, fromPort?.value)
+      gogoendLog.debug(toPort?.value, fromPort?.value)
 
       const { attr } = [toPort?.value, fromPort?.value].find(it => it?.vm === parentVm)!
       const index = Number(attr)
