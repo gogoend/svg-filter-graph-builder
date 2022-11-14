@@ -10,7 +10,7 @@ enum LogLevel {
 const LOG_LEVEL_WRITE_TO_DB = 3
 
 const preProcessLogArguments = (...args: unknown[]) => {
-  const result: any[] = [Number(new Date()), 'Default User']
+  const result: any[] = []
   args.forEach(it => {
     if (
       ['string', 'number', 'boolean', 'undefined', 'bigint'].includes(typeof it) || it === null
@@ -28,15 +28,17 @@ const preProcessLogArguments = (...args: unknown[]) => {
     } else {
       let serializedObject: Record<any, any> = {}
       try {
+        // TODO: 处理Vue组件时，会出现死循环的情况
         serializedObject = JSON.parse(
           JSON.stringify(
             it
           )
         )
       } catch (err) {
-        result.push(
-          ...preProcessLogArguments(err)
-        )
+        result.push({
+          message: (err as Error).message,
+          stack: (err as Error).stack
+        })
       }
       result.push(serializedObject)
     }
@@ -48,22 +50,50 @@ const preProcessLogArguments = (...args: unknown[]) => {
 const gogoendLog = {
   async debug(...args: any) {
     const returnValue = console.log(...args)
-    LOG_LEVEL_WRITE_TO_DB <= LogLevel.DEBUG && logsTable.add(preProcessLogArguments(...args))
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.DEBUG && logsTable.add(
+      preProcessLogArguments(
+        LogLevel[LogLevel.DEBUG],
+        Number(new Date()),
+        'Default User',
+        ...args
+      )
+    )
     return returnValue
   },
   async log(...args: any) {
     const returnValue = console.log(...args)
-    LOG_LEVEL_WRITE_TO_DB <= LogLevel.LOG && logsTable.add(preProcessLogArguments(...args))
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.LOG && logsTable.add(
+      preProcessLogArguments(
+        LogLevel[LogLevel.LOG],
+        Number(new Date()),
+        'Default User',
+        ...args
+      )
+    )
     return returnValue
   },
   async warn(...args: any) {
     const returnValue = console.warn(...args)
-    LOG_LEVEL_WRITE_TO_DB <= LogLevel.WARNING && logsTable.add(preProcessLogArguments(...args))
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.WARNING && logsTable.add(
+      preProcessLogArguments(
+        LogLevel[LogLevel.WARNING],
+        Number(new Date()),
+        'Default User',
+        ...args
+      )
+    )
     return returnValue
   },
   async error(...args: any) {
     const returnValue = console.error(...args)
-    LOG_LEVEL_WRITE_TO_DB <= LogLevel.ERROR && logsTable.add(preProcessLogArguments(...args))
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.ERROR && logsTable.add(
+      preProcessLogArguments(
+        LogLevel[LogLevel.ERROR],
+        Number(new Date()),
+        'Default User',
+        ...args
+      )
+    )
     return returnValue
   }
 }
