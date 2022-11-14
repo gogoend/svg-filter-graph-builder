@@ -40,7 +40,7 @@
         class="output-preview-panel"
         :style="{
           width: '640px',
-          height: '360px',
+          height: '384px',
           bottom: '0px',
           right: '0px',
         }"
