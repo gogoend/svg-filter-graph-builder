@@ -23,6 +23,9 @@
           filter: `url(#previewingFilter)`
         }"
         class="output-preview-panel__image-wrap"
+        @dragstart.stop.prevent
+        @dragover.stop.prevent
+        @drop.stop.prevent="handleDropOnImageWrap"
       >
         <img :src="sourceImageSrc" />
       </div>
@@ -119,9 +122,15 @@ export default defineComponent({
 
     const outputPreviewPanelRootEl = ref()
 
+    const handleDropOnImageWrap = (ev: DragEvent) => {
+      console.log(ev, ev.dataTransfer?.files)
+    }
+
     return {
       sourceImageSrc,
-      outputPreviewPanelRootEl
+      outputPreviewPanelRootEl,
+
+      handleDropOnImageWrap
     }
   }
 })
