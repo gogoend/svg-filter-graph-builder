@@ -277,6 +277,7 @@ export default defineComponent({
   }
 }
 .output-preview-panel {
+  --menu-bar-height: 24px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   position: relative;
@@ -286,18 +287,18 @@ export default defineComponent({
   &__menu-bar {
     display: flex;
     width: 100%;
-    height: 24px;
+    height: var(--menu-bar-height);
     background-color: #fbfbfb;
     z-index: 1;
   }
   &__menu-bar-text {
-    line-height: 24px;
+    line-height: var(--menu-bar-height);
     margin-left: 0.5em;
   }
   &__drag-move-handler {
     background-color: #202020;
-    width: 24px;
-    height: 24px;
+    width: var(--menu-bar-height);
+    height: var(--menu-bar-height);
     cursor: move;
   }
   &__content {
@@ -342,8 +343,9 @@ export default defineComponent({
     position: absolute;
     right: 0px;
     bottom: 0px;
-    width: 20px;
-    height: 20px;
+    box-sizing: border-box;
+    width: var(--menu-bar-height);
+    height: var(--menu-bar-height);
     border-right: 4px solid #59ad3a;
     border-bottom: 4px solid #59ad3a;
     cursor: se-resize;
