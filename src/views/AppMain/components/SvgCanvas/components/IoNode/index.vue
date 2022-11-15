@@ -100,6 +100,7 @@ import { FOCUSING_NODE_SYMBOL } from '@/store/focusState'
 import { REMOVE_NODE_SYMBOL } from '@/store/canvasStuff'
 
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
+import gogoendLog from '@/plugins/log'
 
 const IoNode: {
   new(): OverwrittenIoNodeType
@@ -241,7 +242,7 @@ const IoNode: {
               toPort?.value
             ) {
               // 则认为两个端口应该进行连线
-              // console.log(toPort.value.vm.refs.ioNodeEl.querySelector(`[data-fe-attr=${toPort.value.attr}]`))
+              // gogoendLog.debug(toPort.value.vm.refs.ioNodeEl.querySelector(`[data-fe-attr=${toPort.value.attr}]`))
               emit('port-connect', { ev, originEl, vm })
             } else {
               // 否则如果鼠标事件的终止点不是端口，则认为连线过程已经取消

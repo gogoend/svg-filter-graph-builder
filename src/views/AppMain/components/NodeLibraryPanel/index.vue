@@ -29,6 +29,7 @@ import { filterLibraryPanelWidth } from '@/config/ui'
 import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggingNode'
 import { ADD_NODE_SYMBOL } from '@/store/canvasStuff'
 import { SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
+import gogoendLog from '@/plugins/log'
 
 const menuGroup = [
   {
@@ -63,7 +64,7 @@ export default defineComponent({
           )
         },
         move(ev, { originEl }) {
-          console.log(ghostNodeRef.value)
+          gogoendLog.debug(ghostNodeRef.value)
           ghostNodeRef.value!.$emit(
             'update:position',
             [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
