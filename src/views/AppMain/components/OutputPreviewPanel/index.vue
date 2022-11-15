@@ -69,10 +69,14 @@
         <!--  -->
       </div>
     </div>
+    <div
+      class="output-preview-panel__se-resize-corner"
+      v-resize
+    ></div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onUnmounted, ref, shallowRef, unref, watch } from 'vue'
+import { defineComponent, nextTick, onUnmounted, ref, shallowRef, unref, watch } from 'vue'
 import FilterDef from './components/FilterDef.vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
@@ -163,6 +167,58 @@ export default defineComponent({
       },
       unmounted(el) {
         el.__vDragDispose__()
+      }
+    },
+    resize: {
+      mounted(el) {
+        el.__vResizeMainElToBeResized__ = document.querySelector('.output-preview-panel')
+        const mouseStartHandler = (ev: MouseEvent) => mouseEventHelper(
+          ev,
+          {
+            move(ev) {
+              const currentRect = (el.__vResizeMainElToBeResized__.getBoundingClientRect() as DOMRect)
+              const newSize = [
+                ev.pageX - currentRect.x,
+                ev.pageY - currentRect.y
+              ]
+              if (
+                currentRect.x + newSize[0] >= window.innerWidth
+              ) {
+                newSize[0] -= (ev.pageX - window.innerWidth)
+              }
+              if (
+                currentRect.y + newSize[1] > window.innerHeight
+              ) {
+                newSize[1] -= (ev.pageY - window.innerHeight)
+              }
+              if (currentRect.width >= window.innerWidth) {
+                newSize[0] = window.innerWidth
+              }
+              if (currentRect.height >= window.innerHeight) {
+                newSize[1] = window.innerWidth
+              }
+
+              el.__vResizeMainElToBeResized__.style.width = newSize[0] + 'px'
+              el.__vResizeMainElToBeResized__.style.height = newSize[1] + 'px'
+            }
+          }
+        )
+
+        el.addEventListener(
+          'mousedown',
+          mouseStartHandler
+        )
+        el.__vResizeDispose__ = () => {
+          delete el.__vResizeDispose__
+          delete el.__vResizeMainElToBeResized__
+          el.removeEventListener(
+            'mousedown',
+            mouseStartHandler
+          )
+        }
+      },
+      unmounted(el) {
+        el.__vResizeDispose__()
       }
     }
   },
@@ -267,7 +323,8 @@ export default defineComponent({
     justify-content: center;
     width: 100%;
     height: 100%;
-    filter: url(#previewingFilter)
+    filter: url(#previewingFilter);
+    overflow: hidden;
   }
   &__image__drag-is-hovering__tip {
     position: absolute;
@@ -280,6 +337,17 @@ export default defineComponent({
   }
   &__tools {
     position: relative;
+  }
+  &__se-resize-corner {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    width: 20px;
+    height: 20px;
+    border-right: 4px solid #59ad3a;
+    border-bottom: 4px solid #59ad3a;
+    cursor: se-resize;
+    z-index: 1;
   }
 }
 </style>
