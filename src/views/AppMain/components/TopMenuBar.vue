@@ -198,6 +198,7 @@ const titleText = computed(() => {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   background-color: #eee;
+  user-select: none;
   > * > .seg-content {
     display: inline-flex;
     height: 100%;
@@ -208,7 +209,6 @@ const titleText = computed(() => {
   }
   &__center {
     text-align: center;
-    user-select: none;
   }
   &__right {
     text-align: right;
@@ -223,7 +223,6 @@ const titleText = computed(() => {
   margin: 0;
   padding: 0;
   text-align: center;
-  user-select: none;
   li.menu-entry-item {
     display: flex;
     align-items: center;

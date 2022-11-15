@@ -19,24 +19,64 @@
         filter-el-id="previewingFilter"
       />
       <div
-        :style="{
-          filter: `url(#previewingFilter)`
-        }"
         class="output-preview-panel__image-wrap"
         @dragstart.stop.prevent
-        @dragover.stop.prevent
+        @dragover.stop.prevent="dragIsHovering = true"
+        @dragleave.stop.prevent="dragIsHovering = false"
         @drop.stop.prevent="handleDropOnImageWrap"
       >
-        <img :src="sourceImageSrc" />
+        <img
+          class="output-preview-panel__image"
+          v-if="sourceImageSrc"
+          :src="sourceImageSrc"
+          @error="sourceImageSrc = ''" />
+        <div
+          class="output-preview-panel__image-placeholder"
+          v-else
+        >
+          <div>
+            Drop your image here, then use it as the source image.<br />
+            You can also
+            <input
+              ref="fileInputEl"
+              type="file"
+              :style="{
+                display: 'block',
+                opacity: 0,
+                position: 'fixed',
+                visibility: 'hidden'
+              }"
+              @change="handleFileInputChange"
+            />
+            <button
+              is="ui-button"
+              data-type="primary"
+              @click="() => { fileInputEl.click() }"
+            >choose a image</button>
+            &nbsp;or&nbsp;
+            <button
+              is="ui-button"
+              data-type="primary"
+              @click="loadSampleImage"
+            >use sample image</button>.
+          </div>
+        </div>
+        <div
+          class="output-preview-panel__image__drag-is-hovering__tip"
+          v-show="dragIsHovering"></div>
       </div>
       <div class="output-preview-panel__tools">
         <!--  -->
       </div>
     </div>
+    <div
+      class="output-preview-panel__se-resize-corner"
+      v-resize
+    ></div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, nextTick, onUnmounted, ref, shallowRef, unref, watch } from 'vue'
 import FilterDef from './components/FilterDef.vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
@@ -53,6 +93,7 @@ export default defineComponent({
             start(ev) {
               // 鼠标按下，记下此时坐标相对于当前元素的坐标
               // TODO: 或许应当是鼠标相对要被拖动的元素的坐标。此处当前元素恰好在要被拖动的元素的左上方
+              // TODO: 最好实现一个通用版本的指令，以便复用
               /**
                * -------------------------
                * |       ^               |
@@ -79,26 +120,34 @@ export default defineComponent({
               el.__vDragMainElToBeDragged__.style.top = newPosition[1] + 'px'
             },
             up() {
-              // 鼠标抬起时，判断元素是否位于浮动窗口可视区域内。如果在可视区域外，将移回可视区域内
-              // TODO: 目前窗口resize未处理此情况，可能导致浮窗拖拽区域位于窗口可视区域外，导致浮窗再也拖不回来，最好处理一下
-              const mainElToBeDraggedRect = (el.__vDragMainElToBeDragged__! as HTMLElement).getBoundingClientRect()
-
-              if (mainElToBeDraggedRect.x < 0) {
-                el.__vDragMainElToBeDragged__!.style.left = `0px`
-              } else if (mainElToBeDraggedRect.x + mainElToBeDraggedRect.width > window.innerWidth) {
-                el.__vDragMainElToBeDragged__!.style.left = `${window.innerWidth - mainElToBeDraggedRect.width}px`
-              }
-
-              if (mainElToBeDraggedRect.y < 0) {
-                el.__vDragMainElToBeDragged__!.style.top = `0px`
-              } else if (mainElToBeDraggedRect.y + mainElToBeDraggedRect.height > window.innerHeight) {
-                el.__vDragMainElToBeDragged__!.style.top = `${window.innerHeight - mainElToBeDraggedRect.height}px`
-              }
-
+              checkAndCorrectPosition()
               delete el.__vDragClickedRelativePosition__
             }
           }
         )
+
+        function checkAndCorrectPosition() {
+          // 鼠标抬起时，判断元素是否位于浮动窗口可视区域内。如果在可视区域外，将移回可视区域内
+          const mainElToBeDraggedRect = (el.__vDragMainElToBeDragged__! as HTMLElement).getBoundingClientRect()
+
+          if (mainElToBeDraggedRect.x <= 0) {
+                el.__vDragMainElToBeDragged__!.style.left = `0px`
+          } else if (mainElToBeDraggedRect.x + mainElToBeDraggedRect.width > window.innerWidth) {
+                el.__vDragMainElToBeDragged__!.style.left = `${window.innerWidth - mainElToBeDraggedRect.width}px`
+          }
+
+          if (mainElToBeDraggedRect.y <= 0) {
+                el.__vDragMainElToBeDragged__!.style.top = `0px`
+          } else if (mainElToBeDraggedRect.y + mainElToBeDraggedRect.height > window.innerHeight) {
+                el.__vDragMainElToBeDragged__!.style.top = `${window.innerHeight - mainElToBeDraggedRect.height}px`
+          }
+        }
+
+        window.addEventListener(
+          'resize',
+          checkAndCorrectPosition
+        )
+
         el.addEventListener(
           'mousedown',
           mouseStartHandler
@@ -110,54 +159,147 @@ export default defineComponent({
             'mousedown',
             mouseStartHandler
           )
+          window.removeEventListener(
+            'resize',
+            checkAndCorrectPosition
+          )
         }
       },
       unmounted(el) {
         el.__vDragDispose__()
       }
+    },
+    resize: {
+      mounted(el) {
+        el.__vResizeMainElToBeResized__ = document.querySelector('.output-preview-panel')
+        const mouseStartHandler = (ev: MouseEvent) => mouseEventHelper(
+          ev,
+          {
+            move(ev) {
+              const currentRect = (el.__vResizeMainElToBeResized__.getBoundingClientRect() as DOMRect)
+              const newSize = [
+                ev.pageX - currentRect.x,
+                ev.pageY - currentRect.y
+              ]
+              if (
+                currentRect.x + newSize[0] >= window.innerWidth
+              ) {
+                newSize[0] -= (ev.pageX - window.innerWidth)
+              }
+              if (
+                currentRect.y + newSize[1] > window.innerHeight
+              ) {
+                newSize[1] -= (ev.pageY - window.innerHeight)
+              }
+              if (currentRect.width >= window.innerWidth) {
+                newSize[0] = window.innerWidth
+              }
+              if (currentRect.height >= window.innerHeight) {
+                newSize[1] = window.innerWidth
+              }
+
+              el.__vResizeMainElToBeResized__.style.width = newSize[0] + 'px'
+              el.__vResizeMainElToBeResized__.style.height = newSize[1] + 'px'
+            }
+          }
+        )
+
+        el.addEventListener(
+          'mousedown',
+          mouseStartHandler
+        )
+        el.__vResizeDispose__ = () => {
+          delete el.__vResizeDispose__
+          delete el.__vResizeMainElToBeResized__
+          el.removeEventListener(
+            'mousedown',
+            mouseStartHandler
+          )
+        }
+      },
+      unmounted(el) {
+        el.__vResizeDispose__()
+      }
     }
   },
   setup() {
-    const sourceImageSrc = ref('./demo/assets/rinkysplash.jpg')
-
-    const outputPreviewPanelRootEl = ref()
-
-    const handleDropOnImageWrap = (ev: DragEvent) => {
-      console.log(ev, ev.dataTransfer?.files)
+    const sourceImageSrc = ref()
+    watch(sourceImageSrc, (nVal, oVal) => {
+      URL.revokeObjectURL(oVal)
+    })
+    onUnmounted(() => {
+      URL.revokeObjectURL(unref(sourceImageSrc))
+    })
+    const loadSampleImage = () => {
+      sourceImageSrc.value = './demo/assets/rinkysplash.jpg'
     }
 
+    const outputPreviewPanelRootEl = ref()
+    const dragIsHovering = ref(false)
+    const handleDropOnImageWrap = (ev: DragEvent) => {
+      dragIsHovering.value = false
+      const newImageFile = ev.dataTransfer?.files[0]
+      if (!newImageFile) {
+        return
+      }
+      sourceImageSrc.value = URL.createObjectURL(newImageFile)
+    }
+
+    const fileInputEl = shallowRef<HTMLInputElement>()
+    const handleFileInputChange = (ev: Event) => {
+      const newImageFile = (ev.target as HTMLInputElement).files?.[0]
+      if (!newImageFile) {
+        return
+      }
+      sourceImageSrc.value = URL.createObjectURL(newImageFile)
+    }
     return {
       sourceImageSrc,
+      loadSampleImage,
       outputPreviewPanelRootEl,
 
-      handleDropOnImageWrap
+      dragIsHovering,
+      handleDropOnImageWrap,
+
+      fileInputEl,
+      handleFileInputChange
     }
   }
 })
 </script>
 <style lang="scss" scoped>
+@keyframes inset-shadow-shining__output-preview-panel__image__drag-is-hovering__tip {
+  0% {
+    box-shadow: 0 400px 50px inset rgba(0,0,0,0.5)
+  }
+  100% {
+    box-shadow: 0 400px 50px inset rgba(0,0,0,0)
+  }
+}
 .output-preview-panel {
+  --menu-bar-height: 24px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   position: relative;
   display: flex;
   flex-direction: column;
   z-index: 1;
+  user-select: none;
   &__menu-bar {
     display: flex;
     width: 100%;
-    height: 24px;
+    height: var(--menu-bar-height);
     background-color: #fbfbfb;
     z-index: 1;
   }
   &__menu-bar-text {
-    line-height: 24px;
+    line-height: var(--menu-bar-height);
     margin-left: 0.5em;
   }
   &__drag-move-handler {
     background-color: #202020;
-    width: 24px;
-    height: 24px;
+    width: var(--menu-bar-height);
+    height: var(--menu-bar-height);
     cursor: move;
   }
   &__content {
@@ -170,14 +312,45 @@ export default defineComponent({
     right: 0;
     bottom: 0;
     left: 0;
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  }
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: url(#previewingFilter)
+  }
+  &__image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    filter: url(#previewingFilter);
+    overflow: hidden;
+  }
+  &__image__drag-is-hovering__tip {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    animation: inset-shadow-shining__output-preview-panel__image__drag-is-hovering__tip 0.25s ease 0s infinite alternate;
   }
   &__tools {
     position: relative;
+  }
+  &__se-resize-corner {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    box-sizing: border-box;
+    width: var(--menu-bar-height);
+    height: var(--menu-bar-height);
+    border-right: 4px solid #59ad3a;
+    border-bottom: 4px solid #59ad3a;
+    cursor: se-resize;
+    z-index: 1;
   }
 }
 </style>

@@ -29,7 +29,8 @@
         <button
           class="linked-path__toolbox-button"
           is="ui-button"
-          @click="$emit('remove', pathId)"
+          @mousedown.prevent
+          @click.prevent="$emit('remove', pathId)"
           title="Remove Link"
           data-type="danger"
         >
