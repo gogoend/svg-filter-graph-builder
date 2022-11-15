@@ -19,15 +19,51 @@
         filter-el-id="previewingFilter"
       />
       <div
-        :style="{
-          filter: `url(#previewingFilter)`
-        }"
         class="output-preview-panel__image-wrap"
         @dragstart.stop.prevent
-        @dragover.stop.prevent
+        @dragover.stop.prevent="dragIsHovering = true"
+        @dragleave.stop.prevent="dragIsHovering = false"
         @drop.stop.prevent="handleDropOnImageWrap"
       >
-        <img :src="sourceImageSrc" />
+        <img
+          class="output-preview-panel__image"
+          v-if="sourceImageSrc"
+          :src="sourceImageSrc"
+          @error="sourceImageSrc = ''" />
+        <div
+          class="output-preview-panel__image-placeholder"
+          v-else
+        >
+          <div>
+            Drop your image here, then use it as the source image.<br />
+            You can also
+            <input
+              ref="fileInputEl"
+              type="file"
+              :style="{
+                display: 'block',
+                opacity: 0,
+                position: 'fixed',
+                visibility: 'hidden'
+              }"
+              @change="handleFileInputChange"
+            />
+            <button
+              is="ui-button"
+              data-type="primary"
+              @click="() => { fileInputEl.click() }"
+            >choose a image</button>
+            &nbsp;or&nbsp;
+            <button
+              is="ui-button"
+              data-type="primary"
+              @click="loadSampleImage"
+            >use sample image</button>.
+          </div>
+        </div>
+        <div
+          class="output-preview-panel__image__drag-is-hovering__tip"
+          v-show="dragIsHovering"></div>
       </div>
       <div class="output-preview-panel__tools">
         <!--  -->
@@ -36,7 +72,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onUnmounted, ref, shallowRef, unref, watch } from 'vue'
 import FilterDef from './components/FilterDef.vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
 
@@ -118,24 +154,59 @@ export default defineComponent({
     }
   },
   setup() {
-    const sourceImageSrc = ref('./demo/assets/rinkysplash.jpg')
-
-    const outputPreviewPanelRootEl = ref()
-
-    const handleDropOnImageWrap = (ev: DragEvent) => {
-      console.log(ev, ev.dataTransfer?.files)
+    const sourceImageSrc = ref()
+    watch(sourceImageSrc, (nVal, oVal) => {
+      URL.revokeObjectURL(oVal)
+    })
+    onUnmounted(() => {
+      URL.revokeObjectURL(unref(sourceImageSrc))
+    })
+    const loadSampleImage = () => {
+      sourceImageSrc.value = './demo/assets/rinkysplash.jpg'
     }
 
+    const outputPreviewPanelRootEl = ref()
+    const dragIsHovering = ref(false)
+    const handleDropOnImageWrap = (ev: DragEvent) => {
+      dragIsHovering.value = false
+      const newImageFile = ev.dataTransfer?.files[0]
+      if (!newImageFile) {
+        return
+      }
+      sourceImageSrc.value = URL.createObjectURL(newImageFile)
+    }
+
+    const fileInputEl = shallowRef<HTMLInputElement>()
+    const handleFileInputChange = (ev: Event) => {
+      const newImageFile = (ev.target as HTMLInputElement).files?.[0]
+      if (!newImageFile) {
+        return
+      }
+      sourceImageSrc.value = URL.createObjectURL(newImageFile)
+    }
     return {
       sourceImageSrc,
+      loadSampleImage,
       outputPreviewPanelRootEl,
 
-      handleDropOnImageWrap
+      dragIsHovering,
+      handleDropOnImageWrap,
+
+      fileInputEl,
+      handleFileInputChange
     }
   }
 })
 </script>
 <style lang="scss" scoped>
+@keyframes inset-shadow-shining__output-preview-panel__image__drag-is-hovering__tip {
+  0% {
+    box-shadow: 0 400px 50px inset rgba(0,0,0,0.5)
+  }
+  100% {
+    box-shadow: 0 400px 50px inset rgba(0,0,0,0)
+  }
+}
 .output-preview-panel {
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -170,11 +241,29 @@ export default defineComponent({
     right: 0;
     bottom: 0;
     left: 0;
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  }
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: url(#previewingFilter)
+  }
+  &__image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    filter: url(#previewingFilter)
+  }
+  &__image__drag-is-hovering__tip {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    animation: inset-shadow-shining__output-preview-panel__image__drag-is-hovering__tip 0.25s ease 0s infinite alternate;
   }
   &__tools {
     position: relative;
