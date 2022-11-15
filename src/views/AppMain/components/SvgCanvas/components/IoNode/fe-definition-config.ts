@@ -128,16 +128,16 @@ export const feDropShadow: SVGFilterConfig.Node = {
       type: 'range',
       defaultValue: 0,
       step: 0.01,
-      range: [0, 1000]
+      range: [0, 100]
     },
     'flood-color': {
       type: 'color'
     },
     'flood-opacity': {
       type: 'range',
-      defaultValue: 0,
+      defaultValue: 1,
       step: 0.01,
-      range: [0, 100]
+      range: [0, 1]
     }
   }
 }
@@ -391,9 +391,9 @@ export const feFlood: SVGFilterConfig.NormalNode = {
     },
     'flood-opacity': {
       type: 'range',
-      defaultValue: 0,
+      defaultValue: 1,
       step: 0.01,
-      range: [0, 100]
+      range: [0, 1]
     }
   }
 }
@@ -408,7 +408,7 @@ export const feGaussianBlur: SVGFilterConfig.NormalNode = {
       type: 'range',
       defaultValue: 0,
       step: 0.01,
-      range: [0, 1000]
+      range: [0, 100]
     },
     edgeMode: {
       type: 'text',
