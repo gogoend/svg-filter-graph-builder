@@ -89,6 +89,7 @@ export default defineComponent({
             start(ev) {
               // 鼠标按下，记下此时坐标相对于当前元素的坐标
               // TODO: 或许应当是鼠标相对要被拖动的元素的坐标。此处当前元素恰好在要被拖动的元素的左上方
+              // TODO: 最好实现一个通用版本的指令，以便复用
               /**
                * -------------------------
                * |       ^               |
@@ -115,26 +116,34 @@ export default defineComponent({
               el.__vDragMainElToBeDragged__.style.top = newPosition[1] + 'px'
             },
             up() {
-              // 鼠标抬起时，判断元素是否位于浮动窗口可视区域内。如果在可视区域外，将移回可视区域内
-              // TODO: 目前窗口resize未处理此情况，可能导致浮窗拖拽区域位于窗口可视区域外，导致浮窗再也拖不回来，最好处理一下
-              const mainElToBeDraggedRect = (el.__vDragMainElToBeDragged__! as HTMLElement).getBoundingClientRect()
-
-              if (mainElToBeDraggedRect.x < 0) {
-                el.__vDragMainElToBeDragged__!.style.left = `0px`
-              } else if (mainElToBeDraggedRect.x + mainElToBeDraggedRect.width > window.innerWidth) {
-                el.__vDragMainElToBeDragged__!.style.left = `${window.innerWidth - mainElToBeDraggedRect.width}px`
-              }
-
-              if (mainElToBeDraggedRect.y < 0) {
-                el.__vDragMainElToBeDragged__!.style.top = `0px`
-              } else if (mainElToBeDraggedRect.y + mainElToBeDraggedRect.height > window.innerHeight) {
-                el.__vDragMainElToBeDragged__!.style.top = `${window.innerHeight - mainElToBeDraggedRect.height}px`
-              }
-
+              checkAndCorrectPosition()
               delete el.__vDragClickedRelativePosition__
             }
           }
         )
+
+        function checkAndCorrectPosition() {
+          // 鼠标抬起时，判断元素是否位于浮动窗口可视区域内。如果在可视区域外，将移回可视区域内
+          const mainElToBeDraggedRect = (el.__vDragMainElToBeDragged__! as HTMLElement).getBoundingClientRect()
+
+          if (mainElToBeDraggedRect.x <= 0) {
+                el.__vDragMainElToBeDragged__!.style.left = `0px`
+          } else if (mainElToBeDraggedRect.x + mainElToBeDraggedRect.width > window.innerWidth) {
+                el.__vDragMainElToBeDragged__!.style.left = `${window.innerWidth - mainElToBeDraggedRect.width}px`
+          }
+
+          if (mainElToBeDraggedRect.y <= 0) {
+                el.__vDragMainElToBeDragged__!.style.top = `0px`
+          } else if (mainElToBeDraggedRect.y + mainElToBeDraggedRect.height > window.innerHeight) {
+                el.__vDragMainElToBeDragged__!.style.top = `${window.innerHeight - mainElToBeDraggedRect.height}px`
+          }
+        }
+
+        window.addEventListener(
+          'resize',
+          checkAndCorrectPosition
+        )
+
         el.addEventListener(
           'mousedown',
           mouseStartHandler
@@ -145,6 +154,10 @@ export default defineComponent({
           el.removeEventListener(
             'mousedown',
             mouseStartHandler
+          )
+          window.removeEventListener(
+            'resize',
+            checkAndCorrectPosition
           )
         }
       },
