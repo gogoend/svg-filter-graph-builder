@@ -284,6 +284,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   z-index: 1;
+  user-select: none;
   &__menu-bar {
     display: flex;
     width: 100%;
