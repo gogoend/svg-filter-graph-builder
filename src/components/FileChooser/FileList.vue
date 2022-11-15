@@ -2,7 +2,7 @@
   <div
     class="file-list"
   >
-    <form class="file-list__form">
+    <form class="file-list__form" @submit.prevent>
       <select
         v-model="selectedValue"
         class="file-list__select"

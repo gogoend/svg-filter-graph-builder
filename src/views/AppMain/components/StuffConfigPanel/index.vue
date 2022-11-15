@@ -18,6 +18,7 @@
               &&
               Object.values(formFieldConfig.ports).some(it => [undefined, true].includes(it.showInConfigPanel))
           "
+          @submit.prevent
         >
           <form-item
             v-for="(port, key) in formFieldConfig.ports"
