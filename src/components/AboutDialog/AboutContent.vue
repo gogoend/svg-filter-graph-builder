@@ -40,10 +40,10 @@
     </ul>
 
     <p>
-      Thanks to my current employer,
+      Thanks to my employer,
       <a target="_blank" href="https://www.aicloud.com/">Beijing SinoVoice Technology Co.,Ltd.</a>
-      (aka. <a target="_blank" href="https://www.aicloud.com/">北京捷通华声科技股份有限公司</a>),
-      which gives me have a WLB life style to let me do what I think after work.
+      (aka. <a target="_blank" href="https://www.aicloud.com/">北京捷通华声科技股份有限公司</a> in Chinese),
+      which gives me a WLB life style to let me do my hobby after work.
     </p>
   </div>
 </template>
