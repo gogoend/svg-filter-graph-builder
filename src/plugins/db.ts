@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 import packageInfo from '../../package.json'
+import gogoendLog from './log'
 
 const PRODUCT_NAME = (() => {
   const packageNameSeg = packageInfo.name.split('/')
@@ -27,7 +28,7 @@ gogoendDb.table('products')
     }
   })
   .catch(err => {
-    console.error(err)
+    gogoendLog.error(err)
   })
 
 type BizTable = {
@@ -38,8 +39,10 @@ const currentProductBb = new Dexie(PRODUCT_NAME) as unknown as Dexie & BizTable
 
 currentProductBb.version(1).stores({
   'files': 'id',
-  'userProfiles': 'id'
+  'userProfiles': 'id',
+  'logs': '++id'
 })
 
 export const fileStorage = currentProductBb.table('files')
 export const userProfileStorage = currentProductBb.table('userProfiles')
+export const logsTable = currentProductBb.table('logs')

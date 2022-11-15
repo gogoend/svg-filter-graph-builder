@@ -40,6 +40,7 @@ import { noop } from '@/utils'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
 
 import { NODE_REF_MAP_SYMBOL } from '@/store/canvasStuff'
+import gogoendLog from '@/plugins/log'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -90,7 +91,7 @@ export default defineComponent({
     const getVNodeFragment = (): VNode | null => null
 
     // 填充默认值
-    console.log(fe[props.is])
+    gogoendLog.debug(fe[props.is])
     if (['normal', undefined].includes(fe[props.is].type)) {
       const { ports } = fe[props.is] as SVGFilterConfig.NormalNode
       Object.keys(ports).forEach(key => {

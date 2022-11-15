@@ -40,16 +40,15 @@
         class="output-preview-panel"
         :style="{
           width: '640px',
-          height: '360px',
-          bottom: '0px',
-          right: '0px',
+          height: '384px',
         }"
+        @vnode-mounted="handleOutputPreviewPanelMounted"
       />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
+import { defineComponent, inject, VNodeProps } from 'vue'
 import SvgCanvas from './components/SvgCanvas/index.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
@@ -70,8 +69,20 @@ export default defineComponent({
   },
   setup() {
     const setSvgCanvasVm = inject(SET_SVG_CANVAS_VM_SYMBOL)!
+
+    /**
+     * 用于初始化OutputPreviewPanel的位置。之后如有可能，建议从 IndexedDB 用户偏好设置存储的值中获取。
+     */
+    const handleOutputPreviewPanelMounted: VNodeProps['onVnodeMounted'] = ({ el }) => {
+      const outputPreviewPanelRect = (el! as HTMLElement).getBoundingClientRect()
+
+      el!.style.left = `${window.innerWidth - outputPreviewPanelRect.width}px`
+      el!.style.top = `${window.innerHeight - outputPreviewPanelRect.height}px`
+    }
+
     return {
       setSvgCanvasVm,
+      handleOutputPreviewPanelMounted,
 
       filterLibraryPanelWidth,
       stuffConfigPanelWidth,

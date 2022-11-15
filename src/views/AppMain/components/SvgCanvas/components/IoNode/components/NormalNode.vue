@@ -38,6 +38,7 @@ import { SVGFilterConfig } from '../type'
 import { Dictionary } from '@/utils/type'
 import { noop } from '@/utils'
 import { POINT_BORDER_W, POINT_R } from '@/config/ui'
+import gogoendLog from '@/plugins/log'
 
 export default defineComponent({
   name: 'NormalNode',
@@ -111,7 +112,7 @@ export default defineComponent({
     }
 
     // 填充默认值
-    console.log(fe[props.is])
+    gogoendLog.debug(fe[props.is])
     if (['normal', undefined].includes(fe[props.is].type)) {
       const { ports } = fe[props.is] as SVGFilterConfig.NormalNode
       Object.keys(ports).forEach(key => {
