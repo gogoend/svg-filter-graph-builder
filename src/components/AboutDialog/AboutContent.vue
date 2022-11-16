@@ -40,6 +40,11 @@
     </ul>
 
     <p>
+      The sample image is downloaded from the website of <a target="_blank" href="https://peach.blender.org/media-gallery/"><i>Big Buck Bunny</i></a>
+      - a movie is totally made with open source digital content creators.
+    </p>
+
+    <p>
       Thanks to my employer,
       <a target="_blank" href="https://www.aicloud.com/">Beijing SinoVoice Technology Co.,Ltd.</a>
       (aka. <a target="_blank" href="https://www.aicloud.com/">北京捷通华声科技股份有限公司</a> in Chinese),

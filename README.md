@@ -2,6 +2,8 @@
 
 A node-based SVG filter graph builder, let you can compose complex SVG filter by dragging nodes, which makes the workflow more easily and visualizing without writing unreadable SVG filter structure.
 
+- ![Snapshot of @gogoend/svg-filter-graph-builder](./docs/resources/screenshot-of-editing-rinkysplash.jpg 'Snapshot of @gogoend/svg-filter-graph-builder')
+
 ## Project setup
 ```
 yarn
