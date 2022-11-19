@@ -18,12 +18,18 @@
         </div>
       </div>
       <div class="output-preview-panel__menu-bar__right-content">
-        <button is="ui-button" @click="saveFilteredImage">
-          保存为PNG
+        <button
+          is="ui-button"
+          @click="saveFilteredImage"
+        >
+          Save as PNG
         </button>
       </div>
     </div>
-    <div class="output-preview-panel__content" ref="filteredContentEl">
+    <div
+      class="output-preview-panel__content"
+      ref="filteredContentEl"
+    >
       <filter-def
         filter-el-id="previewingFilter"
       />
@@ -272,9 +278,57 @@ export default defineComponent({
     const sourceImageEl = shallowRef<HTMLImageElement>()
     const saveFilteredImage = async() => {
       try {
-        const dataUrl = await domtoimage.toPng(
-          filteredContentEl.value!
+        const clonedContentNode = filteredContentEl.value!.cloneNode(true)! as HTMLElement
+        const imageEl = clonedContentNode.querySelector('.output-preview-panel__image')! as HTMLImageElement
+
+        if (!imageEl) {
+          LuLightTip.error('没有可以导出的图片，请在预览面板中拖入一张图片，或使用示例图片')
+          return
+        }
+
+        await new Promise((resolve, reject) => {
+          imageEl.addEventListener(
+            'load',
+            resolve,
+            {
+              once: true
+            }
+          )
+          imageEl.addEventListener(
+            'error',
+            reject,
+            {
+              once: true
+            }
+          )
+        })
+
+        imageEl.style.minWidth = imageEl.naturalWidth + 'px'
+        imageEl.style.minHeight = imageEl.naturalHeight + 'px'
+
+        const tempWrapperElForSnapshot = document.createElement('div')
+        tempWrapperElForSnapshot.append(clonedContentNode)
+        Object.assign(
+          tempWrapperElForSnapshot.style,
+          {
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            overflow: 'hidden'
+          }
         )
+        document.body.append(tempWrapperElForSnapshot)
+
+        const dataUrl = await domtoimage.toPng(
+          clonedContentNode
+        ).finally(() => {
+          tempWrapperElForSnapshot.remove()
+        })
+
         const decodedData = atob((() => {
           const urlSegs = dataUrl.split(',')
           return urlSegs[urlSegs.length - 1]
