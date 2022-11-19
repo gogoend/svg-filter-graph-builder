@@ -4,17 +4,26 @@
     :ref="outputPreviewPanelRootEl"
   >
     <div class="output-preview-panel__menu-bar">
-      <div
-        class="output-preview-panel__drag-move-handler"
-        v-move
-      >
-        <el-icon
-          :size="24"
-          color="#fff"><Rank /></el-icon>
+      <div class="output-preview-panel__menu-bar__left-content">
+        <div class="output-preview-panel__menu-bar__title-wrap">
+          <div
+            class="output-preview-panel__drag-move-handler"
+            v-move
+          >
+            <el-icon
+              :size="24"
+              color="#fff"><Rank /></el-icon>
+          </div>
+          <span class="output-preview-panel__menu-bar-text">Preview</span>
+        </div>
       </div>
-      <span class="output-preview-panel__menu-bar-text">Preview</span>
+      <div class="output-preview-panel__menu-bar__right-content">
+        <button is="ui-button" @click="saveFilteredImage">
+          保存为PNG
+        </button>
+      </div>
     </div>
-    <div class="output-preview-panel__content">
+    <div class="output-preview-panel__content" ref="filteredContentEl">
       <filter-def
         filter-el-id="previewingFilter"
       />
@@ -29,7 +38,9 @@
           class="output-preview-panel__image"
           v-if="sourceImageSrc"
           :src="sourceImageSrc"
-          @error="sourceImageSrc = ''" />
+          @error="sourceImageSrc = ''"
+          ref="sourceImageEl"
+        />
         <div
           class="output-preview-panel__image-placeholder"
           v-else
@@ -79,6 +90,9 @@
 import { defineComponent, nextTick, onUnmounted, ref, shallowRef, unref, watch } from 'vue'
 import FilterDef from './components/FilterDef.vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
+
+import domtoimage from 'dom-to-image'
+import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 
 export default defineComponent({
   name: 'OutputPreviewPanel',
@@ -253,6 +267,36 @@ export default defineComponent({
       }
       sourceImageSrc.value = URL.createObjectURL(newImageFile)
     }
+
+    const filteredContentEl = ref<HTMLElement>()
+    const sourceImageEl = shallowRef<HTMLImageElement>()
+    const saveFilteredImage = async() => {
+      try {
+        const dataUrl = await domtoimage.toPng(
+          filteredContentEl.value!
+        )
+        const decodedData = atob((() => {
+          const urlSegs = dataUrl.split(',')
+          return urlSegs[urlSegs.length - 1]
+        })())
+
+        const uint8Arr = new Uint8Array(decodedData.length)
+        for (let i = 0; i < uint8Arr.length; i++) {
+          uint8Arr[i] = decodedData.charCodeAt(i)
+        }
+
+        const blob = new Blob([uint8Arr], { type: 'image/png' })
+        const url = URL.createObjectURL(blob)
+        window.open(
+          url,
+          '_blank'
+        )
+      } catch (err) {
+        LuLightTip.error('生成图片过程发生错误，请稍后重试')
+        throw err
+      }
+    }
+
     return {
       sourceImageSrc,
       loadSampleImage,
@@ -262,7 +306,11 @@ export default defineComponent({
       handleDropOnImageWrap,
 
       fileInputEl,
-      handleFileInputChange
+      handleFileInputChange,
+
+      sourceImageEl,
+      filteredContentEl,
+      saveFilteredImage
     }
   }
 })
@@ -287,10 +335,14 @@ export default defineComponent({
   user-select: none;
   &__menu-bar {
     display: flex;
+    justify-content: space-between;
     width: 100%;
     height: var(--menu-bar-height);
     background-color: #fbfbfb;
     z-index: 1;
+  }
+  &__menu-bar__title-wrap {
+    display: flex;
   }
   &__menu-bar-text {
     line-height: var(--menu-bar-height);
