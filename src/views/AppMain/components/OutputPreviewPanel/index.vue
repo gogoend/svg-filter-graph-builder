@@ -139,6 +139,7 @@ export default defineComponent({
               ]
               el.__vDragMainElToBeDragged__.style.left = newPosition[0] + 'px'
               el.__vDragMainElToBeDragged__.style.top = newPosition[1] + 'px'
+              checkAndCorrectPosition()
             },
             up() {
               checkAndCorrectPosition()
@@ -381,6 +382,7 @@ export default defineComponent({
 }
 .output-preview-panel {
   --menu-bar-height: 24px;
+  min-height: var(--menu-bar-height);
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   position: relative;
