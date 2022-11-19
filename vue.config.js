@@ -2,10 +2,15 @@
 
 module.exports = {
   publicPath: '/svg-filter-graph-builder/',
+  outputDir: './dist/svg-filter-graph-builder/',
   chainWebpack(config) {
     config.plugin('html').tap(args => {
       args[0].title = 'SVG Filter Graph Builder (by @gogoend)'
       return args
     })
+  },
+  pwa: {
+    name: 'SVG Filter Builder',
+    themeColor: '#333' //
   }
 }
