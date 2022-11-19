@@ -5,20 +5,19 @@
   >
     <div class="output-preview-panel__menu-bar">
       <div class="output-preview-panel__menu-bar__left-content">
-        <div class="output-preview-panel__menu-bar__title-wrap">
-          <div
-            class="output-preview-panel__drag-move-handler"
-            v-move
-          >
-            <el-icon
-              :size="24"
-              color="#fff"><Rank /></el-icon>
-          </div>
-          <span class="output-preview-panel__menu-bar-text">Preview</span>
+        <div
+          class="output-preview-panel__drag-move-handler"
+          v-move
+        >
+          <el-icon
+            :size="24"
+            color="#fff"><Rank /></el-icon>
         </div>
+        <span class="output-preview-panel__menu-bar-text">Preview</span>
       </div>
       <div class="output-preview-panel__menu-bar__right-content">
         <button
+          class="lu-ui__extend-small"
           is="ui-button"
           @click="saveFilteredImage"
         >
@@ -66,12 +65,14 @@
               @change="handleFileInputChange"
             />
             <button
+              class="lu-ui__extend-small"
               is="ui-button"
               data-type="primary"
               @click="() => { fileInputEl.click() }"
             >choose a image</button>
             &nbsp;or&nbsp;
             <button
+              class="lu-ui__extend-small"
               is="ui-button"
               data-type="primary"
               @click="loadSampleImage"
@@ -395,7 +396,10 @@ export default defineComponent({
     background-color: #fbfbfb;
     z-index: 1;
   }
-  &__menu-bar__title-wrap {
+  &__menu-bar__left-content {
+    display: flex;
+  }
+  &__menu-bar__right-content {
     display: flex;
   }
   &__menu-bar-text {
