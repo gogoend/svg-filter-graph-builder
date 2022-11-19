@@ -37,6 +37,9 @@
       <li>
         <a target="_blank" href="https://github.com/element-plus/element-plus">element-plus / element-plus</a>
       </li>
+      <li>
+        <a target="_blank" href="https://github.com/tsayen/dom-to-image">tsayen / dom-to-image</a>
+      </li>
     </ul>
 
     <p>
