@@ -10,7 +10,7 @@ module.exports = {
     })
   },
   pwa: {
-    name: 'SVG Filter Builder',
+    name: 'SVG Filter Graph Builder',
     themeColor: '#333' //
   }
 }
