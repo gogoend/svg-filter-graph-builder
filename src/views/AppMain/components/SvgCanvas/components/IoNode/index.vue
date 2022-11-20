@@ -52,6 +52,7 @@
             class="io-node__toolbox-button lu-ui__extend-small"
             is="ui-button"
             @click="copySvgFilterCode(nodeId)"
+            v-pingping="{remark: `[io-node] ${is} 按下了复制SVG滤镜代码按钮`}"
             title="Copy SVG Filter Code"
           >
             &lt;SVG&gt;
@@ -60,6 +61,7 @@
             class="io-node__toolbox-button lu-ui__extend-small"
             is="ui-button"
             @click="copyCssRule(nodeId)"
+            v-pingping="{remark: `[io-node] ${is} 按下了复制CSS规则按钮`}"
             title="Copy CSS Rule"
           >
             CSS Rule
@@ -68,6 +70,7 @@
             class="io-node__toolbox-button lu-ui__extend-small"
             is="ui-button"
             @click="removeNode(nodeId)"
+            v-pingping="{remark: `[io-node] ${is} 按下了删除按钮`}"
             title="Remove Node"
             data-type="danger"
           >

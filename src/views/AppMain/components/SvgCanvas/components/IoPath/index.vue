@@ -33,6 +33,7 @@
           @click.prevent="removePath(pathId)"
           title="Remove Link"
           data-type="danger"
+          v-pingping="{remark: `[io-path] ${from.vm.is} ${from.attr} 到 ${to.vm.is} ${to.attr} 的连线 按下了删除按钮`}"
         >
           <el-icon><Delete /></el-icon>
         </button>

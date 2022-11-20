@@ -7,6 +7,7 @@
       <div class="output-preview-panel__menu-bar__left-content">
         <div
           class="output-preview-panel__drag-move-handler"
+          v-pingping="{remark: '[output-preview-panel] 移动预览面板（左上角）'}"
           v-move
         >
           <el-icon
@@ -21,6 +22,7 @@
           class="lu-ui__extend-small"
           is="ui-button"
           @click="removePreviewImage"
+          v-pingping="{remark: '[output-preview-panel] 移除示例图片'}"
         >
           Remove Preview Image
         </button>
@@ -29,6 +31,7 @@
           class="lu-ui__extend-small"
           is="ui-button"
           @click="saveFilteredImage"
+          v-pingping="{remark: '[output-preview-panel] 另存为PNG'}"
         >
           Save as PNG
         </button>
@@ -78,12 +81,14 @@
               is="ui-button"
               data-type="primary"
               @click="() => { fileInputEl.click() }"
+              v-pingping="{remark: '[output-preview-panel] 选择图片'}"
             >choose a image</button>,
             <button
               class="lu-ui__extend-small"
               is="ui-button"
               data-type="primary"
               @click="showImageUrlInputDialog"
+              v-pingping
             >enter the url of the image</button>
             &nbsp;or&nbsp;
             <button
@@ -91,6 +96,7 @@
               is="ui-button"
               data-type="primary"
               @click="loadSampleImage"
+              v-pingping="{remark: '[output-preview-panel] 使用示例图片'}"
             >use sample image</button>.
           </div>
         </div>
@@ -104,6 +110,7 @@
     </div>
     <div
       class="output-preview-panel__se-resize-corner"
+      v-pingping="{remark: '[output-preview-panel] 调整预览面板大小（右下角）'}"
       v-resize
     ></div>
   </div>
@@ -159,6 +166,16 @@ export default defineComponent({
             },
             up() {
               checkAndCorrectPosition()
+              log.log(
+                '[output-preview-panel] [输出预览面板] 当前位置及尺寸',
+                [
+                  el.__vDragMainElToBeDragged__.style.left,
+                  el.__vDragMainElToBeDragged__.style.top,
+                  el.__vDragMainElToBeDragged__.style.width,
+                  el.__vDragMainElToBeDragged__.style.height
+                ].map(it => parseInt(it))
+              )
+
               delete el.__vDragClickedRelativePosition__
             }
           }
@@ -238,6 +255,17 @@ export default defineComponent({
 
               el.__vResizeMainElToBeResized__.style.width = newSize[0] + 'px'
               el.__vResizeMainElToBeResized__.style.height = newSize[1] + 'px'
+            },
+            up() {
+              log.log(
+                '[output-preview-panel] [输出预览面板] 当前位置及尺寸',
+                [
+                  el.__vResizeMainElToBeResized__.style.left,
+                  el.__vResizeMainElToBeResized__.style.top,
+                  el.__vResizeMainElToBeResized__.style.width,
+                  el.__vResizeMainElToBeResized__.style.height
+                ].map(it => parseInt(it))
+              )
             }
           }
         )
@@ -268,6 +296,7 @@ export default defineComponent({
     onUnmounted(() => {
       URL.revokeObjectURL(unref(sourceImageSrc))
     })
+
     const loadSampleImage = () => {
       sourceImageSrc.value = './demo/assets/rinkysplash.jpg'
     }
@@ -283,6 +312,7 @@ export default defineComponent({
       if (!newImageFile) {
         return
       }
+      log.log('[output-preview-panel] [加载示例图片] 用户通过拖拽加载了示例图片')
       sourceImageSrc.value = URL.createObjectURL(newImageFile)
     }
 
@@ -292,6 +322,7 @@ export default defineComponent({
       if (!newImageFile) {
         return
       }
+      log.log('[output-preview-panel] [加载示例图片] 用户通过文件选择器加载了示例图片')
       sourceImageSrc.value = URL.createObjectURL(newImageFile)
     }
     const showImageUrlInputDialog = () => {
@@ -304,7 +335,7 @@ export default defineComponent({
       if (url === null) {
         return Promise.reject(new Error('[output-preview-panel][输入图片url] 用户取消输入'))
       }
-
+      log.log('[output-preview-panel][加载示例图片] 用户通过输入图片URL加载了示例图片')
       sourceImageSrc.value = url
     }
 
