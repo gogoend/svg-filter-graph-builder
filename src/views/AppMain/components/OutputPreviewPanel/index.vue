@@ -311,14 +311,14 @@ export default defineComponent({
     const filteredContentEl = ref<HTMLElement>()
     const sourceImageEl = shallowRef<HTMLImageElement>()
     const saveFilteredImage = async() => {
+      // FIXME: 最好根据 sourceImageEl 加载图片的状态来判断图片是否可以被导出
       try {
-        const clonedContentNode = filteredContentEl.value!.cloneNode(true)! as HTMLElement
-        const imageEl = clonedContentNode.querySelector('.output-preview-panel__image')! as HTMLImageElement
-
-        if (!imageEl) {
-          LuLightTip.error('没有可以导出的图片，请在预览面板中拖入一张图片，或使用示例图片')
+        if (!sourceImageSrc.value) {
+          LuLightTip.error('No image can be exported, please select a image.')
           return
         }
+        const clonedContentNode = filteredContentEl.value!.cloneNode(true)! as HTMLElement
+        const imageEl = clonedContentNode.querySelector('.output-preview-panel__image')! as HTMLImageElement
 
         await new Promise((resolve, reject) => {
           imageEl.addEventListener(
@@ -387,7 +387,7 @@ export default defineComponent({
           '_blank'
         )
       } catch (err) {
-        LuLightTip.error('生成图片过程发生错误，请稍后重试')
+        LuLightTip.error('We encountered a error when generating the result image. Maybe the image is from other website and cannot be accessed by the app.')
       }
     }
 
