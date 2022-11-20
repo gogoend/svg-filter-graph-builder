@@ -11,6 +11,7 @@
           v-for="(icon, index) in group.children"
           :key="index"
           @mousedown="(ev) => handleIconMousedown(ev, icon)"
+          v-pingping="{remark: `[node-library-panel] ${icon.title} 节点开始拖拽`}"
         >
           {{ icon.title }}
         </li>
@@ -30,6 +31,7 @@ import { DRAGGING_NODE_ICON_SYMBOL, GHOST_NODE_REF_SYMBOL } from '@/store/draggi
 import { ADD_NODE_SYMBOL } from '@/store/canvasStuff'
 import { SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
 import gogoendLog from '@/plugins/log'
+import log from '@/plugins/log'
 
 const menuGroup = [
   {
@@ -85,6 +87,9 @@ export default defineComponent({
               id: uuid(),
               position: [ev.clientX + svgCanvasVm.value.$el.scrollLeft - svgCanvasRect.value.left, ev.clientY + svgCanvasVm.value.$el.scrollTop - svgCanvasRect.value.top]
             })
+            log.log(`[node-library-panel] ${icon.title} 节点已被放置到canvas上`)
+          } else {
+            log.log(`[node-library-panel] ${icon.title} 节点的创建过程已取消`)
           }
           draggingNodeIcon.value = null
           void 0

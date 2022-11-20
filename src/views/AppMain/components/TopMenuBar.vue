@@ -38,6 +38,7 @@
               @mouseenter="handleMouseenter(subMenu)"
               @mouseleave="handleMouseleave(subMenu)"
               @mousedown.prevent
+              v-pingping="{remark: `[top-menu] ${subMenu.id} 菜单项被点击`}"
               @click.prevent="() => {
                 if (subMenu.disabled) { return }
                 subMenu.onClick?.()
@@ -56,7 +57,10 @@
     <div
       class="menu-bar__center"
     >
-      <div class="seg-content">
+      <div
+        class="seg-content"
+        v-pingping="{remark: `[top-menu-bar] 标题被点击`}"
+      >
         {{ titleText }}
       </div>
     </div>
@@ -67,6 +71,7 @@
         <a
           target="_blank"
           href="https://github.com/gogoend/svg-filter-graph-builder"
+          v-pingping="{remark: `[top-menu-bar] GitHub链接被点击`}"
         >GitHub</a>
       </div>
     </div>
