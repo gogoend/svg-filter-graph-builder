@@ -17,6 +17,15 @@
       </div>
       <div class="output-preview-panel__menu-bar__right-content">
         <button
+          v-if="sourceImageSrc"
+          class="lu-ui__extend-small"
+          is="ui-button"
+          @click="removePreviewImage"
+        >
+          Remove Preview Image
+        </button>
+        <button
+          v-if="sourceImageSrc"
           class="lu-ui__extend-small"
           is="ui-button"
           @click="saveFilteredImage"
@@ -262,6 +271,9 @@ export default defineComponent({
     const loadSampleImage = () => {
       sourceImageSrc.value = './demo/assets/rinkysplash.jpg'
     }
+    const removePreviewImage = () => {
+      sourceImageSrc.value = ''
+    }
 
     const outputPreviewPanelRootEl = ref()
     const dragIsHovering = ref(false)
@@ -382,6 +394,8 @@ export default defineComponent({
     return {
       sourceImageSrc,
       loadSampleImage,
+      removePreviewImage,
+
       outputPreviewPanelRootEl,
 
       dragIsHovering,
