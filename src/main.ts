@@ -10,6 +10,15 @@ import { EventDoer } from './utils/event-doer'
 import gogoendLog from './plugins/log'
 
 import './registerServiceWorker'
+import runtimeConfig from '../public/runtime-config.json'
+
+fetch('./runtime-config.json')
+  .then(res => {
+    return res.json()
+  })
+  .then(res => {
+    window.__sfgb_runtime_config__ = res as typeof runtimeConfig
+  })
 
 const app = createApp(App)
 
