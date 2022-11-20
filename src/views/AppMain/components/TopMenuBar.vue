@@ -80,11 +80,13 @@
 
 <script lang="ts" setup>
 import { UNSAVED_PROJECT_NAME } from '@/config/project'
-import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
+import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL, TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL } from '@/store/projectInfoState'
 import { computed, inject, ref, UnwrapRef } from 'vue'
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 import { showAboutDialog } from '@/components/AboutDialog'
 import { PWA_BEFORE_INSTALL_WAITEE_SYMBOL, SHOW_PWA_INSTALL_DIALOG_SYMBOL } from '@/store/pwa'
+
+import samples from '@/config/samples'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
 const handleMouseenter = (menuItem: SubMenuItem) => {
@@ -105,6 +107,8 @@ const pwaBeforeInstallWaitee = inject(PWA_BEFORE_INSTALL_WAITEE_SYMBOL)!
 const showPwaInstallDialog = inject(SHOW_PWA_INSTALL_DIALOG_SYMBOL)!
 
 type SubMenuItem = UnwrapRef<typeof menuTemplate>[number]['subMenu'][number]
+
+const tryToOpenSampleProject = inject(TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL)!
 
 const menuTemplate = computed(() => [
   {
@@ -155,6 +159,19 @@ const menuTemplate = computed(() => [
         }
       }
     ]
+  },
+  {
+    id: 'Sample',
+    label: 'Sample',
+    subMenu: samples.map(it => {
+      return {
+        id: it.id,
+        label: it.project.name,
+        onClick() {
+          tryToOpenSampleProject(it.id)
+        }
+      }
+    })
   },
   {
     id: 'Help',
