@@ -13,8 +13,8 @@
           :class="{
             'menu-entry-item__active': activeMenuIndexedById[menu.id]
           }"
-          @mouseenter="handleMouseenter(menu.id)"
-          @mouseleave="handleMouseleave(menu.id)"
+          @mouseenter="handleMouseenter(menu)"
+          @mouseleave="handleMouseleave(menu)"
         >
           <div>{{ menu.label }}</div>
           <ul
@@ -32,12 +32,15 @@
               class="submenu-item"
               :class="{
                 'submenu-item--active': activeMenuIndexedById[subMenu.id],
+                'submenu-item--disabled': subMenu.disabled === true,
                 'submenu-item__is-hr': subMenu.type === 'hr'
               }"
-              @mouseenter="handleMouseenter(subMenu.id)"
-              @mouseleave="handleMouseleave(subMenu.id)"
+              @mouseenter="handleMouseenter(subMenu)"
+              @mouseleave="handleMouseleave(subMenu)"
               @mousedown.prevent
+              v-pingping="{remark: `[top-menu] ${subMenu.id} 菜单项被点击`}"
               @click.prevent="() => {
+                if (subMenu.disabled) { return }
                 subMenu.onClick?.()
                 activeMenuIndexedById = {}
               }"
@@ -54,7 +57,10 @@
     <div
       class="menu-bar__center"
     >
-      <div class="seg-content">
+      <div
+        class="seg-content"
+        v-pingping="{remark: `[top-menu-bar] 标题被点击`}"
+      >
         {{ titleText }}
       </div>
     </div>
@@ -65,6 +71,7 @@
         <a
           target="_blank"
           href="https://github.com/gogoend/svg-filter-graph-builder"
+          v-pingping="{remark: `[top-menu-bar] GitHub链接被点击`}"
         >GitHub</a>
       </div>
     </div>
@@ -73,23 +80,35 @@
 
 <script lang="ts" setup>
 import { UNSAVED_PROJECT_NAME } from '@/config/project'
-import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL } from '@/store/projectInfoState'
-import { computed, inject, ref } from 'vue'
+import { CURRENT_PROJECT_SYMBOL, TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, SAVE_CURRENT_PROJECT_SYMBOL, SAVE_CURRENT_PROJECT_AS_SYMBOL, TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL, TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL } from '@/store/projectInfoState'
+import { computed, inject, ref, UnwrapRef } from 'vue'
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 import { showAboutDialog } from '@/components/AboutDialog'
+import { PWA_BEFORE_INSTALL_WAITEE_SYMBOL, SHOW_PWA_INSTALL_DIALOG_SYMBOL } from '@/store/pwa'
+
+import samples from '@/config/samples'
 
 const activeMenuIndexedById = ref<Record<string, true>>({})
-const handleMouseenter = (id: string) => {
-  activeMenuIndexedById.value[id] = true
+const handleMouseenter = (menuItem: SubMenuItem) => {
+  if (menuItem.disabled) { return }
+  activeMenuIndexedById.value[menuItem.id] = true
 }
-const handleMouseleave = (id: string) => {
-  delete activeMenuIndexedById.value[id]
+const handleMouseleave = (menuItem: SubMenuItem) => {
+  if (menuItem.disabled) { return }
+  delete activeMenuIndexedById.value[menuItem.id]
 }
 
 const saveCurrentProject = inject(SAVE_CURRENT_PROJECT_SYMBOL)!
 const saveCurrentProjectAs = inject(SAVE_CURRENT_PROJECT_AS_SYMBOL)!
 const closeAndNewProject = inject(TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL)!
 const tryToShowOpenFileDialog = inject(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL)!
+
+const pwaBeforeInstallWaitee = inject(PWA_BEFORE_INSTALL_WAITEE_SYMBOL)!
+const showPwaInstallDialog = inject(SHOW_PWA_INSTALL_DIALOG_SYMBOL)!
+
+type SubMenuItem = UnwrapRef<typeof menuTemplate>[number]['subMenu'][number]
+
+const tryToOpenSampleProject = inject(TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL)!
 
 const menuTemplate = computed(() => [
   {
@@ -125,8 +144,34 @@ const menuTemplate = computed(() => [
         onClick() {
           closeAndNewProject()
         }
+      },
+      {
+        id: 'Hr between close and install',
+        type: 'hr'
+      },
+      {
+        id: 'Install Desktop Icon',
+        label: 'Install Desktop Icon',
+        // TODO: 当用户自行通过浏览器右上角自带标识安装PWA后，怎样禁用此处的安装入口？
+        disabled: pwaBeforeInstallWaitee.value === null,
+        async onClick() {
+          showPwaInstallDialog()
+        }
       }
     ]
+  },
+  {
+    id: 'Sample',
+    label: 'Sample',
+    subMenu: samples.map(it => {
+      return {
+        id: it.id,
+        label: it.project.name,
+        onClick() {
+          tryToOpenSampleProject(it.id)
+        }
+      }
+    })
   },
   {
     id: 'Help',
@@ -262,6 +307,9 @@ const titleText = computed(() => {
     &--active {
       background-color: #333333;
       color: #fff;
+    }
+    &--disabled {
+      color: #ccc;
     }
   }
 }

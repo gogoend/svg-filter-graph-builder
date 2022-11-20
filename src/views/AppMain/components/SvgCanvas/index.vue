@@ -34,7 +34,6 @@
         :path-d-arguments="path.pathDArguments"
         :from="path.from"
         :to="path.to"
-        @remove="removePath"
       ></io-path>
       <g class="ghost">
         <path
@@ -81,6 +80,7 @@ import useLayoutCache from './hooks/useLayoutCache'
 import { ProjectFile } from '@/schema/ProjectFile'
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
 import gogoendLog from '@/plugins/log'
+import log from '@/plugins/log'
 
 export default defineComponent({
   name: 'SvgCanvas',
@@ -97,7 +97,6 @@ export default defineComponent({
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
     const addPath = inject(ADD_PATH_SYMBOL)!
-    const removePath = inject(REMOVE_PATH_SYMBOL)!
 
     const nodes = inject(ALL_NODES_ON_CANVAS_SYMBOL)!
 
@@ -306,6 +305,7 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
           from: fromPort.value as Port<InstanceType<typeof IoNode>>,
           to: toPort.value as Port<InstanceType<typeof IoNode>>
         }
+        log.log(`[svg-canvas] 建立了一条${linkedPath.from.vm.is} ${linkedPath.from.attr} 到 ${linkedPath.to.vm.is} ${linkedPath.to.attr} 的连线`)
       }
 
       try {
@@ -344,6 +344,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
      * 用于处理连线取消的逻辑
      */
     const handlePortCancel = () => {
+      log.log(`[svg-canvas] ${fromPort.value?.vm.is} ${fromPort.value?.attr} 到 ${toPort.value?.vm.is} ${toPort.value?.attr} 的连线已取消`)
+
       gogoendLog.debug('canceled')
       fromPort.value = null
       toPort.value = null
@@ -532,7 +534,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       defaultRelativePath,
       relativePathMapIndexedByNodeId,
-      removePath,
 
       loadCanvasStuffFromSerializedData
     }

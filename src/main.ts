@@ -9,13 +9,29 @@ import App from './App.vue'
 import { EventDoer } from './utils/event-doer'
 import gogoendLog from './plugins/log'
 
-const app = createApp(App)
+import './registerServiceWorker'
+import runtimeConfig from '../public/runtime-config.json'
 
-// FIXME: proxy.$eventHub拿不到？？？
-app.config.globalProperties.$eventHub = new EventDoer()
+import pingping from './directives/pingping'
 
-app.use(ElIconPlugin)
-app.mount('#app')
+fetch('./runtime-config.json')
+  .then(res => {
+    return res.json()
+  })
+  .then(res => {
+    window.__sfgb_runtime_config__ = res as typeof runtimeConfig
+  })
+  .then(() => {
+    const app = createApp(App)
 
-app.config.warnHandler = (...args) => gogoendLog.warn('[Vue]', args[0], args[2])
-app.config.errorHandler = (...args) => gogoendLog.error('[Vue]', args[0], args[2])
+    // FIXME: proxy.$eventHub拿不到？？？
+    app.config.globalProperties.$eventHub = new EventDoer()
+
+    app.use(ElIconPlugin)
+    app.directive('pingping', pingping)
+
+    app.mount('#app')
+
+    app.config.warnHandler = (...args) => gogoendLog.warn('[Vue]', args[0], args[2])
+    app.config.errorHandler = (...args) => gogoendLog.error('[Vue]', args[0], args[2])
+  })

@@ -5,10 +5,11 @@ import { ALL_NODES_ON_CANVAS_SYMBOL, NODE_FORM_VALUE_TYPE_SYMBOL, LINKED_PATHS_F
 
 import LuDialog from 'lu2/theme/edge/js/common/ui/Dialog'
 import { getSelectFileWaitee } from '@/components/FileChooser'
-import { fileStorage } from '@/plugins/db'
+import { fileStorage, appTable } from '@/plugins/db'
 import { SVG_CANVAS_VM_SYMBOL } from './vmStore'
-import SvgCanvas from '@/views/AppMain/components/SvgCanvas/index.vue'
 import { ProjectFile } from '@/schema/ProjectFile'
+
+import samples from '@/config/samples'
 
 export const SAVE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('保存项目')
 export const SAVE_CURRENT_PROJECT_AS_SYMBOL: InjectionKey<() => void> = Symbol('另存为项目')
@@ -20,6 +21,8 @@ export const CLOSE_AND_NEW_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('�
 
 export const TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭项目')
 export const TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL: InjectionKey<() => void> = Symbol('尝试打开打开文件对话框')
+
+export const TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL: InjectionKey<(sampleId: string) => void> = Symbol('尝试打开示例项目文件')
 
 export default function projectInfoState() {
   const vm = getCurrentInstance()!.proxy
@@ -56,7 +59,7 @@ export default function projectInfoState() {
         }, {
           value: 'Cancel',
           events(ev: any) {
-            reject(new Error('[展示打开文件弹窗] 用户取消了操作'))
+            reject(new Error('[关闭文件提示] 用户取消了操作'))
             ev.dialog.remove()
           }
         }]
@@ -93,7 +96,7 @@ export default function projectInfoState() {
   }
   provide(TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL, tryToShowOpenFileDialog)
 
-  const collectCurrentFilterProjectFileData = (): Omit<ProjectFile, 'id'> & { id?: string } => {
+  const collectCurrentFilterProjectFileData = async(): Promise<Omit<ProjectFile, 'id'> & { id?: string }> => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const nodes = (vm!.$ as any).provides[ALL_NODES_ON_CANVAS_SYMBOL]
@@ -114,10 +117,13 @@ export default function projectInfoState() {
       version: packageInfo.version,
       buildVersion: 0
     }
+    const currentUserProfileId = (await appTable.get('lastUserProfileId')).value
     const project = {
-      author: 'gogoend',
-      createdTime: Number(new Date()),
-      modifiedTime: Number(new Date()),
+      authorIds: [
+        ...new Set<string>([...currentProject.value?.project.authorIds ?? [], currentUserProfileId])],
+      createdTime: currentProject.value?.project.createdTime ?? Number(new Date()),
+      lastModifiedTime: Number(new Date()),
+      lastModifierId: currentUserProfileId,
       name: ''
     }
 
@@ -136,8 +142,10 @@ export default function projectInfoState() {
   const saveCurrentProject = async() => {
     const currentProjectId = currentProject.value?.id
     if (currentProjectId) {
+      const data = await collectCurrentFilterProjectFileData()
       await fileStorage.where('id').equals(currentProjectId).modify((value, ref) => {
-        ref.value = collectCurrentFilterProjectFileData()
+        // TODO: 其它数据库操作似乎不能在此运行？- 因为已经有一个事务存在了？
+        ref.value = data
       })
       return
     } else {
@@ -147,7 +155,7 @@ export default function projectInfoState() {
   provide(SAVE_CURRENT_PROJECT_SYMBOL, saveCurrentProject)
 
   const saveCurrentProjectAs = async() => {
-    const projectFileData = collectCurrentFilterProjectFileData()
+    const projectFileData = await collectCurrentFilterProjectFileData()
     projectFileData.id = uuid()
 
     let projectName = ''
@@ -158,7 +166,7 @@ export default function projectInfoState() {
     }
 
     if (projectName === null) {
-      return
+      return Promise.reject(new Error('[projectInfoState][另存为] 用户取消保存'))
     }
 
     projectFileData.project.name = projectName
@@ -171,4 +179,12 @@ export default function projectInfoState() {
     setOpeningProject(newProjectFileDataInfo)
   }
   provide(SAVE_CURRENT_PROJECT_AS_SYMBOL, saveCurrentProjectAs)
+
+  const tryToOpenSampleProject = async(sampleFileId: string) => {
+    const sample = samples.find(it => it.id === sampleFileId)
+    await tryToCloseCurrentProject()
+
+    svgCanvasVm.value.loadCanvasStuffFromSerializedData(sample)
+  }
+  provide(TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL, tryToOpenSampleProject)
 }

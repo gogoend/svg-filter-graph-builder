@@ -48,16 +48,20 @@ export type ProjectFile = {
      */
     name: string
     /**
-     * 作者
+     * 作者Id
      */
-    author: string
+    authorIds: string[]
     /**
      * 创建时间
      */
     createdTime: number
     /**
+     * 上次修改者Id
+     */
+    lastModifierId: string
+    /**
      * 修改时间
      */
-    modifiedTime: number
+    lastModifiedTime: number
   }
 }
