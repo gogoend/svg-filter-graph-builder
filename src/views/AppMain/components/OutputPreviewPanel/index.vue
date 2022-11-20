@@ -4,17 +4,40 @@
     :ref="outputPreviewPanelRootEl"
   >
     <div class="output-preview-panel__menu-bar">
-      <div
-        class="output-preview-panel__drag-move-handler"
-        v-move
-      >
-        <el-icon
-          :size="24"
-          color="#fff"><Rank /></el-icon>
+      <div class="output-preview-panel__menu-bar__left-content">
+        <div
+          class="output-preview-panel__drag-move-handler"
+          v-move
+        >
+          <el-icon
+            :size="24"
+            color="#fff"><Rank /></el-icon>
+        </div>
+        <span class="output-preview-panel__menu-bar-text">Preview</span>
       </div>
-      <span class="output-preview-panel__menu-bar-text">Preview</span>
+      <div class="output-preview-panel__menu-bar__right-content">
+        <button
+          v-if="sourceImageSrc"
+          class="lu-ui__extend-small"
+          is="ui-button"
+          @click="removePreviewImage"
+        >
+          Remove Preview Image
+        </button>
+        <button
+          v-if="sourceImageSrc"
+          class="lu-ui__extend-small"
+          is="ui-button"
+          @click="saveFilteredImage"
+        >
+          Save as PNG
+        </button>
+      </div>
     </div>
-    <div class="output-preview-panel__content">
+    <div
+      class="output-preview-panel__content"
+      ref="filteredContentEl"
+    >
       <filter-def
         filter-el-id="previewingFilter"
       />
@@ -29,7 +52,9 @@
           class="output-preview-panel__image"
           v-if="sourceImageSrc"
           :src="sourceImageSrc"
-          @error="sourceImageSrc = ''" />
+          @error="sourceImageSrc = ''"
+          ref="sourceImageEl"
+        />
         <div
           class="output-preview-panel__image-placeholder"
           v-else
@@ -49,12 +74,20 @@
               @change="handleFileInputChange"
             />
             <button
+              class="lu-ui__extend-small"
               is="ui-button"
               data-type="primary"
               @click="() => { fileInputEl.click() }"
-            >choose a image</button>
+            >choose a image</button>,
+            <button
+              class="lu-ui__extend-small"
+              is="ui-button"
+              data-type="primary"
+              @click="showImageUrlInputDialog"
+            >enter the url of the image</button>
             &nbsp;or&nbsp;
             <button
+              class="lu-ui__extend-small"
               is="ui-button"
               data-type="primary"
               @click="loadSampleImage"
@@ -79,6 +112,10 @@
 import { defineComponent, nextTick, onUnmounted, ref, shallowRef, unref, watch } from 'vue'
 import FilterDef from './components/FilterDef.vue'
 import mouseEventHelper from '@/utils/mouse-event-helper'
+
+import domtoimage from 'dom-to-image'
+import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
+import log from '@/plugins/log'
 
 export default defineComponent({
   name: 'OutputPreviewPanel',
@@ -118,6 +155,7 @@ export default defineComponent({
               ]
               el.__vDragMainElToBeDragged__.style.left = newPosition[0] + 'px'
               el.__vDragMainElToBeDragged__.style.top = newPosition[1] + 'px'
+              checkAndCorrectPosition()
             },
             up() {
               checkAndCorrectPosition()
@@ -233,6 +271,9 @@ export default defineComponent({
     const loadSampleImage = () => {
       sourceImageSrc.value = './demo/assets/rinkysplash.jpg'
     }
+    const removePreviewImage = () => {
+      sourceImageSrc.value = ''
+    }
 
     const outputPreviewPanelRootEl = ref()
     const dragIsHovering = ref(false)
@@ -253,16 +294,121 @@ export default defineComponent({
       }
       sourceImageSrc.value = URL.createObjectURL(newImageFile)
     }
+    const showImageUrlInputDialog = () => {
+      let url: string | null = ''
+      while (url?.trim() === '') {
+        url = window.prompt(
+          'Enter the url of the your image'
+        ) as string
+      }
+      if (url === null) {
+        return Promise.reject(new Error('[output-preview-panel][输入图片url] 用户取消输入'))
+      }
+
+      sourceImageSrc.value = url
+    }
+
+    const filteredContentEl = ref<HTMLElement>()
+    const sourceImageEl = shallowRef<HTMLImageElement>()
+    const saveFilteredImage = async() => {
+      // FIXME: 最好根据 sourceImageEl 加载图片的状态来判断图片是否可以被导出
+      try {
+        if (!sourceImageSrc.value) {
+          LuLightTip.error('No image can be exported, please select a image.')
+          return
+        }
+        const clonedContentNode = filteredContentEl.value!.cloneNode(true)! as HTMLElement
+        const imageEl = clonedContentNode.querySelector('.output-preview-panel__image')! as HTMLImageElement
+
+        await new Promise((resolve, reject) => {
+          imageEl.addEventListener(
+            'load',
+            resolve,
+            {
+              once: true
+            }
+          )
+          imageEl.addEventListener(
+            'error',
+            reject,
+            {
+              once: true
+            }
+          )
+        })
+
+        imageEl.style.minWidth = imageEl.naturalWidth + 'px'
+        imageEl.style.minHeight = imageEl.naturalHeight + 'px'
+
+        const tempWrapperElForSnapshot = document.createElement('div')
+        tempWrapperElForSnapshot.append(clonedContentNode)
+        Object.assign(
+          tempWrapperElForSnapshot.style,
+          {
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            overflow: 'hidden'
+          }
+        )
+        document.body.append(tempWrapperElForSnapshot)
+
+        let dataUrl = ''
+        try {
+          dataUrl = await domtoimage.toPng(
+            clonedContentNode
+          )
+        } catch (err) {
+          log.log('[output-preview-panel][生成图片]', sourceImageSrc.value)
+          log.error('[output-preview-panel][生成图片] 生成图片过程发生错误，请稍后重试', err)
+          throw err
+        } finally {
+          tempWrapperElForSnapshot.remove()
+        }
+
+        const decodedData = atob((() => {
+          const urlSegs = dataUrl.split(',')
+          return urlSegs[urlSegs.length - 1]
+        })())
+
+        const uint8Arr = new Uint8Array(decodedData.length)
+        for (let i = 0; i < uint8Arr.length; i++) {
+          uint8Arr[i] = decodedData.charCodeAt(i)
+        }
+
+        const blob = new Blob([uint8Arr], { type: 'image/png' })
+        const url = URL.createObjectURL(blob)
+        window.open(
+          url,
+          '_blank'
+        )
+      } catch (err) {
+        LuLightTip.error('We encountered a error when generating the result image. Maybe the image is from other website and cannot be accessed by the app.')
+      }
+    }
+
     return {
       sourceImageSrc,
       loadSampleImage,
+      removePreviewImage,
+
       outputPreviewPanelRootEl,
 
       dragIsHovering,
       handleDropOnImageWrap,
 
+      showImageUrlInputDialog,
+
       fileInputEl,
-      handleFileInputChange
+      handleFileInputChange,
+
+      sourceImageEl,
+      filteredContentEl,
+      saveFilteredImage
     }
   }
 })
@@ -278,6 +424,7 @@ export default defineComponent({
 }
 .output-preview-panel {
   --menu-bar-height: 24px;
+  min-height: var(--menu-bar-height);
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   position: relative;
@@ -287,10 +434,17 @@ export default defineComponent({
   user-select: none;
   &__menu-bar {
     display: flex;
+    justify-content: space-between;
     width: 100%;
     height: var(--menu-bar-height);
     background-color: #fbfbfb;
     z-index: 1;
+  }
+  &__menu-bar__left-content {
+    display: flex;
+  }
+  &__menu-bar__right-content {
+    display: flex;
   }
   &__menu-bar-text {
     line-height: var(--menu-bar-height);

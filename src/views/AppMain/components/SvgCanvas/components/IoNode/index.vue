@@ -49,7 +49,7 @@
         />
         <div class="io-node__toolbox" @click.stop>
           <button
-            class="io-node__toolbox-button"
+            class="io-node__toolbox-button lu-ui__extend-small"
             is="ui-button"
             @click="copySvgFilterCode(nodeId)"
             title="Copy SVG Filter Code"
@@ -57,7 +57,7 @@
             &lt;SVG&gt;
           </button>
           <button
-            class="io-node__toolbox-button"
+            class="io-node__toolbox-button lu-ui__extend-small"
             is="ui-button"
             @click="copyCssRule(nodeId)"
             title="Copy CSS Rule"
@@ -65,7 +65,7 @@
             CSS Rule
           </button>
           <button
-            class="io-node__toolbox-button"
+            class="io-node__toolbox-button lu-ui__extend-small"
             is="ui-button"
             @click="removeNode(nodeId)"
             title="Remove Node"
@@ -459,10 +459,7 @@ export default IoNode
     display: flex;
     // TODO: 为何即使设置padding:0、line-height:1，按钮高度还是14px而非16px？
     .io-node__toolbox-button[is=ui-button] {
-      padding: 4px;
-      min-width: unset;
       border: 0;
-      line-height: 1;
       ::v-deep(.el-icon) {
         display: flex;
       }
