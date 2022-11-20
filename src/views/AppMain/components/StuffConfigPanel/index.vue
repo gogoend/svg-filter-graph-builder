@@ -30,8 +30,8 @@
         </form>
         <div v-else>
           <h3>Opus! 🫢</h3>
-          No field can be edit here.<br />
-          Just look around the canvas, and create links between the available ports.
+          No fields can be edited here.<br />
+          Look around this node on the canvas, and create links between the available ports.
         </div>
 
       </div>
