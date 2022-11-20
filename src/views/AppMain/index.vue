@@ -1,5 +1,6 @@
 <template>
   <div class="app-wrap">
+    <ping-ping />
     <top-menu-bar
       class="top-menu-bar"
       :style="{
@@ -54,6 +55,7 @@ import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
 import OutputPreviewPanel from './components/OutputPreviewPanel/index.vue'
 import TopMenuBar from './components/TopMenuBar.vue'
+import PingPing from './components/PingPing.vue'
 import { filterLibraryPanelWidth, stuffConfigPanelWidth } from '@/config/ui'
 import { topMenuBarHeight } from '../../config/ui'
 import { SET_SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
@@ -65,7 +67,8 @@ export default defineComponent({
     SvgCanvas,
     NodeLibraryPanel,
     StuffConfigPanel,
-    OutputPreviewPanel
+    OutputPreviewPanel,
+    PingPing
   },
   setup() {
     const setSvgCanvasVm = inject(SET_SVG_CANVAS_VM_SYMBOL)!

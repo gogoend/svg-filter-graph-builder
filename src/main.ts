@@ -19,14 +19,15 @@ fetch('./runtime-config.json')
   .then(res => {
     window.__sfgb_runtime_config__ = res as typeof runtimeConfig
   })
+  .then(() => {
+    const app = createApp(App)
 
-const app = createApp(App)
+    // FIXME: proxy.$eventHub拿不到？？？
+    app.config.globalProperties.$eventHub = new EventDoer()
 
-// FIXME: proxy.$eventHub拿不到？？？
-app.config.globalProperties.$eventHub = new EventDoer()
+    app.use(ElIconPlugin)
+    app.mount('#app')
 
-app.use(ElIconPlugin)
-app.mount('#app')
-
-app.config.warnHandler = (...args) => gogoendLog.warn('[Vue]', args[0], args[2])
-app.config.errorHandler = (...args) => gogoendLog.error('[Vue]', args[0], args[2])
+    app.config.warnHandler = (...args) => gogoendLog.warn('[Vue]', args[0], args[2])
+    app.config.errorHandler = (...args) => gogoendLog.error('[Vue]', args[0], args[2])
+  })
