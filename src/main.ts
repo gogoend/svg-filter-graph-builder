@@ -9,6 +9,8 @@ import App from './App.vue'
 import { EventDoer } from './utils/event-doer'
 import gogoendLog from './plugins/log'
 
+import './registerServiceWorker'
+
 const app = createApp(App)
 
 // FIXME: proxy.$eventHub拿不到？？？
