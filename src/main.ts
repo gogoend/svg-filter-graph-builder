@@ -12,6 +12,8 @@ import gogoendLog from './plugins/log'
 import './registerServiceWorker'
 import runtimeConfig from '../public/runtime-config.json'
 
+import pingping from './directives/pingping'
+
 fetch('./runtime-config.json')
   .then(res => {
     return res.json()
@@ -26,6 +28,8 @@ fetch('./runtime-config.json')
     app.config.globalProperties.$eventHub = new EventDoer()
 
     app.use(ElIconPlugin)
+    app.directive('pingping', pingping)
+
     app.mount('#app')
 
     app.config.warnHandler = (...args) => gogoendLog.warn('[Vue]', args[0], args[2])
