@@ -61,5 +61,7 @@ const setupPingTimer = () => {
   }, POLLING_INTERVAL)
 }
 
-setupPingTimer()
+if (logDestination) {
+  setupPingTimer()
+}
 </script>
