@@ -2,6 +2,7 @@
 
 module.exports = {
   publicPath: '/svg-filter-graph-builder/',
+  outputDir: './dist/svg-filter-graph-builder/',
   css: {
     loaderOptions: {
       scss: {
@@ -15,5 +16,9 @@ module.exports = {
       args[0].title = 'SVG Filter Graph Builder (by @gogoend)'
       return args
     })
+  },
+  pwa: {
+    name: 'SVG Filter Graph Builder',
+    themeColor: '#333' //
   }
 }

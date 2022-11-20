@@ -34,7 +34,6 @@
         :path-d-arguments="path.pathDArguments"
         :from="path.from"
         :to="path.to"
-        @remove="removePath"
       ></io-path>
       <g class="ghost">
         <path
@@ -97,7 +96,6 @@ export default defineComponent({
 
     const linkedPaths = inject(ALL_LINKED_PATH_ON_CANVAS_SYMBOL)!
     const addPath = inject(ADD_PATH_SYMBOL)!
-    const removePath = inject(REMOVE_PATH_SYMBOL)!
 
     const nodes = inject(ALL_NODES_ON_CANVAS_SYMBOL)!
 
@@ -532,7 +530,6 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
 
       defaultRelativePath,
       relativePathMapIndexedByNodeId,
-      removePath,
 
       loadCanvasStuffFromSerializedData
     }

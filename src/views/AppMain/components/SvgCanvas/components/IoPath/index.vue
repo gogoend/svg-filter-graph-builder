@@ -30,7 +30,7 @@
           class="linked-path__toolbox-button"
           is="ui-button"
           @mousedown.prevent
-          @click.prevent="$emit('remove', pathId)"
+          @click.prevent="removePath(pathId)"
           title="Remove Link"
           data-type="danger"
         >
@@ -49,7 +49,8 @@
 <script lang="ts">
 import { PATH_STROKE_W } from '@/config/ui'
 import gogoendLog from '@/plugins/log'
-import { computed, defineComponent, PropType, ref } from 'vue'
+import { REMOVE_PATH_SYMBOL } from '@/store/canvasStuff'
+import { computed, defineComponent, inject, PropType, ref } from 'vue'
 
 import { OverwrittenIoNodeType } from '../../type'
 
@@ -77,8 +78,8 @@ export default defineComponent({
     const pathD = computed(() => {
       const dArgs = props.pathDArguments
       return `
-M ${dArgs[0]}, ${dArgs[1]}
-C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
+      M ${dArgs[0]}, ${dArgs[1]}
+      C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
     })
     const pathRef = ref<SVGPathElement|null>(null)
 
@@ -90,13 +91,14 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       return [x, y]
     })
 
+    const removePath = inject(REMOVE_PATH_SYMBOL)!
     const handlePathClick = (ev: MouseEvent) => {
       gogoendLog.debug(ev)
     }
-
     const handlePathBlur = (ev: Event) => {
       gogoendLog.debug(ev)
     }
+
     return {
       PATH_STROKE_W,
 
@@ -104,6 +106,8 @@ C ${dArgs[2]}, ${dArgs[3]}, ${dArgs[4]}, ${dArgs[5]}, ${dArgs[6]}, ${dArgs[7]}`
       pathRef,
       pathD,
       p,
+
+      removePath,
       handlePathClick,
       handlePathBlur
     }
