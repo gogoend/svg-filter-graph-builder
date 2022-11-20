@@ -158,7 +158,7 @@ export default function projectInfoState() {
     }
 
     if (projectName === null) {
-      return
+      return Promise.reject(new Error('[projectInfoState][另存为] 用户取消保存'))
     }
 
     projectFileData.project.name = projectName

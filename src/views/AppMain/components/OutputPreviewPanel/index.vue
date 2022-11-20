@@ -69,7 +69,13 @@
               is="ui-button"
               data-type="primary"
               @click="() => { fileInputEl.click() }"
-            >choose a image</button>
+            >choose a image</button>,
+            <button
+              class="lu-ui__extend-small"
+              is="ui-button"
+              data-type="primary"
+              @click="showImageUrlInputDialog"
+            >enter the url of the image</button>
             &nbsp;or&nbsp;
             <button
               class="lu-ui__extend-small"
@@ -100,6 +106,7 @@ import mouseEventHelper from '@/utils/mouse-event-helper'
 
 import domtoimage from 'dom-to-image'
 import LuLightTip from 'lu2/theme/edge/js/common/ui/LightTip'
+import log from '@/plugins/log'
 
 export default defineComponent({
   name: 'OutputPreviewPanel',
@@ -275,6 +282,19 @@ export default defineComponent({
       }
       sourceImageSrc.value = URL.createObjectURL(newImageFile)
     }
+    const showImageUrlInputDialog = () => {
+      let url: string | null = ''
+      while (url?.trim() === '') {
+        url = window.prompt(
+          'Enter the url of the your image'
+        ) as string
+      }
+      if (url === null) {
+        return Promise.reject(new Error('[output-preview-panel][输入图片url] 用户取消输入'))
+      }
+
+      sourceImageSrc.value = url
+    }
 
     const filteredContentEl = ref<HTMLElement>()
     const sourceImageEl = shallowRef<HTMLImageElement>()
@@ -325,11 +345,18 @@ export default defineComponent({
         )
         document.body.append(tempWrapperElForSnapshot)
 
-        const dataUrl = await domtoimage.toPng(
-          clonedContentNode
-        ).finally(() => {
+        let dataUrl = ''
+        try {
+          dataUrl = await domtoimage.toPng(
+            clonedContentNode
+          )
+        } catch (err) {
+          log.log('[output-preview-panel][生成图片]', sourceImageSrc.value)
+          log.error('[output-preview-panel][生成图片] 生成图片过程发生错误，请稍后重试', err)
+          throw err
+        } finally {
           tempWrapperElForSnapshot.remove()
-        })
+        }
 
         const decodedData = atob((() => {
           const urlSegs = dataUrl.split(',')
@@ -349,7 +376,6 @@ export default defineComponent({
         )
       } catch (err) {
         LuLightTip.error('生成图片过程发生错误，请稍后重试')
-        throw err
       }
     }
 
@@ -360,6 +386,8 @@ export default defineComponent({
 
       dragIsHovering,
       handleDropOnImageWrap,
+
+      showImageUrlInputDialog,
 
       fileInputEl,
       handleFileInputChange,
