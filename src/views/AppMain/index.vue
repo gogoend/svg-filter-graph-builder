@@ -23,6 +23,13 @@
           setSvgCanvasVm(vnode.component.proxy)
         }"
       />
+      <svg-canvas-overlay-tip
+        class="svg-canvas__overlay-tip"
+        :style="{
+          left: filterLibraryPanelWidth + 'px',
+          width: `calc(100% - ${stuffConfigPanelWidth}px - ${filterLibraryPanelWidth}px)`
+        }"
+      />
       <node-library-panel
         class="node-library-panel"
         :style="{
@@ -51,6 +58,7 @@
 <script lang="ts">
 import { defineComponent, inject, onMounted, VNodeProps } from 'vue'
 import SvgCanvas from './components/SvgCanvas/index.vue'
+import SvgCanvasOverlayTip from './components/SvgCanvasOverlayTip.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
 import OutputPreviewPanel from './components/OutputPreviewPanel/index.vue'
@@ -66,6 +74,7 @@ export default defineComponent({
   components: {
     TopMenuBar,
     SvgCanvas,
+    SvgCanvasOverlayTip,
     NodeLibraryPanel,
     StuffConfigPanel,
     OutputPreviewPanel,
@@ -120,6 +129,10 @@ export default defineComponent({
     left: 0;
     right: 0;
     bottom: 0;
+    .svg-canvas__overlay-tip {
+      position: absolute;
+      user-select: none;
+    }
     .svg-canvas {
       overflow: auto;
       position: absolute;
