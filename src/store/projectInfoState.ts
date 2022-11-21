@@ -139,7 +139,6 @@ export default function projectInfoState() {
     )
   }
   const saveCurrentProject = async() => {
-    debugger
     const currentProjectId = currentProject.value?.id
     if (currentProjectId) {
       const data = await collectCurrentFilterProjectFileData()
