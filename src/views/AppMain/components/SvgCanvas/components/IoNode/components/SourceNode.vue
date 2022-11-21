@@ -43,7 +43,8 @@ export default defineComponent({
     // FIXME: 此处节点应该只用于缩略图预览，不应出现在最终结果中
     const getVNodeFragment = (): VNode => {
       return h('feOffset', {
-        in: props.is
+        in: props.is,
+        result: props.nodeId
       })
     }
 
