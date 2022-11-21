@@ -6,9 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "ci:build": "node ./scripts/build.mjs",
     "ci:release-version": "node ./scripts/release-version.mjs",
     "ci:deploy-gh-pages": "node ./scripts/deploy-gh-pages.mjs",
-    "ci:deploy-local": "node ./scripts/deploy-local.mjs",
     "ci:test-stage-branch": "node ./scripts/test-stage-branch.mjs"
   },
   "dependencies": {
