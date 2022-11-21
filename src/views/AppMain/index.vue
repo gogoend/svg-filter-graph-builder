@@ -1,5 +1,6 @@
 <template>
   <div class="app-wrap">
+    <ping-ping />
     <top-menu-bar
       class="top-menu-bar"
       :style="{
@@ -20,6 +21,13 @@
         }"
         @vnode-mounted="(vnode) => {
           setSvgCanvasVm(vnode.component.proxy)
+        }"
+      />
+      <svg-canvas-overlay-tip
+        class="svg-canvas__overlay-tip"
+        :style="{
+          left: filterLibraryPanelWidth + 'px',
+          width: `calc(100% - ${stuffConfigPanelWidth}px - ${filterLibraryPanelWidth}px)`
         }"
       />
       <node-library-panel
@@ -48,24 +56,29 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, inject, VNodeProps } from 'vue'
+import { defineComponent, inject, onMounted, VNodeProps } from 'vue'
 import SvgCanvas from './components/SvgCanvas/index.vue'
+import SvgCanvasOverlayTip from './components/SvgCanvasOverlayTip.vue'
 import NodeLibraryPanel from './components/NodeLibraryPanel/index.vue'
 import StuffConfigPanel from './components/StuffConfigPanel/index.vue'
 import OutputPreviewPanel from './components/OutputPreviewPanel/index.vue'
 import TopMenuBar from './components/TopMenuBar.vue'
+import PingPing from './components/PingPing.vue'
 import { filterLibraryPanelWidth, stuffConfigPanelWidth } from '@/config/ui'
 import { topMenuBarHeight } from '../../config/ui'
 import { SET_SVG_CANVAS_VM_SYMBOL } from '@/store/vmStore'
+import log from '@/plugins/log'
 
 export default defineComponent({
   name: 'AppMain',
   components: {
     TopMenuBar,
     SvgCanvas,
+    SvgCanvasOverlayTip,
     NodeLibraryPanel,
     StuffConfigPanel,
-    OutputPreviewPanel
+    OutputPreviewPanel,
+    PingPing
   },
   setup() {
     const setSvgCanvasVm = inject(SET_SVG_CANVAS_VM_SYMBOL)!
@@ -79,6 +92,10 @@ export default defineComponent({
       el!.style.left = `${window.innerWidth - outputPreviewPanelRect.width}px`
       el!.style.top = `${window.innerHeight - outputPreviewPanelRect.height}px`
     }
+
+    onMounted(() => {
+      log.log('[Hello] 用户界面已加载', [window.__sfgb_runtime_config__, navigator.userAgent])
+    })
 
     return {
       setSvgCanvasVm,
@@ -112,6 +129,10 @@ export default defineComponent({
     left: 0;
     right: 0;
     bottom: 0;
+    .svg-canvas__overlay-tip {
+      position: absolute;
+      user-select: none;
+    }
     .svg-canvas {
       overflow: auto;
       position: absolute;

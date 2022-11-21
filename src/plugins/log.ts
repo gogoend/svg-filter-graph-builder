@@ -1,4 +1,4 @@
-import { logsTable } from './db'
+import { logsTable, appTable } from './db'
 
 enum LogLevel {
   ERROR = 1,
@@ -50,11 +50,11 @@ const preProcessLogArguments = (...args: unknown[]) => {
 const gogoendLog = {
   async debug(...args: any) {
     const returnValue = console.log(...args)
-    LOG_LEVEL_WRITE_TO_DB >= LogLevel.DEBUG && logsTable.add(
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.DEBUG && await logsTable.add(
       preProcessLogArguments(
         LogLevel[LogLevel.DEBUG],
         Number(new Date()),
-        'Default User',
+        (await appTable.get('lastUserProfileId'))?.value,
         ...args
       )
     )
@@ -62,11 +62,11 @@ const gogoendLog = {
   },
   async log(...args: any) {
     const returnValue = console.log(...args)
-    LOG_LEVEL_WRITE_TO_DB >= LogLevel.LOG && logsTable.add(
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.LOG && await logsTable.add(
       preProcessLogArguments(
         LogLevel[LogLevel.LOG],
         Number(new Date()),
-        'Default User',
+        (await appTable.get('lastUserProfileId'))?.value,
         ...args
       )
     )
@@ -74,11 +74,11 @@ const gogoendLog = {
   },
   async warn(...args: any) {
     const returnValue = console.warn(...args)
-    LOG_LEVEL_WRITE_TO_DB >= LogLevel.WARNING && logsTable.add(
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.WARNING && await logsTable.add(
       preProcessLogArguments(
         LogLevel[LogLevel.WARNING],
         Number(new Date()),
-        'Default User',
+        (await appTable.get('lastUserProfileId'))?.value,
         ...args
       )
     )
@@ -86,11 +86,11 @@ const gogoendLog = {
   },
   async error(...args: any) {
     const returnValue = console.error(...args)
-    LOG_LEVEL_WRITE_TO_DB >= LogLevel.ERROR && logsTable.add(
+    LOG_LEVEL_WRITE_TO_DB >= LogLevel.ERROR && await logsTable.add(
       preProcessLogArguments(
         LogLevel[LogLevel.ERROR],
         Number(new Date()),
-        'Default User',
+        (await appTable.get('lastUserProfileId'))?.value,
         ...args
       )
     )

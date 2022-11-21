@@ -3,10 +3,16 @@
     class="about-content"
   >
     <p>
-      SVG Filter Node Builder v{{ packageInfo.version }}
+      SVG Filter Node Builder v{{ appInfo.version }}
       <br />
       ©️2021-2022
       <a target="_blank" href="https://github.com/gogoend">gogoend</a>
+      <br />
+      Build Time: {{ new Date(appInfo.buildTime) }}
+      <br />
+      Git Commit: {{ appInfo.buildHash }}
+      <br />
+      Build Version: {{ appInfo.buildVersion }}
     </p>
 
     <p>
@@ -37,6 +43,9 @@
       <li>
         <a target="_blank" href="https://github.com/element-plus/element-plus">element-plus / element-plus</a>
       </li>
+      <li>
+        <a target="_blank" href="https://github.com/tsayen/dom-to-image">tsayen / dom-to-image</a>
+      </li>
     </ul>
 
     <p>
@@ -54,7 +63,7 @@
 </template>
 
 <script lang="ts" setup>
-import packageInfo from '../../../package.json'
+const appInfo = window.__sfgb_runtime_config__
 </script>
 <style lang="scss" scoped>
 

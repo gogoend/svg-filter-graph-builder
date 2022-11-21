@@ -4,21 +4,23 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "node ./scripts/build.mjs",
     "lint": "vue-cli-service lint",
+    "ci:release-version": "node ./scripts/release-version.mjs",
     "ci:deploy-gh-pages": "node ./scripts/deploy-gh-pages.mjs",
-    "ci:deploy-local": "node ./scripts/deploy-local.mjs",
     "ci:test-stage-branch": "node ./scripts/test-stage-branch.mjs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
     "dexie": "^3.2.2",
+    "dom-to-image": "^2.6.0",
     "element-plus": "^2.2.21",
     "lu2": "^2021.12.21",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.41"
   },
   "devDependencies": {
+    "@types/dom-to-image": "^2.6.4",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
