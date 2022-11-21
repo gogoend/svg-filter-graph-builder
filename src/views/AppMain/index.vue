@@ -94,7 +94,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      log.log('[Hello] 用户界面已加载', [window.__sfgb_runtime_config__, navigator.userAgent])
+      log.log('[Hello] 用户界面已加载', [location.href, window.__sfgb_runtime_config__, navigator.userAgent])
     })
 
     return {
