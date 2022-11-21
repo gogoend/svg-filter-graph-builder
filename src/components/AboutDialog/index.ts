@@ -9,7 +9,7 @@ export function showAboutDialog() {
   new LuDialog({
     title: 'About',
     content: `<div class="about-dialog-dialog" />`,
-    width: '480px',
+    width: '640px',
     buttons: [{
       value: 'Close'
     }],
