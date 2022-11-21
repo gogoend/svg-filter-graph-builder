@@ -1,8 +1,8 @@
 {
-  "name": "",
-  "version": "",
-  "buildVersion": 0,
-  "buildTime": 0,
-  "buildHash": "",
+  "name": "@gogoend/svg-filter-graph-builder",
+  "version": "0.1.0",
+  "buildVersion": 1,
+  "buildTime": 1669045829945,
+  "buildHash": "da22682af5611aece8df3959f91a8b3e7dbcfc33",
   "logDestination": "https://dowob.net/sfgb/v1/log/l"
 }
