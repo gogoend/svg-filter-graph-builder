@@ -123,7 +123,7 @@ export default function projectInfoState() {
       createdTime: currentProject.value?.project.createdTime ?? Number(new Date()),
       lastModifiedTime: Number(new Date()),
       lastModifierId: currentUserProfileId,
-      name: ''
+      name: currentProject.value?.project.name ?? ''
     }
 
     const projectFileData: Omit<ProjectFile, 'id'> & { id?: string } = {
@@ -139,6 +139,7 @@ export default function projectInfoState() {
     )
   }
   const saveCurrentProject = async() => {
+    debugger
     const currentProjectId = currentProject.value?.id
     if (currentProjectId) {
       const data = await collectCurrentFilterProjectFileData()
