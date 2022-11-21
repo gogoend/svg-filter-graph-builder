@@ -2,6 +2,8 @@
 
 A node-based SVG filter graph builder, let you can compose complex SVG filter by dragging nodes, which makes the workflow more easily and visualizing without writing unreadable SVG filter structure.
 
+[![Test Stage Branch](https://github.com/gogoend/svg-filter-graph-builder/actions/workflows/test-stage-branch.yml/badge.svg?branch=dev)](https://github.com/gogoend/svg-filter-graph-builder/actions/workflows/test-stage-branch.yml)
+
 ## Terminology
 - Node
 
