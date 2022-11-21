@@ -1,4 +1,3 @@
-import packageInfo from '../../package.json'
 import { uuid } from '../utils/uuid'
 import { getCurrentInstance, InjectionKey, provide, ShallowRef, shallowRef, nextTick } from 'vue'
 import { ALL_NODES_ON_CANVAS_SYMBOL, NODE_FORM_VALUE_TYPE_SYMBOL, LINKED_PATHS_FOR_SERIALIZE_SYMBOL, EMPTY_CANVAS_STUFF_SYMBOL } from './canvasStuff'
@@ -113,9 +112,9 @@ export default function projectInfoState() {
       links: linkedPathsForSerialize.value
     }
     const product = {
-      name: packageInfo.name,
-      version: packageInfo.version,
-      buildVersion: 0
+      name: window.__sfgb_runtime_config__.name,
+      version: window.__sfgb_runtime_config__.version,
+      buildVersion: window.__sfgb_runtime_config__.buildVersion
     }
     const currentUserProfileId = (await appTable.get('lastUserProfileId')).value
     const project = {
@@ -145,7 +144,7 @@ export default function projectInfoState() {
       const data = await collectCurrentFilterProjectFileData()
       await fileStorage.where('id').equals(currentProjectId).modify((value, ref) => {
         // TODO: 其它数据库操作似乎不能在此运行？- 因为已经有一个事务存在了？
-        ref.value = data
+        ref.value = data as ProjectFile
       })
       return
     } else {

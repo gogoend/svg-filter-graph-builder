@@ -1,8 +1,8 @@
 {
   "name": "",
   "version": "",
-  "buildVersion": "", 
-  "buildTime": "", 
+  "buildVersion": 0,
+  "buildTime": 0,
   "buildHash": "",
   "logDestination": "https://dowob.net/sfgb/v1/log/l"
 }
