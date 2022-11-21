@@ -1,4 +1,5 @@
 import { execSync } from 'child_process'
+import { runBuild } from './_public.mjs'
 
 async function release() {
   if (!process.env.GITHUB_ACTIONS) {
@@ -16,16 +17,11 @@ async function release() {
   execSync(
     `git checkout $GITHUB_HEAD_REF`
   )
-  execSync(
-    `yarn`
-  )
   // TODO: 单元测试
   // execSync(
   //   `npx vue-cli-service test:unit`
   // )
-  execSync(
-    `yarn build`
-  )
+  await runBuild()
   console.log(`[CI Stage] ${process.env.GITHUB_HEAD_REF} 分支测试结束`)
 }
 

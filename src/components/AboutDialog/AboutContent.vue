@@ -3,10 +3,16 @@
     class="about-content"
   >
     <p>
-      SVG Filter Node Builder v{{ packageInfo.version }}
+      SVG Filter Node Builder v{{ appInfo.version }}
       <br />
       ©️2021-2022
       <a target="_blank" href="https://github.com/gogoend">gogoend</a>
+      <br />
+      Build Time: {{ new Date(appInfo.buildTime) }}
+      <br />
+      Git Commit: {{ appInfo.buildHash }}
+      <br />
+      Build Version: {{ appInfo.buildVersion }}
     </p>
 
     <p>
@@ -57,7 +63,7 @@
 </template>
 
 <script lang="ts" setup>
-import packageInfo from '../../../package.json'
+const appInfo = window.__sfgb_runtime_config__
 </script>
 <style lang="scss" scoped>
 

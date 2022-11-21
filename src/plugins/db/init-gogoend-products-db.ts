@@ -1,28 +1,28 @@
-import { PRODUCT_NAME } from '@/config/product'
 import Dexie from 'dexie'
-import packageInfo from '../../../package.json'
-import gogoendLog from '../log'
 
-export const gogoendDb = new Dexie('gogoend')
-gogoendDb.version(1).stores({
-  products: 'id,name'
-})
-gogoendDb.table('products')
-  .where('id')
-  .equals(PRODUCT_NAME)
-  .toArray()
-  .then(res => {
-    if (res.length === 0) {
-      return gogoendDb.table('products').add(
-        {
-          id: PRODUCT_NAME,
-          name: 'SVG滤镜节点编辑器',
-          version: packageInfo.version,
-          buildVersion: 1
-        }
-      )
-    }
+const initGogoendProductsDb = async() => {
+  const gogoendDb = new Dexie('gogoend')
+  gogoendDb.version(1).stores({
+    products: 'id,name'
   })
-  .catch(err => {
-    gogoendLog.error(err)
-  })
+  return gogoendDb.table('products')
+    .where('id')
+    .equals(window.__sfgb_runtime_config__.name)
+    .toArray()
+    .then(res => {
+      if (res.length === 0) {
+        return gogoendDb.table('products').add(
+          {
+            id: window.__sfgb_runtime_config__.name,
+            name: window.__sfgb_runtime_config__.name,
+            version: window.__sfgb_runtime_config__.version,
+            buildVersion: window.__sfgb_runtime_config__.buildVersion,
+            buildHash: window.__sfgb_runtime_config__.buildHash
+          }
+        )
+      }
+    })
+}
+
+export default initGogoendProductsDb
+
