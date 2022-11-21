@@ -499,10 +499,11 @@ export default defineComponent({
     left: 0;
   }
   &__image {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: url(#previewingFilter)
+    filter: url(#previewingFilter);
   }
   &__image-placeholder {
     display: flex;
