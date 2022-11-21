@@ -456,6 +456,7 @@ export default defineComponent({
 .output-preview-panel {
   --menu-bar-height: 24px;
   min-height: var(--menu-bar-height);
+  min-width: 480px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   position: relative;
