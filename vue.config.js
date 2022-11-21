@@ -2,7 +2,6 @@
 
 module.exports = {
   publicPath: '/svg-filter-graph-builder/',
-  outputDir: './dist/svg-filter-graph-builder/',
   css: {
     loaderOptions: {
       scss: {

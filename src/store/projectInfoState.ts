@@ -8,6 +8,8 @@ import { fileStorage, appTable } from '@/plugins/db'
 import { SVG_CANVAS_VM_SYMBOL } from './vmStore'
 import { ProjectFile } from '@/schema/ProjectFile'
 
+import samples from '@/config/samples'
+
 export const SAVE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('保存项目')
 export const SAVE_CURRENT_PROJECT_AS_SYMBOL: InjectionKey<() => void> = Symbol('另存为项目')
 
@@ -18,6 +20,8 @@ export const CLOSE_AND_NEW_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('�
 
 export const TRY_TO_CLOSE_CURRENT_PROJECT_SYMBOL: InjectionKey<() => void> = Symbol('关闭项目')
 export const TRY_TO_SHOW_OPEN_PROJECT_DIALOG_SYMBOL: InjectionKey<() => void> = Symbol('尝试打开打开文件对话框')
+
+export const TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL: InjectionKey<(sampleId: string) => void> = Symbol('尝试打开示例项目文件')
 
 export default function projectInfoState() {
   const vm = getCurrentInstance()!.proxy
@@ -54,7 +58,7 @@ export default function projectInfoState() {
         }, {
           value: 'Cancel',
           events(ev: any) {
-            reject(new Error('[展示打开文件弹窗] 用户取消了操作'))
+            reject(new Error('[关闭文件提示] 用户取消了操作'))
             ev.dialog.remove()
           }
         }]
@@ -174,4 +178,12 @@ export default function projectInfoState() {
     setOpeningProject(newProjectFileDataInfo)
   }
   provide(SAVE_CURRENT_PROJECT_AS_SYMBOL, saveCurrentProjectAs)
+
+  const tryToOpenSampleProject = async(sampleFileId: string) => {
+    const sample = samples.find(it => it.id === sampleFileId)
+    await tryToCloseCurrentProject()
+
+    svgCanvasVm.value.loadCanvasStuffFromSerializedData(sample)
+  }
+  provide(TRY_TO_OPEN_SAMPLE_PROJECT_SYMBOL, tryToOpenSampleProject)
 }

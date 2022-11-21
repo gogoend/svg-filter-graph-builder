@@ -16,4 +16,4 @@ export interface LinkInStore {
   }
 }
 
-export type NodeFormValue = Record<string | number, string>
+export type NodeFormValue = Record<string | number, any>
