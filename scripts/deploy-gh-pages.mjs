@@ -1,4 +1,5 @@
 import { execSync } from 'child_process'
+import { runBuild } from './_public.mjs'
 
 async function release() {
   if (!process.env.GITHUB_ACTIONS) {
@@ -15,15 +16,7 @@ async function release() {
   execSync(
     'git checkout build/gh-pages-src'
   )
-  execSync(
-    'yarn version --patch --no-git-tag-version'
-  )
-  execSync(
-    'yarn'
-  )
-  execSync(
-    'yarn build'
-  )
+  await runBuild()
 }
 
 release()
